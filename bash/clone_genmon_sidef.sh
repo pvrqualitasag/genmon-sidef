@@ -125,7 +125,7 @@ fi'
       CLONECMD='QSRCDIR='"$REPOROOT"';
 QHTZDIR='"$REPOPATH"';
 if [ ! -d "$QSRCDIR" ]; then mkdir -p $QSRCDIR;fi;
-if [ ! -d "$QHTZDIR" ]; then \
+if [ ! -d "$QHTZDIR" ]; then 
   git -C "$QSRCDIR" clone '"$GHURI"'
 else 
   echo "$QHTZDIR already exists, run updated_quagzws_htz.sh";
