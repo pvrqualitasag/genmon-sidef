@@ -59,9 +59,11 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT  -b <branch_reference> -s <server_name> -u <remote_user>"
+  $ECHO "Usage: $SCRIPT  -b <branch_reference> -g <github_uri> -n <repo_name> -s <server_name> -u <remote_user>"
   $ECHO "  where -s <server_name>     --  optional, run package update on single server"
   $ECHO "        -b <repo_reference>  --  optional, update to a branch reference"
+  $ECHO "        -g <github_uri>      --  optional, specify uri of github repo"
+  $ECHO "        -n <repo_name>       --  optional, specify name of repository"
   $ECHO "        -u <remote_user>     --  optional, username of remote user"
   $ECHO ""
   exit 1
@@ -106,15 +108,18 @@ log_msg () {
 #+ update-pkg-fun
 pull_repo () {
   local l_SERVER=$1
+  local l_PULLCMD=""
   log_msg 'pull_repo' "Running update on $l_SERVER"
   if [ "$REFERENCE" != "" ]
   then
-    ssh $REMOTEUSER@$l_SERVER 'QTSPDIR=/home/quagadmin/simg/genmon-sidef; \
-git -C "$QTSPDIR" pull https://github.com/pvrqualitasag/genmon-sidef.git -b "$REFERENCE"'
+    l_PULLCMD='QTSPDIR='"$REPOPATH"';
+git -C "$QTSPDIR" pull '"$GHURI"' -b '"$REFERENCE"
   else
-    ssh $REMOTEUSER@$l_SERVER 'QTSPDIR=/home/quagadmin/simg/genmon-sidef; \
-git -C "$QTSPDIR" pull https://github.com/pvrqualitasag/genmon-sidef.git'
+    l_PULLCMD='QTSPDIR='"$REPOPATH"';
+git -C "$QTSPDIR" pull '"$GHURI"
   fi
+  log_msg 'pull_repo' " * Running command: $l_PULLCMD ..."
+  ssh $REMOTEUSER@$l_SERVER $l_PULLCMD
 }
 
 
@@ -130,9 +135,9 @@ local_pull_repo () {
   # check whether we are inside of a singularity container
   if [ "$REFERENCE" != "" ]
   then
-    git -C "$QTSPDIR" pull https://github.com/pvrqualitasag/genmon-sidef.git -b "$REFERENCE"
+    git -C "$QTSPDIR" pull "$GHURI" -b "$REFERENCE"
   else
-    git -C "$QTSPDIR" pull https://github.com/pvrqualitasag/genmon-sidef.git
+    git -C "$QTSPDIR" pull "$GHURI"
   fi  
 }
 
@@ -147,18 +152,26 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 REMOTEUSER=quagadmin
-SERVERS=(1-htz.quagzws.com 2-htz.quagzws.com)
+SERVERS=(fagr.genmon.ch)
 SERVERNAME=""
 REFERENCE=""
+REPONAME=genmon-sidef
 REPOROOT=/home/quagadmin/simg
-REPOPATH=$REPOROOT/genmon_sidef
-while getopts ":b:s:h" FLAG; do
+REPOPATH=$REPOROOT/$REPONAME
+GHURI=https://github.com/pvrqualitasag/${REPONAME}.git
+while getopts ":b:g:n:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     b)
       REFERENCE=$OPTARG
+      ;;
+    g)
+      GHURI=$OPTARG
+      ;;
+    n)
+      REPONAME=$OPTARG
       ;;
     s)
       SERVERNAME=$OPTARG
