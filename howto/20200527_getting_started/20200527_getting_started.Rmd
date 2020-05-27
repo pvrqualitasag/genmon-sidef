@@ -1,0 +1,26 @@
+---
+title: "Singularity Container For GENMON"
+author: "Peter von Rohr"
+date: "5/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+The steps to setup a singularity container for the GENMON project is described.
+
+
+# Prerequisites
+All material is inclosed in the github repository `genmon-sidef`. A shell script is provided to clone and to update the content of the github repository.
+
+
+# Plan
+Start with a singularity sandbox container built according to the description given in 
+
+* https://www.youtube.com/watch?v=m8llDjFuXlc and 
+* https://www.youtube.com/watch?v=SJHizTjwyFk.
+
+
