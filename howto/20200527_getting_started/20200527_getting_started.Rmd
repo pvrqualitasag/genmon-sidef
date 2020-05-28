@@ -24,3 +24,72 @@ Start with a singularity sandbox container built according to the description gi
 * https://www.youtube.com/watch?v=SJHizTjwyFk.
 
 
+# Protocol
+## Building the container
+
+```
+sudo singularity build --sandbox ubuntu_sand docker://ubuntu:18.04
+```
+
+
+## Start shell in Sandbox Container
+
+```
+sudo singularity shell --writable ubuntu_sand/
+```
+
+
+## Building Container from Recipe
+
+```
+sudo singularity build si-genmon.simg /home/quagadmin/simg/genmon-sidef/Singularity-genmon.recipe
+```
+
+
+## Starting an Instance of the container
+
+```
+singularity instance start si-genmon.simg sigm
+```
+
+
+## Want to Change Image
+
+* Hence I start a shell in the `--writable` mode from an image-file and not from a sandbox directory.
+
+```
+sudo singularity shell --writable si-genmon.simg 
+ERROR  : Unable to open squashfs image in read-write mode: Read-only file system
+ABORT  : Retval = 255
+```
+
+* This gives me the same problem as reported by Eildert. Let us look at the version. 
+
+```
+singularity --version
+2.4.2-dist
+```
+
+* Try the same on '2.6.1-dist'
+
+The same problem is also on '2.6.1-dist'
+
+```
+singularity --version
+2.6.1-dist
+```
+
+Starting a writable shell from an image file does not work.
+
+```
+sudo singularity shell --writable ubuntu_hw.img 
+ERROR  : Unable to open squashfs image in read-write mode: Read-only file system
+ABORT  : Retval = 255
+```
+
+A normal shell can be started. 
+
+
+
+
+

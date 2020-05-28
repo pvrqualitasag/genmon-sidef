@@ -1,0 +1,28 @@
+---
+title: "Download PopRep"
+output: html_notebook
+---
+
+
+The following commands are done to download poprep.
+
+* Getting fexclient
+
+```
+139  cd source
+140  mkdir fex
+141  cd fex
+143  wget http://fex.belwue.de/download/fexget
+145  chmod 755 fexget
+```
+
+* Download poprep
+
+```
+147  cd ..
+148  mkdir poprep
+149  cd poprep/
+150  ../fex/fexget https://fex.rus.uni-stuttgart.de/fop/VC23BlpT/pop_complete.tar.gz
+152  tar xvzf pop_complete.tar.gz 
+```
+
