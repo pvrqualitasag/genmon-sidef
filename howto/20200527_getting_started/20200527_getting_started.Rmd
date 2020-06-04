@@ -14,7 +14,17 @@ The steps to setup a singularity container for the GENMON project is described.
 
 
 # Prerequisites
-All material is inclosed in the github repository `genmon-sidef`. A shell script is provided to clone and to update the content of the github repository.
+All material is inclosed in the github repository `genmon-sidef`. A shell script is provided to clone and to update the content of the github repository. The first time the repository must be cloned.
+
+```
+./bash/clone_genmon_sidef.sh
+```
+
+After the initial cloning steps, all updates must be deployed using 
+
+```
+./bash/update_genmon_sidef.sh
+```
 
 
 # Plan
@@ -25,12 +35,19 @@ Start with a singularity sandbox container built according to the description gi
 
 
 # Protocol
+## Initialise working directory
+
+```
+SIMGWD=/home/quagadmin/simg/img/genmon
+./simg/genmon-sidef/bash/init_simg.sh -w $SIMGWD
+```
+
 ## Building the container
 
 ```
+SIMGWD=/home/quagadmin/simg/img/genmon;cd $SIMGWD
 sudo singularity build --sandbox ubuntu_sand docker://ubuntu:18.04
 ```
-
 
 ## Start shell in Sandbox Container
 
@@ -39,57 +56,90 @@ sudo singularity shell --writable ubuntu_sand/
 ```
 
 
-## Building Container from Recipe
+## Apply the required changes
+The changes are taken from the file 'install.html' from the github repository.
+
+
+### Server Basics
+Additional packages are installed using 'apt-get'
 
 ```
-sudo singularity build si-genmon.simg /home/quagadmin/simg/genmon-sidef/Singularity-genmon.recipe
+apt-get update
+apt-get install -y vim build-essential sudo git
+```
+
+At this point it is not clear whether 'apache2' must be installed also
+
+
+### Firewall 
+The firewall settings are done on the host. When starting an instance port-forwarding must be considered.
+
+
+### Postgres
+
+```
+# locales
+apt-get install -y locales
+locale-gen en_US.UTF-8
+locale-gen de_CH.UTF-8
+
+#install tzdata package
+export DEBIAN_FRONTEND=noninteractive
+apt-get install -y tzdata
+# set your timezone
+echo 'Europe/Berlin' > /etc/timezone
+
+# pg
+apt-get install -y postgresql
+```
+
+The result at the end of the installation
+
+```
+Success. You can now start the database server using:
+
+    /usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/main -l logfile start
+
 ```
 
 
-## Starting an Instance of the container
+
+### Postgis
 
 ```
-singularity instance start si-genmon.simg sigm
+apt-get install -y postgresql-10-postgis-2.4
+```
+
+### Config DB
+
+First, the database server must be started by
+
+```
+sudo -i -u postgresql
+/usr/lib/postgresql/10/bin/initdb -D /var/lib/postgresql/10/data -A trust -U postgres
+mkdir -p /var/lib/postgresql/10/log
+/usr/lib/postgresql/10/bin/pg_ctl -D /var/lib/postgresql/10/data -l /var/lib/postgresql/10/log/logfile start
+```
+
+Then the DB-user can be created as
+```
+sudo -i -u postgres
+createuser -s -P geome_admin # ==> must enter pwd twice which should be 'geome'
+```
+
+Creating a new database
+
+```
+createdb -O geome_admin GenMon_CH
+```
+
+Create postgis extension
+
+```
+psql -d GenMon_CH -c "CREATE EXTENSION postgis;"
 ```
 
 
-## Want to Change Image
 
-* Hence I start a shell in the `--writable` mode from an image-file and not from a sandbox directory.
-
-```
-sudo singularity shell --writable si-genmon.simg 
-ERROR  : Unable to open squashfs image in read-write mode: Read-only file system
-ABORT  : Retval = 255
-```
-
-* This gives me the same problem as reported by Eildert. Let us look at the version. 
-
-```
-singularity --version
-2.4.2-dist
-```
-
-* Try the same on '2.6.1-dist'
-
-The same problem is also on '2.6.1-dist'
-
-```
-singularity --version
-2.6.1-dist
-```
-
-Starting a writable shell from an image file does not work.
-
-```
-sudo singularity shell --writable ubuntu_hw.img 
-ERROR  : Unable to open squashfs image in read-write mode: Read-only file system
-ABORT  : Retval = 255
-```
-
-A normal shell can be started. 
-
-
-
-
-
+## Singularity Recipe
+All the changes are recorded as statements in a singularity recipe file.

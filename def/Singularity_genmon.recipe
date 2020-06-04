@@ -1,0 +1,24 @@
+BootStrap: debootstrap
+OSVersion: bionic
+MirrorURL: http://archive.ubuntu.com/ubuntu/
+
+%post
+  apt-get update
+  apt-get install -y vim build-essential sudo git
+  # locales
+  apt-get install -y locales
+  locale-gen en_US.UTF-8
+  locale-gen de_CH.UTF-8
+
+  #install tzdata package
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get install -y tzdata
+  # set your timezone
+  echo 'Europe/Berlin' > /etc/timezone
+
+  # pg
+  apt-get install -y postgresql
+
+  # postgis
+  apt-get install -y postgresql-10-postgis-2.4
+
