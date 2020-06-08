@@ -11,7 +11,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get upgrade -y
   
   # basic system
-  apt-get install -y vim build-essential sudo git
+  apt-get install -y vim build-essential sudo git apt-utils
   # locales
   apt-get install -y locales
   locale-gen en_US.UTF-8
@@ -27,7 +27,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get install -y postgresql
 
   # poprep-req
-  #apt-get update -y
+  apt-get update -y
   #apt-get install -y texlive-full
   apt-get install -y texlive-base
   apt-get install -y texlive-latex-recommended
