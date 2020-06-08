@@ -1,0 +1,41 @@
+BootStrap: debootstrap
+OSVersion: bionic
+MirrorURL: http://archive.ubuntu.com/ubuntu/
+
+%files
+  /home/quagadmin/source/popreport/home/popreport/production/apiis /home/popreport/production
+
+%post
+  apt-get update
+  apt-get install -y vim build-essential sudo git
+  # locales
+  apt-get install -y locales
+  locale-gen en_US.UTF-8
+  locale-gen de_CH.UTF-8
+
+  #install tzdata package
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get install -y tzdata
+  # set your timezone
+  echo 'Europe/Berlin' > /etc/timezone
+
+  # pg
+  apt-get install -y postgresql
+
+  # poprep-req
+  apt-get install -y texlive-full
+  apt-get install -y texinfo  
+  apt-get install -y gnuplot
+  apt-get install -y pdftk
+  apt-get install -y zip
+  apt-get install -y unzip
+  apt-get install -y gfortran
+  apt-get install -y transfig
+  apt-get install -y xinetd
+
+  # re-configure papersize
+  sed -i 's/letter/a4/' /etc/papersize
+  paperconfig -p a4
+  
+  # prepare directory for poprep
+  chmod 777 /home/popreport/production

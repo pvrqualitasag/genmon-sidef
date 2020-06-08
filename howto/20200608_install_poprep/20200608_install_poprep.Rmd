@@ -1,0 +1,101 @@
+---
+title: "Installation of PopRep"
+author: "Peter von Rohr"
+date: "6/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+Documentation and protocol for installing PopRep.
+
+
+## Download
+PopRep was downloaded as shown in the download protocol in '20200528_download_poprep'. The downloaded tar-ball contains a complete linux distribution. We try to use the installation description for GenMon to find the relevant parts of PopRep.
+
+
+## Installation
+Based on the description in `install.html`
+
+```
+cdpgp
+open GENMON_GitHub/GENMON/install.html
+```
+
+
+## Container
+We start by building a separate container for PopRep.
+
+```
+cd /home/quagadmin/simg/img/
+../genmon-sidef/bash/init_simg.sh -w `pwd`/poprep
+```
+
+Building a sandbox container 
+
+```
+sudo singularity build --sandbox ubuntu_sand docker://ubuntu:18.04
+```
+
+Open a shell in the sandbox
+
+```
+sudo singularity shell --writable ubuntu_sand
+```
+
+Packages required for poprep but were installed earlier in the installation description
+
+
+```
+apt-get update -y
+apt-get install -y vim build-essential sudo git
+# locales
+apt-get install -y locales
+locale-gen en_US.UTF-8
+locale-gen de_CH.UTF-8
+  
+export DEBIAN_FRONTEND=noninteractive
+apt-get install -y tzdata
+# set your timezone
+echo 'Europe/Berlin' > /etc/timezone
+
+# pg
+apt-get install -y postgresql
+
+```
+
+
+Adding the packages needed by poprep as shown in the description. 
+
+```
+apt-get update -y
+apt-get install -y texlive-full
+apt-get install -y texinfo  
+apt-get install -y gnuplot
+apt-get install -y pdftk
+apt-get install -y zip
+apt-get install -y unzip
+apt-get install -y gfortran
+apt-get install -y transfig
+apt-get install -y xinetd
+```
+
+Configure papersize
+
+```
+#sudo vim /etc/papersize #change the default paper size in latex
+#a4 (instead of letter; + Esc + ZZ (to save))
+sed -i 's/letter/a4/' /etc/papersize
+paperconfig -p a4
+```
+
+
+
+
+
+
+
+
