@@ -3,7 +3,7 @@ OSVersion: bionic
 MirrorURL: http://archive.ubuntu.com/ubuntu/
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production/apiis /home/popreport/production
+  /home/quagadmin/source/popreport/home/popreport/production/apiis ${SINGULARITY_ROOTFS}
 
 %post
   sed -i 's/main restricted/main restricted universe/g' /etc/apt/sources.list
@@ -31,7 +31,8 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   #apt-get install -y texlive-full
   apt-get install -y texlive-base
   apt-get install -y texlive-latex-recommended
-  apt-get install -y texinfo  
+  #apt-get install -y texinfo  
+  apt-get install -y texinfo-doc-nonfree install-info info
   apt-get install -y gnuplot
   apt-get install -y pdftk
   apt-get install -y zip
