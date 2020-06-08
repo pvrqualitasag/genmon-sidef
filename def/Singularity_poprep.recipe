@@ -44,5 +44,5 @@ From: ubuntu:18.04
   
   # prepare directory for poprep
   mkdir -p /home/popreport/production
-  mv ${SINGULARITY_ROOTFS}/apiis /home/popreport/production
+  #mv ${SINGULARITY_ROOTFS}/apiis /home/popreport/production
   chmod 777 /home/popreport/production
