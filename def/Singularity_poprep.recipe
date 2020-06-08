@@ -28,9 +28,9 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
 
   # poprep-req
   #apt-get update -y
-  apt-get install -y texlive-full
-  #apt-get install -y texlive-base
-  #apt-get install -y texlive-latex-extra
+  #apt-get install -y texlive-full
+  apt-get install -y texlive-base
+  apt-get install -y texlive-latex-extra
   apt-get install -y texinfo  
   apt-get install -y gnuplot
   apt-get install -y pdftk
