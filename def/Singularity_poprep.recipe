@@ -6,7 +6,11 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   /home/quagadmin/source/popreport/home/popreport/production/apiis /home/popreport/production
 
 %post
-  apt-get update
+  sed -i 's/main restricted/main restricted universe/g' /etc/apt/sources.list
+  apt-get update -y
+  apt-get upgrade -y
+  
+  # basic system
   apt-get install -y vim build-essential sudo git
   # locales
   apt-get install -y locales
@@ -23,6 +27,7 @@ MirrorURL: http://archive.ubuntu.com/ubuntu/
   apt-get install -y postgresql
 
   # poprep-req
+  apt-get update -y
   apt-get install -y texlive-full
   apt-get install -y texinfo  
   apt-get install -y gnuplot
