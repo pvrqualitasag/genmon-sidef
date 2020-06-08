@@ -5,7 +5,7 @@ From: ubuntu:18.04
   /home/quagadmin/source/popreport/home/popreport/production/apiis ${SINGULARITY_ROOTFS}
 
 %post
-  sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
+  #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
   apt-get update -y
   apt-get upgrade -y
   
@@ -26,23 +26,23 @@ From: ubuntu:18.04
   apt-get install -y postgresql
 
   # poprep-req
-  apt-get update -y
+  #apt-get update -y
   #apt-get install -y texlive-full
-  apt-get install -y texlive-base
-  apt-get install -y texlive-latex-recommended
+  #apt-get install -y texlive-base
+  #apt-get install -y texlive-latex-recommended
   #apt-get install -y texinfo  
-  apt-get install -y texinfo-doc-nonfree install-info info
-  apt-get install -y gnuplot
-  apt-get install -y pdftk
-  apt-get install -y zip
-  apt-get install -y unzip
-  apt-get install -y gfortran
-  apt-get install -y transfig
-  apt-get install -y xinetd
+  #apt-get install -y texinfo-doc-nonfree install-info info
+  #apt-get install -y gnuplot
+  #apt-get install -y pdftk
+  #apt-get install -y zip
+  #apt-get install -y unzip
+  #apt-get install -y gfortran
+  #apt-get install -y transfig
+  #apt-get install -y xinetd
 
   # re-configure papersize
-  sed -i 's/letter/a4/' /etc/papersize
-  paperconfig -p a4
+  #sed -i 's/letter/a4/' /etc/papersize
+  #paperconfig -p a4
   
   # prepare directory for poprep
-  chmod 777 /home/popreport/production
+  #chmod 777 /home/popreport/production
