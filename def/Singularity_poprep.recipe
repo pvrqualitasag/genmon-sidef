@@ -26,8 +26,8 @@ From: ubuntu:18.04
   apt-get install -y postgresql
 
   # poprep-req
-  #apt-get update -y
-  #apt-get install -y texlive-full
+  apt-get update -y
+  apt-get install -y texlive-full
   #apt-get install -y texlive-base
   #apt-get install -y texlive-latex-recommended
   #apt-get install -y texinfo  
