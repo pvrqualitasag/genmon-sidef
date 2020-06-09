@@ -2,7 +2,7 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production/apiis /root
+  /home/quagadmin/source/popreport/home/popreport/production/apiis /root/apiis
 
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
@@ -53,5 +53,5 @@ From: ubuntu:18.04
   
   # prepare directory for poprep
   mkdir -p /home/popreport/production
-  #mv ${SINGULARITY_ROOTFS}/apiis /home/popreport/production
+  mv /root/apiis /home/popreport/production
   chmod 777 /home/popreport/production
