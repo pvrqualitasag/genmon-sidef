@@ -2,7 +2,7 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production/apiis ${SINGULARITY_ROOTFS}
+  /home/quagadmin/source/popreport/home/popreport/production/apiis /root
 
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
