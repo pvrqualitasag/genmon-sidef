@@ -27,15 +27,19 @@ From: ubuntu:18.04
 
   # poprep-req
   apt-get update -y
-  apt-get install -y texlive-full
-  apt-get install -y texinfo  
-  #apt-get install -y texinfo-doc-nonfree install-info info
+  apt-get install -y mutt
+  apt-get install -y apache2
+  apt-get install -y postfix
+  apt-get install -y texlive
+  apt-get install -y texinfo
   apt-get install -y gnuplot
+  apt-get install -y gnuplot-nox
   apt-get install -y zip
   apt-get install -y unzip
   apt-get install -y gfortran
   apt-get install -y transfig
   apt-get install -y xinetd
+  apt-get install -y fex fex-utils
   
   # special installation for pdftk which is no longer available
   curl -sSL http://launchpadlibrarian.net/337429932/libgcj-common_6.4-3ubuntu1_all.deb > libgcj-common_6.4-3ubuntu1_all.deb
@@ -51,7 +55,24 @@ From: ubuntu:18.04
   sed -i 's/letter/a4/' /etc/papersize
   paperconfig -p a4
   
+  # add the user for poprep
+  useradd popreport
+  echo popreport:pass | chpasswd
+  
   # prepare directory for poprep
   mkdir -p /home/popreport/production
   mv /root/apiis /home/popreport/production
   chmod 777 /home/popreport/production
+
+  # add apiis_home to .bashrc
+  (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
+  export PATH=$PATH:$APIIS_HOME/bin >> /home/popreport/.bashrc
+
+  # check and install additional perl- and apt-packages
+  /home/popreport/production/apiis/bin/apiis-test-dependencies -i -d
+  
+  # create pg-directories
+  mkdir -p /var/lib/postgresql/incoming
+  mkdir -p /var/lib/postgresql/done
+  mkdir -p /var/lib/postgresql/projects
+  
