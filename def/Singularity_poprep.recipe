@@ -10,7 +10,7 @@ From: ubuntu:18.04
   apt-get upgrade -y
   
   # basic system
-  apt-get install -y vim build-essential sudo git apt-utils
+  apt-get install -y vim build-essential sudo git apt-utils software-properties-common curl gdebi-core
   # locales
   apt-get install -y locales
   locale-gen en_US.UTF-8
@@ -31,12 +31,21 @@ From: ubuntu:18.04
   apt-get install -y texinfo  
   #apt-get install -y texinfo-doc-nonfree install-info info
   apt-get install -y gnuplot
-  #apt-get install -y pdftk
   apt-get install -y zip
   apt-get install -y unzip
   apt-get install -y gfortran
   apt-get install -y transfig
   apt-get install -y xinetd
+  
+  # special installation for pdftk which is no longer available
+  curl -sSL http://launchpadlibrarian.net/337429932/libgcj-common_6.4-3ubuntu1_all.deb > libgcj-common_6.4-3ubuntu1_all.deb
+  curl -sSL http://launchpadlibrarian.net/340410966/libgcj17_6.4.0-8ubuntu1_amd64.deb > libgcj17_6.4.0-8ubuntu1_amd64.deb
+  curl -sSL http://launchpadlibrarian.net/277739894/pdftk_2.02-4build1_amd64.deb > pdftk_2.02-4build1_amd64.deb
+  gdebi --n libgcj-common_6.4-3ubuntu1_all.deb
+  gdebi --n libgcj17_6.4.0-8ubuntu1_amd64.deb
+  gdebi --n pdftk_2.02-4build1_amd64.deb
+  apt-get update
+  rm -rf libgcj-common_6.4-3ubuntu1_all.deb libgcj17_6.4.0-8ubuntu1_amd64.deb pdftk_2.02-4build1_amd64.deb
 
   # re-configure papersize
   sed -i 's/letter/a4/' /etc/papersize
