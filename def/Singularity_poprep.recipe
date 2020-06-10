@@ -2,7 +2,7 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production/apiis /root/apiis
+  /home/quagadmin/source/popreport/home/popreport/production /root/production
 
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
@@ -60,8 +60,8 @@ From: ubuntu:18.04
   echo popreport:pass | chpasswd
   
   # prepare directory for poprep
-  mkdir -p /home/popreport/production
-  mv /root/apiis /home/popreport/production
+  mv /root/production /home/popreport
+  chown -R popreport: /home/popreport/production
   chmod 777 /home/popreport/production
 
   # add apiis_home to .bashrc
