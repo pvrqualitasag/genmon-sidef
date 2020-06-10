@@ -56,7 +56,7 @@ From: ubuntu:18.04
   paperconfig -p a4
   
   # add the user for poprep
-  useradd popreport
+  useradd popreport -s /bin/bash -m
   echo popreport:pass | chpasswd
   
   # prepare directory for poprep
