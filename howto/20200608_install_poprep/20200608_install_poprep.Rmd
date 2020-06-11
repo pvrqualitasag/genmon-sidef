@@ -29,10 +29,17 @@ open GENMON_GitHub/GENMON/install.html
 ## Container
 We start by building a separate container for PopRep.
 
+
+### Initialise Working Directory
+The container image file is built in a working directory which is created by the following script.
+
 ```
 cd /home/quagadmin/simg/img/
 ../genmon-sidef/bash/init_simg.sh -w `pwd`/poprep
 ```
+
+### Sandbox Container
+For testing and debugging purposes, it is convenient to have a container sandbox directory in which we can test different solutions.
 
 Building a sandbox container 
 
@@ -46,12 +53,13 @@ Open a shell in the sandbox
 sudo singularity shell --writable ubuntu_sand
 ```
 
+### Packages 
 Packages required for poprep but were installed earlier in the installation description
 
 
 ```
 apt-get update -y
-apt-get install -y vim build-essential sudo git
+apt-get install -y vim build-essential sudo git apt-utils software-properties-common curl gdebi-core
 # locales
 apt-get install -y locales
 locale-gen en_US.UTF-8
@@ -75,12 +83,26 @@ apt-get update -y
 apt-get install -y texlive-full
 apt-get install -y texinfo  
 apt-get install -y gnuplot
-apt-get install -y pdftk
+#apt-get install -y pdftk
 apt-get install -y zip
 apt-get install -y unzip
 apt-get install -y gfortran
 apt-get install -y transfig
 apt-get install -y xinetd
+```
+
+The package `pdftk` is not available for ubuntu bionic (18.04), it is installed via a separate procedure
+
+```
+  # special installation for pdftk which is no longer available
+  curl -sSL http://launchpadlibrarian.net/337429932/libgcj-common_6.4-3ubuntu1_all.deb > libgcj-common_6.4-3ubuntu1_all.deb
+  curl -sSL http://launchpadlibrarian.net/340410966/libgcj17_6.4.0-8ubuntu1_amd64.deb > libgcj17_6.4.0-8ubuntu1_amd64.deb
+  curl -sSL http://launchpadlibrarian.net/277739894/pdftk_2.02-4build1_amd64.deb > pdftk_2.02-4build1_amd64.deb
+  gdebi --n libgcj-common_6.4-3ubuntu1_all.deb
+  gdebi --n libgcj17_6.4.0-8ubuntu1_amd64.deb
+  gdebi --n pdftk_2.02-4build1_amd64.deb
+  apt-get update
+  rm -rf libgcj-common_6.4-3ubuntu1_all.deb libgcj17_6.4.0-8ubuntu1_amd64.deb pdftk_2.02-4build1_amd64.deb
 ```
 
 Configure papersize
@@ -92,7 +114,21 @@ sed -i 's/letter/a4/' /etc/papersize
 paperconfig -p a4
 ```
 
+Copy the PopRep code into the container. This is done via the '%files' directive in the singularity recipe file. 
 
+
+### Packages for PopRep
+The packages to be installed for PopRep are taken from the README.install inside of PopRep. This leads to a smaller image file.
+
+
+## Alternative Running Mode
+From 'PopRep.php' (in GENMON_GitHub/GENMON), it becomes clear that an uploaded pedigree file is processed via the command 
+
+```
+/home/popreport/production/apiis/bin/./process_uploads.sh -i /var/lib/postgresql/incoming -l /var/log/popreport.log -u www-data -g www-data -a /home/popreport/production/apiis
+```
+
+This command should be usable for a different user such as zws. The question at this point is how to start the DB-server inside of the singularity container image. The same question must be solved for the container containing TheSNPpit. 
 
 
 
