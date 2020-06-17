@@ -128,7 +128,9 @@ From 'PopRep.php' (in GENMON_GitHub/GENMON), it becomes clear that an uploaded p
 /home/popreport/production/apiis/bin/./process_uploads.sh -i /var/lib/postgresql/incoming -l /var/log/popreport.log -u www-data -g www-data -a /home/popreport/production/apiis
 ```
 
-This command should be usable for a different user such as zws. The question at this point is how to start the DB-server inside of the singularity container image. The same question must be solved for the container containing TheSNPpit. 
+This command should be usable for a different user such as zws. The question at this point is how to start the DB-server inside of the singularity container image. The same question must be solved for the container containing TheSNPpit. This is solved in the 'post_installation'-script of TSP. 
+
+The currently chosen setup is such that PopRep is tried to be used from user 'zws' instead of user www-data. It will also be the user 'zws' that runs the singularity container image.
 
 
 
