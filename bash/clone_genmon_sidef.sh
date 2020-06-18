@@ -143,8 +143,8 @@ fi'
 #+ local-update-repo
 local_clone_repo () {
   log_msg 'local_clone_repo' "Running update on $SERVER"
-  QSRCDIR=/home/quagadmin/simg
-  QHTZDIR=${QSRCDIR}/genmon_sidef
+  QSRCDIR="$REPOROOT"
+  QHTZDIR="$REPOPATH"
   if [ ! -d "$QSRCDIR" ]; then mkdir -p $QSRCDIR;fi
 
   # check whether we are inside of a singularity container
@@ -179,8 +179,6 @@ SERVERS=(fagr.genmon.ch)
 SERVERNAME=""
 REFERENCE=""
 REPONAME=genmon-sidef
-REPOROOT=/home/quagadmin/simg
-REPOPATH=$REPOROOT/$REPONAME
 GHURI=https://github.com/pvrqualitasag/${REPONAME}.git
 while getopts ":b:g:n:s:u:h" FLAG; do
   case $FLAG in
@@ -212,6 +210,12 @@ while getopts ":b:g:n:s:u:h" FLAG; do
 done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+#' ## Define User-dependent Variables
+#' Repository root and repository path depend on the user, hence they are 
+#' specified after commandline parsing
+REPOROOT=/home/${REMOTEUSER}/simg
+REPOPATH=$REPOROOT/quagtsp_sidef
 
 #' ## Run Updates
 #' Decide whether to run the update on one server or on all servers on the list
