@@ -269,7 +269,7 @@ init_pg_server () {
 #+ start-pg-server-fun
 start_pg_server () {
   log_msg 'start_pg_server' ' * Starting pg-db-server ...'
-  $PGCTL -D $PGDATADIR -l $LOGFILE start
+  $PGCTL -D $PGDATADIR -l $PGLOGFILE start
   if [ $? -eq 0 ]
   then
     ok "PG server started successfully ..."
