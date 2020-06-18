@@ -21,6 +21,7 @@ From: ubuntu:18.04
   apt-get install -y tzdata
   # set your timezone
   echo 'Europe/Berlin' > /etc/timezone
+  dpkg-reconfigure --frontend noninteractive tzdata
 
   # pg
   apt-get install -y postgresql
