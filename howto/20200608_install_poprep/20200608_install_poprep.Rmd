@@ -120,6 +120,20 @@ Copy the PopRep code into the container. This is done via the '%files' directive
 ### Packages for PopRep
 The packages to be installed for PopRep are taken from the README.install inside of PopRep. This leads to a smaller image file.
 
+### Check List for Installation Items
+This section contains a list of requirements for running PopRep. The following items are all implemented in the singularity recipe.
+
+* `# Install all modules needed by PopRep ==> all packages to be installed with apt-get are included in the recipe`
+* `# prepare folder and copy code ==> the user 'popreport' is created in the recipe and the content of the subdirectory 'production' is moved in the recipe`
+* `# install perl package -> run perl script from poprep ==> the script 'apiis-test-dependencies' is run in the recipe`
+* `# prepare folder with rights for www-data user: folders 'incoming', 'projects' and 'done' are created in the recipe`
+
+Requirements that are related to the user (zws in our case) that is running the program is implemented in the post-installation script 'post_install_prp.sh'
+
+* `# Change permission in the /var/log/popreport.log ==> popreport.log is created under local user in post_install_prp.sh`
+* `# define environment variables ==> `
+
+
 
 ## Alternative Running Mode
 From 'PopRep.php' (in GENMON_GitHub/GENMON), it becomes clear that an uploaded pedigree file is processed via the command 
