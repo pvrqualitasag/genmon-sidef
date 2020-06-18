@@ -81,5 +81,8 @@ From: ubuntu:18.04
   chmod -R 777 /var/run/postgresql
 
   # set your timezone
-  echo 'Europe/Berlin' > /etc/timezone
+  ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime  
   dpkg-reconfigure --frontend noninteractive tzdata
+
+
+
