@@ -10,7 +10,7 @@ From: ubuntu:18.04
   apt-get upgrade -y
   
   # basic system
-  apt-get install -y vim build-essential sudo git apt-utils software-properties-common curl gdebi-core time tzdata locales
+  apt-get install -y vim build-essential wget sudo git apt-utils software-properties-common curl gdebi-core time tzdata locales
 
   # locales
   locale-gen en_US.UTF-8
