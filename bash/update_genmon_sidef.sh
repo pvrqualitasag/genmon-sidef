@@ -116,7 +116,7 @@ git fetch;
 git checkout origin/'"$REFERENCE"
   else
     SSHCMD="QTSPDIR=$REPOPATH;"' \
-git -C "$QTSPDIR" pull https://github.com/pvrqualitasag/quagtsp-sidef.git'
+git -C "$QTSPDIR" pull '"$GHURI"
   fi
   log_msg 'pull_repo' " ** SSHCMD: $SSHCMD"
   ssh $REMOTEUSER@$l_SERVER "$SSHCMD"
