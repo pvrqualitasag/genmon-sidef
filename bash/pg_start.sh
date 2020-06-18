@@ -1,20 +1,20 @@
 #!/bin/bash
 #' ---
-#' title: Stop Postgresql DB-Server
+#' title: Start Postgresql DB-Server
 #' date:  2020-06-15 09:36:42
 #' author: Peter von Rohr
 #' ---
 #' ## Purpose
-#' Seamless stopping of a pg-server such that it can be restarted again. {Write a paragraph about what problems are solved with this script.}
+#' Seamless starting of a pg-server such that it can be restarted again. {Write a paragraph about what problems are solved with this script.}
 #'
 #' ## Description
-#' Stopping instance of postgresql db-server. {Write a paragraph about how the problems are solved.}
+#' Starting instance of postgresql db-server. {Write a paragraph about how the problems are solved.}
 #'
 #' ## Details
-#' The stopping process should also include removing any pid or lockfiles. {Give some more details here.}
+#' The starting process should also include removing any pid or lockfiles. {Give some more details here.}
 #'
 #' ## Example
-#' ./pg_stop.sh -d <data_dir> {Specify an example call of the script.}
+#' ./pg_start.sh -d <data_dir> {Specify an example call of the script.}
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -58,8 +58,9 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -d <data_directory>"
+  $ECHO "Usage: $SCRIPT -d <data_directory> -l <log_directory>"
   $ECHO "  where -d <data_directory>  --  specify the data directory with which the pg-server is running (optional)"
+  $ECHO "        -l <log_directory>   --  specify the log directory (optional)"
   $ECHO ""
   exit 1
 }
@@ -135,7 +136,8 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 DATADIR=${HOME}/prp/pgdata
-while getopts ":d:h" FLAG; do
+LOGDIR=${HOME}/prp/pglog
+while getopts ":d:l:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -147,6 +149,13 @@ while getopts ":d:h" FLAG; do
         usage "$OPTARG isn't a directory"
       fi
       ;;
+    l)
+      if test -d $OPTARG; then
+        LOGDIR=$OPTARG
+      else
+        usage "$OPTARG isn't a directory"
+      fi
+      ;;    
     :)
       usage "-$OPTARG requires an argument"
       ;;
@@ -165,6 +174,9 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 if test "$DATADIR" == ""; then
   usage "-d <data_directory> not defined"
 fi
+if test "$LOGDIR" == ""; then
+  usage "-l <log_directory> not defined"
+fi
 
 #' ### Determine Version of PG
 #' The version of pg is determined
@@ -176,12 +188,12 @@ get_pg_version
 #' Commands used with pg are defined with variables
 #+ pg-var-def
 PGCTL="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_ctl"
+LOGFILE=$LOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
 
-
-#' ## Stopping the pg-server
-#' The pg-server is stopped with the pg_ctl command
+#' ## Starting the pg-server
+#' The pg-server is started with the pg_ctl command
 #+ pg-server-stop
-$PGCTL -D $DATADIR stop
+$PGCTL -D $DATADIR -l $LOGFILE start
 
 
 
