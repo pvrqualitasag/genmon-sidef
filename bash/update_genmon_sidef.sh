@@ -108,18 +108,18 @@ log_msg () {
 #+ update-pkg-fun
 pull_repo () {
   local l_SERVER=$1
-  local l_PULLCMD=""
-  log_msg 'pull_repo' "Running update on $l_SERVER"
+  log_msg 'pull_repo' " ** Running update on $l_SERVER"
   if [ "$REFERENCE" != "" ]
   then
-    l_PULLCMD='QTSPDIR='"$REPOPATH"';
-git -C "$QTSPDIR" pull '"$GHURI"' -b '"$REFERENCE"
+    SSHCMD="cd $REPOPATH;"'
+git fetch;    
+git checkout origin/'"$REFERENCE"
   else
-    l_PULLCMD='QTSPDIR='"$REPOPATH"';
-git -C "$QTSPDIR" pull '"$GHURI"
+    SSHCMD="QTSPDIR=$REPOPATH;"' \
+git -C "$QTSPDIR" pull https://github.com/pvrqualitasag/quagtsp-sidef.git'
   fi
-  log_msg 'pull_repo' " * Running command: $l_PULLCMD ..."
-  ssh $REMOTEUSER@$l_SERVER $l_PULLCMD
+  log_msg 'pull_repo' " ** SSHCMD: $SSHCMD"
+  ssh $REMOTEUSER@$l_SERVER "$SSHCMD"
 }
 
 
@@ -130,7 +130,7 @@ git -C "$QTSPDIR" pull '"$GHURI"
 #+ local-update-repo
 local_pull_repo () {
   log_msg 'local_pull_repo' "Running update on $SERVER"
-  QTSPDIR=/home/quagadmin/simg/genmon-sidef
+  QTSPDIR=$REPOPATH
 
   # check whether we are inside of a singularity container
   if [ "$REFERENCE" != "" ]
@@ -156,8 +156,6 @@ SERVERS=(fagr.genmon.ch)
 SERVERNAME=""
 REFERENCE=""
 REPONAME=genmon-sidef
-REPOROOT=/home/quagadmin/simg
-REPOPATH=$REPOROOT/$REPONAME
 GHURI=https://github.com/pvrqualitasag/${REPONAME}.git
 while getopts ":b:g:n:s:h" FLAG; do
   case $FLAG in
@@ -189,6 +187,12 @@ while getopts ":b:g:n:s:h" FLAG; do
 done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+#' ## Define User-dependent Variables
+#' Repository root and repository path depend on the user, hence they are 
+#' specified after commandline parsing
+REPOROOT=/home/$REMOTEUSER/simg
+REPOPATH=$REPOROOT/quagtsp-sidef
 
 #' ## Run Updates
 #' Decide whether to run the update on one server or on all servers on the list
