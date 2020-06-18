@@ -100,26 +100,39 @@ log_msg () {
 #' Get the version of the installed pg instance
 #+ get-pg-version-fun
 get_pg_version () {
-    log_msg 'get_pg_version' "collecting PG_version information ..."
-    # we get here only after we have tested that there is only one
-    # version of postgresql installed.
-    # need PG_ALLVERSION  like 9.4 or 10
-    # need PG_SUBVERSION  like 4
-    # need PG_VERSION     like 9
-    # need PG_PACKET      like postgresql_11
-    PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}')
-    PG_SUBVERSION=''
-    if [ -n "$PG_PACKET"  ]; then
-       if [[ $PG_PACKET = *9.* ]]; then
-# subv wird packet bei 10 11 etc
-          PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-9.//')
-       else
-          PG_SUBVERSION=' '
-          echo no subversion
-       fi
+    log_msg 'get_pg_version' " * Determine PG_version information ..."
+    PG_ALLVERSION=''
+    # check whether version file is available
+    if [ -f "$PGVERSIONFILE" ]
+    then
+      PG_ALLVERSION=$(cat $PGVERSIONFILE)
+      log_msg 'get_pg_version' " * Determine pg-version from version file: $PG_ALLVERSION ..."
+    else
+      # no version file => use db  
+      # we get here only after we have tested that there is only one
+      # version of postgresql installed.
+      # need PG_ALLVERSION  like 9.4 or 10
+      # need PG_SUBVERSION  like 4
+      # need PG_VERSION     like 9
+      # need PG_PACKET      like postgresql_11
+      PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}')
+      PG_SUBVERSION=''
+      if [ -n "$PG_PACKET"  ]; then
+         if [[ $PG_PACKET = *9.* ]]; then
+           # subv wird packet bei 10 11 etc
+           PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-9.//')
+         else
+           PG_SUBVERSION=' '
+           echo no subversion
+        fi
+      fi
+      PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-//')  
+    fi 
+    # check whether version could be determined
+    if [ "$PG_ALLVERSION" == '' ]
+    then
+      usage " *** ERROR: Cannot determin the PG-Version ..."
     fi
-
-    PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-//')
     PG_VERSION=$(echo $PG_ALLVERSION |  cut -d. -f1)
 }
 
@@ -135,6 +148,7 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 DATADIR=${HOME}/prp/pgdata
+PGVERSIONFILE=$DATADIR/PG_VERSION
 while getopts ":d:h" FLAG; do
   case $FLAG in
     h)
