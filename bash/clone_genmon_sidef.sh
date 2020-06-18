@@ -182,7 +182,7 @@ REPONAME=genmon-sidef
 REPOROOT=/home/quagadmin/simg
 REPOPATH=$REPOROOT/$REPONAME
 GHURI=https://github.com/pvrqualitasag/${REPONAME}.git
-while getopts ":b:g:n:s:h" FLAG; do
+while getopts ":b:g:n:s:u:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
