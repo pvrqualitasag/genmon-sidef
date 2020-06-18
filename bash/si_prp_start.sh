@@ -109,7 +109,7 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-SINGULAIRTYINSTANCENAME='siprp'
+SINGULARITYINSTANCENAME='siprp'
 SINGULARITYIMAGENAME=/home/quagadmin/simg/img/poprep/prp.simg
 BINDPATH=''
 while getopts ":b:i:n:h" FLAG; do
@@ -121,7 +121,7 @@ while getopts ":b:i:n:h" FLAG; do
       BINDPATH=$OPTARG
       ;;
     i)
-      SINGULAIRTYINSTANCENAME=$OPTARG
+      SINGULARITYINSTANCENAME=$OPTARG
       ;;
     n)
       if test -f $OPTARG; then
@@ -145,7 +145,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
-if test "$SINGULAIRTYINSTANCENAME" == ""; then
+if test "$SINGULARITYINSTANCENAME" == ""; then
   usage "-i <singularity_instance_name> not defined"
 fi
 if test "$SINGULARITYIMAGENAME" == ""; then
@@ -156,9 +156,9 @@ fi
 #' ## Check Status of Instance
 #' First check that the instance is not already running
 #+ check-instance running
-if [ `singularity instance list | grep $SINGULAIRTYINSTANCENAME | wc -l` -ne 0 ]
+if [ `singularity instance list | grep $SINGULARITYINSTANCENAME | wc -l` -ne 0 ]
 then
-  usage " *** ERROR: Instance $SINGULAIRTYINSTANCENAME already running ..."
+  usage " *** ERROR: Instance $SINGULARITYINSTANCENAME already running ..."
 fi
 
 #' ## Start Singularity Instance
@@ -166,11 +166,11 @@ fi
 #+ singularity-instance-start
 if [ "$BINDPATH" == '' ]
 then
-  log_msg "$SCRIPT" " * Starting singularity instance $SINGULAIRTYINSTANCENAME from image $SINGULARITYIMAGENAME ..."
-  singularity instance start $SINGULARITYIMAGENAME $SINGULAIRTYINSTANCENAME
+  log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME ..."
+  singularity instance start $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
 else
-  log_msg "$SCRIPT" " * Starting singularity instance $SINGULAIRTYINSTANCENAME from image $SINGULARITYIMAGENAME using bind-path $BINDPATH ..."
-  singularity instance start --bind $BINDPATH $SINGULARITYIMAGENAME $SINGULAIRTYINSTANCENAME
+  log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME using bind-path $BINDPATH ..."
+  singularity instance start --bind $BINDPATH $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
 fi
 
 
@@ -178,13 +178,13 @@ fi
 #' The pg-db inside the image is started using the start script
 #+ pg-db-start
 log_msg "$SCRIPT" " * Starting pg-db ..."
-singularity exec instance://$SINGULAIRTYINSTANCENAME $INSTALLDIR/pg_start.sh
+singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/pg_start.sh
 
 
 #' ## Check Status of DB-Server
 #' Using the pg-command to check whether the DB-server is running
 #+ pg-db-check
-singularity exec instance://$SINGULAIRTYINSTANCENAME /usr/lib/postgresql/10/bin/pg_isready
+singularity exec instance://$SINGULARITYINSTANCENAME /usr/lib/postgresql/10/bin/pg_isready
 
 
 #' ## End of Script
