@@ -153,6 +153,14 @@ if test "$SINGULARITYIMAGENAME" == ""; then
 fi
 
 
+#' ## Check Status of Instance
+#' First check that the instance is not already running
+#+ check-instance running
+if [ `singularity instance list | grep $SINGULAIRTYINSTANCENAME | wc -l` -ne 0 ]
+then
+  usage " *** ERROR: Instance $SINGULAIRTYINSTANCENAME already running ..."
+fi
+
 #' ## Start Singularity Instance
 #' Singularity instance is started
 #+ singularity-instance-start
