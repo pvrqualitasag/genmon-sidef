@@ -10,21 +10,17 @@ From: ubuntu:18.04
   apt-get upgrade -y
   
   # basic system
-  apt-get install -y vim build-essential sudo git apt-utils software-properties-common curl gdebi-core
+  apt-get install -y vim build-essential sudo git apt-utils software-properties-common curl gdebi-core time tzdata locales
+
   # locales
-  apt-get install -y locales
   locale-gen en_US.UTF-8
   locale-gen de_CH.UTF-8
 
-  #install tzdata package
-  export DEBIAN_FRONTEND=noninteractive
-  apt-get install -y tzdata
-  # set your timezone
-  echo 'Europe/Berlin' > /etc/timezone
-  dpkg-reconfigure --frontend noninteractive tzdata
-
   # pg
-  apt-get install -y postgresql
+  apt-get update -y
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+  wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | apt-key add -
+  apt-get install -y postgresql postgresql-contrib
 
   # poprep-req
   apt-get update -y
@@ -42,6 +38,11 @@ From: ubuntu:18.04
   apt-get install -y xinetd
   apt-get install -y fex fex-utils
   
+  # update and upgrade
+  apt-get update -y
+  apt-get upgrade -y
+  apt-get clean
+  
   # special installation for pdftk which is no longer available
   curl -sSL http://launchpadlibrarian.net/337429932/libgcj-common_6.4-3ubuntu1_all.deb > libgcj-common_6.4-3ubuntu1_all.deb
   curl -sSL http://launchpadlibrarian.net/340410966/libgcj17_6.4.0-8ubuntu1_amd64.deb > libgcj17_6.4.0-8ubuntu1_amd64.deb
@@ -49,7 +50,6 @@ From: ubuntu:18.04
   gdebi --n libgcj-common_6.4-3ubuntu1_all.deb
   gdebi --n libgcj17_6.4.0-8ubuntu1_amd64.deb
   gdebi --n pdftk_2.02-4build1_amd64.deb
-  apt-get update
   rm -rf libgcj-common_6.4-3ubuntu1_all.deb libgcj17_6.4.0-8ubuntu1_amd64.deb pdftk_2.02-4build1_amd64.deb
 
   # re-configure papersize
@@ -77,3 +77,9 @@ From: ubuntu:18.04
   mkdir -p /var/lib/postgresql/done
   mkdir -p /var/lib/postgresql/projects
   
+  # permissions for postgres
+  chmod -R 777 /var/run/postgresql
+
+  # set your timezone
+  echo 'Europe/Berlin' > /etc/timezone
+  dpkg-reconfigure --frontend noninteractive tzdata
