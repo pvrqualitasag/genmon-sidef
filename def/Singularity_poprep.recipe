@@ -26,7 +26,6 @@ From: ubuntu:18.04
   apt-get update -y
   apt-get install -y mutt
   apt-get install -y apache2
-  apt-get install -y postfix
   apt-get install -y texlive
   apt-get install -y texinfo
   apt-get install -y gnuplot
@@ -36,7 +35,6 @@ From: ubuntu:18.04
   apt-get install -y gfortran
   apt-get install -y transfig
   apt-get install -y xinetd
-  apt-get install -y fex fex-utils
   
   # update and upgrade
   apt-get update -y
