@@ -124,6 +124,10 @@ PRPWORKDIR=${HOME}/prp
 PGDATADIR=${PRPWORKDIR}/pgdata
 PGLOGDIR=${PRPWORKDIR}/pglog
 PRPLOGDIR=${PRPWORKDIR}/prplog
+# prp pg-bind directories
+PRPINCOMING=${PRPWORKDIR}/incoming
+PRPDONE=${PRPWORKDIR}/done
+PRPPROJECTS=${PRPWORKDIR}/projects
 
 
 #' ## Create PRP Working Directory
@@ -144,6 +148,18 @@ fi
 if [ "$PRPLOGDIR" != "" ]
 then
   check_exist_dir_create $PRPLOGDIR
+fi
+if [ "$PRPINCOMING" != "" ]
+then
+  check_exist_dir_create $PRPINCOMING
+fi
+if [ "$PRPDONE" != "" ]
+then
+  check_exist_dir_create $PRPDONE
+fi
+if [ "$PRPPROJECTS" != "" ]
+then
+  check_exist_dir_create $PRPPROJECTS
 fi
 
 
