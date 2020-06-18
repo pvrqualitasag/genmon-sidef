@@ -156,7 +156,7 @@ sleep 2
 #' ## Stop the Singularity Instance
 #' The singualrity instance is stopped
 #+ singularity-instance-stop
-log_msg "$SCRIPT" ' * Stopping the singularity instance $SINGULARITYINSTANCENAME ...'
+log_msg "$SCRIPT" " * Stopping the singularity instance $SINGULARITYINSTANCENAME ..."
 singularity instance stop $SINGULARITYINSTANCENAME
 
 
