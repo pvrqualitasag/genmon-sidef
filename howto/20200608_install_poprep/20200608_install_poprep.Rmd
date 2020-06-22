@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
 ```
 
 ## Disclaimer
@@ -147,7 +148,43 @@ This command should be usable for a different user such as zws. The question at 
 The currently chosen setup is such that PopRep is tried to be used from user 'zws' instead of user www-data. It will also be the user 'zws' that runs the singularity container image.
 
 
+## Execution Path For Pedigree Upload
+The following execution path leads to the processing of uploaded pedigree data.
+
+```{r execution_path_pedigree_upload, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/execution_path_pedigree_upload.odg')
+knitr::include_graphics(path = "odg/execution_path_pedigree_upload.png")
+```
+
+
+## Running Tests
+From the web-interface of PopRep under https://popreport.fli.de/cgi-bin/entry.pl, a Sample Dataset can be downloaded and submitted. The results are returned by e-mail. This helps in verifying the results to be expected from PopRep. 
+
+In `GenStuDb.php` the following preparation tasks (shown as `php`-code snippet) are performed before calling `PopRep.php`
+
+```
+$date=date('Y-m-d-H-i-s');
+exec("mkdir /var/lib/postgresql/incoming/".$date);
+exec("mv ".$_SESSION['wwwDataDirectory'].$_SESSION['fileName'].".csv /var/lib/postgresql/incoming/".$date."/datafile");
+$param=array();
+$param[]="email=solange.duruz@epfl.ch";
+$param[]="breed=".$breed_name;
+$param[]="male=M";
+$param[]="female=F";
+$param[]="pedfile=datafile";
+$param[]="dateformat=YYYY-MM-DD";
+$param[]="datesep=-";
+$param[]="get_tar=0";
+$j=0;
+while ($j<count($param)){
+	exec("echo ".$param[$j]." >> /var/lib/postgresql/incoming/".$date."/param");
+	$j++;
+}
+```
+
+These preparatory steps are taken from the `php-script` and are implemented in a shell-script such that 'PopRep'-jobs can be run from the commandline. The script is called `run_poprep.sh` and is included in the repository `genmon-sidef`.
 
 
 
 
+ 
