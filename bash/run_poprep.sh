@@ -137,9 +137,9 @@ write_parameter_file () {
 #' ### Move Pedigree
 #' Pedigree file is moved to project directory
 #+ move-pedigree-file-fun
-move_pedigree_file () {
-  log_msg 'move_pedigree_file' " * Moving $PEDIGREEFILE to $PROJDIR/datafile ..."
-  mv $PEDIGREEFILE $PROJDIR/datafile
+copy_pedigree_file () {
+  log_msg 'copy_pedigree_file' " * Copy $PEDIGREEFILE to $PROJDIR/datafile ..."
+  cp $PEDIGREEFILE $PROJDIR/datafile
 }
 
 
@@ -241,8 +241,8 @@ write_parameter_file
 #' ## Move Pedigree File
 #' The pedigree file must be moved to the project directory
 #+ move-pedigree-file
-log_msg "$SCRIPT" ' * Moving pedigree file ...'
-move_pedigree_file
+log_msg "$SCRIPT" ' * Copy pedigree file ...'
+copy_pedigree_file
 
 
 #' ## Running PopRep
