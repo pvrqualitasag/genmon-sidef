@@ -14,7 +14,10 @@
 #' After starting the singularity container image, the pg-db-server is also started which makes it possible to have the complete PopRep functionality available immediately after the start of the instance.
 #'
 #' ## Example
-#' ./si_prp_start.sh -i siprp -n /home/quagadmin/simg/img/poprep/prp.simg
+#' ./si_prp_start.sh -b /home/zws/prp/incoming/:/var/lib/postresql/incoming,\
+#'                      /home/zws/prp/done:/var/lib/postgresql/done,\
+#'                      /home/zws/prp/projects:/var/lib/postgresql/projects \
+#'                   -i siprp -n /home/quagadmin/simg/img/poprep/prp.simg 
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
