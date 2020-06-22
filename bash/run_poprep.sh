@@ -245,6 +245,11 @@ log_msg "$SCRIPT" ' * Moving pedigree file ...'
 move_pedigree_file
 
 
+#' ## Running PopRep
+#' PopRep is run with the prepared input
+log_msg "$SCRIPT" ' * Running poprep ...'
+
+
 #' ## End of Script
 #+ end-msg, eval=FALSE
 end_msg
