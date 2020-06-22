@@ -61,7 +61,7 @@ From: ubuntu:18.04
   # prepare directory for poprep
   mv /root/production /home/popreport
   chown -R popreport: /home/popreport/production
-  chmod 777 /home/popreport/production
+  chmod -R 777 /home/popreport/production
 
   # add apiis_home to .bashrc
   (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
