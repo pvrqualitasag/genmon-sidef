@@ -222,7 +222,7 @@ fi
 #' ## Definition of Project Directory
 #' Project is defined based on current date
 DATENOW=$(date +"%Y-%m-%d-%H-%M-%S")
-PROJDIR=${PROJECTROOT}/${INCOMINGDIR}/${l_DATENOW}
+PROJDIR=${PROJECTROOT}/${INCOMINGDIR}/${DATENOW}
 
 #' ## Prepare Requirements
 #' Start to create a directory for the current project
