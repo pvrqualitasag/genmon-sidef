@@ -166,15 +166,59 @@ if [ -z "$EMAIL" ];  then echo "Parameter -e <EMAIL> missing" ; DIE=1; fi
 if [ -z "$MALE" ];  then echo "Parameter -e <MALE> missing" ; DIE=1; fi
 if [ -z "$FEMALE" ];  then echo "Parameter -e <FEMALE> missing" ; DIE=1; fi
 if [ -z "$DATEFORMAT" ];  then echo "Parameter -e <DATEFORMAT> missing" ; DIE=1; fi
+[ -n "$DELETE" ] && DELETE="-d"
 
-echo " *** run_poprep_file: Breed after check: $BREED ..."
-echo " *** run_poprep_file: DATAFILE after check: $DATAFILE ..."
-echo " *** run_poprep_file: EMAIL after check: $EMAIL ..."
-echo " *** run_poprep_file: MALE after check : $MALE ..."
-echo " *** run_poprep_file: FEMALE after check : $FEMALE ..."
+echo " *** run_poprep_file: Breed after check:       $BREED ..."
+echo " *** run_poprep_file: DATAFILE after check:    $DATAFILE ..."
+echo " *** run_poprep_file: EMAIL after check:       $EMAIL ..."
+echo " *** run_poprep_file: MALE after check :       $MALE ..."
+echo " *** run_poprep_file: FEMALE after check :     $FEMALE ..."
 echo " *** run_poprep_file: DATEFORMAT after check : $DATEFORMAT ..."
-echo " *** run_poprep_file: DIE after check : $DIE ..."
+echo " *** run_poprep_file: DIE after check :        $DIE ..."
+echo " *** run_poprep_file: DELETE after check :     $DELETE ..."
 
+# datesep and get_tar can be empty
+if [ "$GETTAR" == 'on' ]; then
+    TAR="-t"
+fi
+if [ -n "$DATESEP" ]; then
+    DATESEP="-s $DATESEP"
+fi
+
+if [ "$DIE" -eq 1 ]; then
+    echo "Not enough parameters given!"
+    usage
+    exit 1
+fi
+
+echo " *** run_poprep_file: TAR after check :     $TAR ..."
+echo " *** run_poprep_file: DATESEP after check : $DATESEP ..."
+
+$BINDIR/is_valid_email $EMAIL
+case "$?" in
+    0) ;;
+    1) echo "No email address was supplied"; exit ;;
+    2) echo "There is a syntactical error in the email address"; exit ;;
+    3) echo "There are no DNS entries for the host in question (no MX records or A records)"; exit ;;
+    4) echo "The toplevel domain check failed"; exit ;;
+    5) echo "Your email has no valid fully qualified domain name"; exit ;;
+    *) echo "Unspecified error with your mail address"; exit ;;
+esac
+
+# create a project/user with random name:
+PROJ=`$BINDIR/mk_rand_string`
+
+# create apiis project:
+PROJ_DIR="${PROJ_DIR_BASE}/${PROJ}"
+
+# for early debugging:
+LOG="${PROJ_DIR}/run_popreport_file.debug"
+LIST="${PROJ_DIR}/early.tex"
+
+echo " *** run_poprep_file: PROJ after check :     $PROJ ..."
+echo " *** run_poprep_file: PROJ_DIR after check : $PROJ_DIR ..."
+echo " *** run_poprep_file: LOG after check :      $LOG ..."
+echo " *** run_poprep_file: LIST after check :     $LIST ..."
 
 
 #' ## End of Script
