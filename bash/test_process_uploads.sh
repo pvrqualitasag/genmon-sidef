@@ -165,7 +165,15 @@ GROUP=${P_GROUP-'popreport'}
 APIIS_HOME=${P_APIISHOME-'/home/popreport/production/apiis'}
 PROJ_DIR=${P_PROJ_DIR-'/var/lib/postgresql/projects'}
 # end configuration
-PATH=${APIIS_HOME}/bin:$PATH
+#PATH=${APIIS_HOME}/bin:$PATH
+
+log_msg "$SCRIPT" " * INCOMING:    $INCOMING ..."
+log_msg "$SCRIPT" " * LOG:         $LOG ..."
+log_msg "$SCRIPT" " * PRPUSER:     $PRPUSER ..."
+log_msg "$SCRIPT" " * PRPGRP:      $PRPGRP ..."
+log_msg "$SCRIPT" " * APIIS_HOME:  $APIIS_HOME ..."
+log_msg "$SCRIPT" " * BREEDNAME:   $BREEDNAME ..."
+log_msg "$SCRIPT" " * PROJ_DIR:    $PROJ_DIR ..."
 
 HASHES='##############################################################################'
 NEXT=`/bin/ls -d ${INCOMING}/20* 2>/dev/null |sort -n |head -1`
@@ -190,13 +198,6 @@ fi
 #' ## Output Arguments
 #' List the arguments
 #+ argument-list
-log_msg "$SCRIPT" " * INCOMING:    $INCOMING ..."
-log_msg "$SCRIPT" " * LOG:         $LOG ..."
-log_msg "$SCRIPT" " * PRPUSER:     $PRPUSER ..."
-log_msg "$SCRIPT" " * PRPGRP:      $PRPGRP ..."
-log_msg "$SCRIPT" " * APIIS_HOME:  $APIIS_HOME ..."
-log_msg "$SCRIPT" " * BREEDNAME:   $BREEDNAME ..."
-log_msg "$SCRIPT" " * PROJ_DIR:    $PROJ_DIR ..."
 log_msg "$SCRIPT" " * NEXT:        $NEXT ..."
 log_msg "$SCRIPT" " * WORKING:     $WORKING ..."
 
