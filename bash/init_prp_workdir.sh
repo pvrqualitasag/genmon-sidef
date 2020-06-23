@@ -125,9 +125,10 @@ PGDATADIR=${PRPWORKDIR}/pgdata
 PGLOGDIR=${PRPWORKDIR}/pglog
 PRPLOGDIR=${PRPWORKDIR}/prplog
 # prp pg-bind directories
-PRPINCOMING=${PRPWORKDIR}/incoming
-PRPDONE=${PRPWORKDIR}/done
-PRPPROJECTS=${PRPWORKDIR}/projects
+PRPBINDROOT=/qualstorzws01/data_projekte/projekte/poprep
+PRPINCOMING=${PRPBINDROOT}/incoming
+PRPDONE=${PRPBINDROOT}/done
+PRPPROJECTS=${PRPBINDROOT}/projects
 
 
 #' ## Create PRP Working Directory
