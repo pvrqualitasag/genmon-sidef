@@ -248,7 +248,7 @@ copy_pedigree_file
 #' ## Running PopRep
 #' PopRep is run with the prepared input
 log_msg "$SCRIPT" ' * Running poprep ...'
-test_process_uploads.sh -i /var/lib/postgresql/incoming -l /home/zws/prp/prplog/popreport.log -u zws -g zws -a /home/popreport/production/apiis -b $BREEDNAME
+$INSTALLDIR/test_process_uploads.sh -i /var/lib/postgresql/incoming -l /home/zws/prp/prplog/popreport.log -u zws -g zws -a /home/popreport/production/apiis -b $BREEDNAME
 
 
 
