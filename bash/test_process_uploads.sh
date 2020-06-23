@@ -19,7 +19,7 @@
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
 #+ bash-env-setting, eval=FALSE
-set -o errexit    # exit immediately, if single command exits with non-zero status
+# set -o errexit    # exit immediately, if single command exits with non-zero status
 set -o nounset    # treat unset variables as errors
 set -o pipefail   # return value of pipeline is value of last command to exit with non-zero status
                   #  hence pipe fails if one command in pipe fails
@@ -184,6 +184,8 @@ if [ $HALF -eq 0 ]; then
     HALF=1
 fi
 
+log_msg "$SCRIPT" " * NEXT:        $NEXT ..."
+
 if [ -z "$NEXT" ]; then
     # nothing to do
     exit
@@ -194,11 +196,9 @@ if [ "$WORKING" -ge $HALF ]; then
     exit
 fi
 
-
 #' ## Output Arguments
 #' List the arguments
 #+ argument-list
-log_msg "$SCRIPT" " * NEXT:        $NEXT ..."
 log_msg "$SCRIPT" " * WORKING:     $WORKING ..."
 
 if [ ! -d $NEXT ]; then
