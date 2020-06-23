@@ -153,7 +153,7 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-PROJECTROOT=${HOME}/prp
+PROJECTROOT=/var/lib/postgresql
 BREEDNAME='test_breed'
 PEDIGREEFILE=''
 EMAILADDRESS='fbzws-quagzws@gmail.com'
