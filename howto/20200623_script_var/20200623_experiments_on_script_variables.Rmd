@@ -1,0 +1,25 @@
+---
+title: "On Variables and Scripts"
+author: "Peter von Rohr"
+date: "6/23/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+Experiments and tests on scripts and variables. Variables that are defined on different levels are not always passed from one script to next script when they are passed via commandline arguments.
+
+
+## Experiments and Tests
+Two alternatives are tested
+
+1. sourcing the second script from the first: Leads to problem that commandline arguments are not passed to second script.
+2. calling second script from first: variables defined in first script are not available in second script.
+3. todo: export variables from first script and check whether they are available.
+
+## Results
+When calling a script from a different script, the environment variables defined in the first script are not available in the second script. An alternative would be to source the second script instead of calling it. But that prevents us to pass commandline arguments to the second script. 
+

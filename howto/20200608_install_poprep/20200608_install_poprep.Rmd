@@ -185,6 +185,62 @@ while ($j<count($param)){
 These preparatory steps are taken from the `php-script` and are implemented in a shell-script such that 'PopRep'-jobs can be run from the commandline. The script is called `run_poprep.sh` and is included in the repository `genmon-sidef`.
 
 
+## Binding PopRep Project Directories
+The poprep project directories are bound when starting the singularity container. When starting the first time, we have to initialise the postrgre database.
 
+```
+BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
+BINDROOTCNTR=/var/lib/postresql
+singularity instance start --bind $BINDROOTHOST/incoming/:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects /home/quagadmin/simg/img/poprep/prp.simg siprp
+SINGUALRITY_SHELL=/bin/bash singularity shell instance://siprp
+./simg/genmon-sidef/bash/post_install_prp.sh
+```
+
+After the first installation of the database, the following command can be used
+
+```
+BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
+BINDROOTCNTR=/var/lib/postresql
+./simg/genmon-sidef/bash/si_prp_start.sh -b $BINDROOTHOST/incoming/:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects
+```
+
+Starting a shell into the started instance
+
+```
+# SINGUALRITY_SHELL=/bin/bash singularity shell instance://siprp
+sibash instance://siprp
+```
+
+
+## Running PopRep
+The requirements of process_uploads.sh are satisfied by the following command
+
+```
+./simg/genmon-sidef/bash/run_poprep.sh -b testbreed -p test_pedigree.dat.txt
+```
+
+
+The above command to run PopRep is modified in the following way
+
+```
+/home/popreport/production/apiis/bin/./process_uploads.sh -i /var/lib/postgresql/incoming -l /home/zws/prp/prplog/popreport.log -u zws -g zws -a /home/popreport/production/apiis
+```
+
+After changing the call to 'run_popreport_file' by prepending a dot, such the script is sourced instead of forked into a new shell, a new error pops up.
+
+```
+2020-06-23-08.45.39: processing /var/lib/postgresql/incoming/2020-06-23-08-45-29
+Now running run_popreport_file ....
+PATH: /home/popreport/production/apiis/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/popreport/production/apiis/bin 
+APIIS_HOME: /home/popreport/production/apiis 
+Parameter -d <DATAFILE> missing
+Not enough parameters given!
+
+Usage: run_propreport_file -b <BREED> -d <DATAFILE> -e <EMAIL>
+     -m <MALE> -f <FEMALE> -y <DATEFORMAT> -s <DATESEP> -g <tar_switch>
+     -I INCOMING -P <PROJECT_BASE_DIR> -D
+```
+
+This results in the error `APIIS_HOME is not set` shown in the logfile. 
 
  
