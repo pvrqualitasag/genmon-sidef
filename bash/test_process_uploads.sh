@@ -163,7 +163,7 @@ LOG=${P_LOG-'/var/log/popreport.log'}
 USER=${P_USER-'www-data'}
 GROUP=${P_GROUP-'popreport'}
 APIIS_HOME=${P_APIISHOME-'/home/popreport/production/apiis'}
-PROJ_DIR=${P_PROJ_DIR-'/var/lib/postgresql/projects'}
+PROJ_DIR=${P_PROJ_DIR:-'/var/lib/postgresql/projects'}
 # end configuration
 #PATH=${APIIS_HOME}/bin:$PATH
 
