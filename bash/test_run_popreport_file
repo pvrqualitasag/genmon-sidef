@@ -110,22 +110,13 @@ log_msg () {
 #+ start-msg, eval=FALSE
 start_msg
 
-if [ -z $APIIS_HOME ]; then
-    echo APIIS_HOME is not set
-    exit
-fi
-
-BINDIR=${APIIS_HOME}/bin
-LIBDIR=${APIIS_HOME}/lib/popreport
-echo " *** run_poprep_file: BINDIR:     $BINDIR ..."
-echo " *** run_poprep_file: LIBDIR:     $LIBDIR ..."
-
 
 #' ## Getopts for Commandline Argument Parsing
 #' If an option should be followed by an argument, it should be followed by a ":".
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
+P_APIISHOME=""
 BREED=""
 DATAFILE=""
 EMAIL=""
@@ -137,11 +128,12 @@ GETTAR=""
 INCOMING=""
 PROJ_DIR_BASE=""
 DELETE=""
-while getopts "b:d:e:m:f:y:s:g:I:P:Dh" FLAG; do
+while getopts "a:b:d:e:m:f:y:s:g:I:P:Dh" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
+    a) P_APIISHOME=$OPTARG;;
     b) BREED=$OPTARG;;
     d) DATAFILE=$OPTARG;;
     e) EMAIL=$OPTARG;;
@@ -164,6 +156,20 @@ while getopts "b:d:e:m:f:y:s:g:I:P:Dh" FLAG; do
 done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+
+APIIS_HOME=${P_APIISHOME-'/home/popreport/production/apiis'}
+
+if [ -z $APIIS_HOME ]; then
+    echo APIIS_HOME is not set
+    exit
+fi
+
+BINDIR=${APIIS_HOME}/bin
+LIBDIR=${APIIS_HOME}/lib/popreport
+echo " *** run_poprep_file: BINDIR:     $BINDIR ..."
+echo " *** run_poprep_file: LIBDIR:     $LIBDIR ..."
+
 
 
 echo " *** run_poprep_file: Breed after getopts:     $BREED ..."
