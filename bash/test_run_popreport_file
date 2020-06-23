@@ -157,8 +157,6 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 echo " *** run_poprep_file: Breed after getopts: $BREED ..."
 echo " *** run_poprep_file: DATAFILE after getopts: $DATAFILE ..."
-
-
 echo " *** run_poprep_file: Breed after getopts: $BREED ..."
 echo " *** run_poprep_file: DATAFILE before check : $DATAFILE ..."
 DIE=0
@@ -168,6 +166,15 @@ if [ -z "$EMAIL" ];  then echo "Parameter -e <EMAIL> missing" ; DIE=1; fi
 if [ -z "$MALE" ];  then echo "Parameter -e <MALE> missing" ; DIE=1; fi
 if [ -z "$FEMALE" ];  then echo "Parameter -e <FEMALE> missing" ; DIE=1; fi
 if [ -z "$DATEFORMAT" ];  then echo "Parameter -e <DATEFORMAT> missing" ; DIE=1; fi
+
+echo " *** run_poprep_file: Breed after check: $BREED ..."
+echo " *** run_poprep_file: DATAFILE after check: $DATAFILE ..."
+echo " *** run_poprep_file: EMAIL after check: $EMAIL ..."
+echo " *** run_poprep_file: MALE after check : $MALE ..."
+echo " *** run_poprep_file: FEMALE after check : $FEMALE ..."
+echo " *** run_poprep_file: DATEFORMAT after check : $DATEFORMAT ..."
+echo " *** run_poprep_file: DIE after check : $DIE ..."
+
 
 
 #' ## End of Script
