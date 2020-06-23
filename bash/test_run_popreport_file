@@ -110,6 +110,17 @@ log_msg () {
 #+ start-msg, eval=FALSE
 start_msg
 
+if [ -z $APIIS_HOME ]; then
+    echo APIIS_HOME is not set
+    exit
+fi
+
+BINDIR=${APIIS_HOME}/bin
+LIBDIR=${APIIS_HOME}/lib/popreport
+echo " *** run_poprep_file: BINDIR:     $BINDIR ..."
+echo " *** run_poprep_file: LIBDIR:     $LIBDIR ..."
+
+
 #' ## Getopts for Commandline Argument Parsing
 #' If an option should be followed by an argument, it should be followed by a ":".
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
@@ -155,10 +166,8 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
-echo " *** run_poprep_file: Breed after getopts: $BREED ..."
-echo " *** run_poprep_file: DATAFILE after getopts: $DATAFILE ..."
-echo " *** run_poprep_file: Breed after getopts: $BREED ..."
-echo " *** run_poprep_file: DATAFILE before check : $DATAFILE ..."
+echo " *** run_poprep_file: Breed after getopts:     $BREED ..."
+echo " *** run_poprep_file: DATAFILE after getopts:  $DATAFILE ..."
 DIE=0
 if [ -z "$BREED" ]; then echo "Parameter -b <BREED> missing"  ; DIE=1; fi
 if [ -z "$DATAFILE" ];  then echo "Parameter -d <DATAFILE> missing"     ; DIE=1; fi
@@ -192,8 +201,8 @@ if [ "$DIE" -eq 1 ]; then
     exit 1
 fi
 
-echo " *** run_poprep_file: TAR after check :     $TAR ..."
-echo " *** run_poprep_file: DATESEP after check : $DATESEP ..."
+echo " *** run_poprep_file: TAR after check :        $TAR ..."
+echo " *** run_poprep_file: DATESEP after check :    $DATESEP ..."
 
 $BINDIR/is_valid_email $EMAIL
 case "$?" in
