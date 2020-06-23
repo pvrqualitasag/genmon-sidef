@@ -178,6 +178,7 @@ echo " *** run_poprep_file: DIE after check :        $DIE ..."
 echo " *** run_poprep_file: DELETE after check :     $DELETE ..."
 
 # datesep and get_tar can be empty
+TAR=""
 if [ "$GETTAR" == 'on' ]; then
     TAR="-t"
 fi
