@@ -23,3 +23,19 @@ Two alternatives are tested
 ## Results
 When calling a script from a different script, the environment variables defined in the first script are not available in the second script. An alternative would be to source the second script instead of calling it. But that prevents us to pass commandline arguments to the second script. 
 
+
+## Note
+The construct with assignment of default values to variable names does not work as done in poprep scripts. In those scripts a colon is missing. Hence assignments like
+
+```
+APIIS_HOME=${P_APIISHOME-'/home/popreport/production/apiis'}
+```
+
+must be replaced by 
+
+```
+APIIS_HOME=${P_APIISHOME:-'/home/popreport/production/apiis'}
+```
+
+
+
