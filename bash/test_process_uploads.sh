@@ -241,6 +241,7 @@ BREED=`echo $BREED |tr -cd '[:alnum:]'`
 MALE=`echo $MALE |tr -s '$üÜöÖäÄß ()[]{}' '.'`
 FEMALE=`echo $FEMALE |tr -s '$üÜöÖäÄß ()[]{}' '.'`
 
+TAR=""
 if [ "$GETTAR" == "yes" ]; then
     TAR="-g on"
 fi
@@ -248,10 +249,13 @@ if [ -n "$DATESEP" ]; then
     DATESEP="-s $DATESEP"
 fi
 
-echo "Now running run_popreport_file ...." >>$LOG
-echo "PATH: $PATH " >> $LOG
-echo "APIIS_HOME: $APIIS_HOME " >> $LOG
-echo "DATA: $DATA " >> $LOG
+echo "$SCRIPT -- Now running run_popreport_file ...." >>$LOG
+echo "$SCRIPT -- PATH:       $PATH " >> $LOG
+echo "$SCRIPT -- APIIS_HOME: $APIIS_HOME " >> $LOG
+echo "$SCRIPT -- DATA:       $DATA " >> $LOG
+echo "$SCRIPT -- EMAIL:      $EMAIL " >> $LOG
+echo "$SCRIPT -- TAR:        $TAR " >> $LOG
+
 #. $APIIS_HOME/bin/run_popreport_file \
 #    -b "$BREED" \
 #    -d ${DATA}/datafile \
