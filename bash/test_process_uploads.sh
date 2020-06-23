@@ -139,7 +139,7 @@ while getopts ":a:b:i:l:u:g:ch" FLAG; do
       PRPUSER=$OPTARG
       ;;
     g)
-      PRPGRP$OPTARG
+      PRPGRP=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
