@@ -112,35 +112,39 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-INCOMINGDIR=""
-LOGFILE=""
-PRPUSER=""
-PRPGRP=""
-APIISHOME=""
+P_INDIR=""
+P_LOG=""
+P_USER=""
+P_GROUP=""
+P_APIISHOME=""
 BREEDNAME=""
-while getopts ":a:b:i:l:u:g:ch" FLAG; do
+P_PROJ_DIR=""
+while getopts ":a:b:i:l:u:g:p:ch" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     a)
-      APIISHOME=$OPTARG
+      P_APIISHOME=$OPTARG
       ;;
     b)
       BREEDNAME=$OPTARG
       ;;
     i)
-      INCOMINGDIR=$OPTARG
+      P_INDIR=$OPTARG
       ;;
     l)
-      LOGFILE=$OPTARG
+      P_LOG=$OPTARG
       ;;
     u)
-      PRPUSER=$OPTARG
+      P_USER=$OPTARG
       ;;
     g)
-      PRPGRP=$OPTARG
+      P_GROUP=$OPTARG
       ;;
+    p ) 
+      P_PROJ_DIR=$OPTARG
+      ;;  
     :)
       usage "-$OPTARG requires an argument"
       ;;
@@ -153,17 +157,117 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
+# some configuration:
+INCOMING=${P_INDIR-'/var/lib/postgresql/incoming'}
+LOG=${P_LOG-'/var/log/popreport.log'}
+USER=${P_USER-'www-data'}
+GROUP=${P_GROUP-'popreport'}
+APIIS_HOME=${P_APIISHOME-'/home/popreport/production/apiis'}
+PROJ_DIR=${P_PROJ_DIR-'/var/lib/postgresql/projects'}
+# end configuration
+PATH=${APIIS_HOME}/bin:$PATH
+
+HASHES='##############################################################################'
+NEXT=`/bin/ls -d ${INCOMING}/20* 2>/dev/null |sort -n |head -1`
+DATE=`date +%F-%H.%M.%S`
+CPU_NO=`cat /proc/cpuinfo |grep ^processor |wc -l`
+HALF=$((${CPU_NO}/2))
+if [ $HALF -eq 0 ]; then
+    HALF=1
+fi
+
+if [ -z "$NEXT" ]; then
+    # nothing to do
+    exit
+fi
+
+WORKING=`/bin/ls -d ${INCOMING}/working* 2>/dev/null |wc -l`
+if [ "$WORKING" -ge $HALF ]; then
+    exit
+fi
+
 
 #' ## Output Arguments
 #' List the arguments
 #+ argument-list
-log_msg "$SCRIPT" " * INCOMINGDIR: $INCOMINGDIR ..."
-log_msg "$SCRIPT" " * LOGFILE:     $LOGFILE ..."
+log_msg "$SCRIPT" " * INCOMING:    $INCOMING ..."
+log_msg "$SCRIPT" " * LOG:         $LOG ..."
 log_msg "$SCRIPT" " * PRPUSER:     $PRPUSER ..."
 log_msg "$SCRIPT" " * PRPGRP:      $PRPGRP ..."
-log_msg "$SCRIPT" " * APIISHOME:   $APIISHOME ..."
+log_msg "$SCRIPT" " * APIIS_HOME:  $APIIS_HOME ..."
 log_msg "$SCRIPT" " * BREEDNAME:   $BREEDNAME ..."
+log_msg "$SCRIPT" " * PROJ_DIR:    $PROJ_DIR ..."
+log_msg "$SCRIPT" " * NEXT:        $NEXT ..."
+log_msg "$SCRIPT" " * WORKING:     $WORKING ..."
 
+if [ ! -d $NEXT ]; then
+    echo $HASHES >>$LOG
+    echo "${DATE}: Should not happen: $NEXT is not a directory!" >>$LOG
+    echo $HASHES >>$LOG
+    exit
+fi
+
+echo $HASHES >>$LOG
+DATE=`date +%F-%H.%M.%S`
+echo "${DATE}: processing $NEXT" >>$LOG
+STARTDATE=`date "+%F %T"`
+
+BASE=`basename $NEXT`
+DATA="${INCOMING}/working_$BASE"
+mv $NEXT $DATA
+echo "startdate=${STARTDATE}" >>"${DATA}/param"
+
+# for later use:
+BASE2=`basename $DATA`
+BASE3=`echo $BASE2 |sed -e 's/working_//'`
+DONE="${INCOMING}/done_$BASE3"
+
+/bin/chmod -R 0770 $DATA
+/bin/chown -R ${USER}:${GROUP} $DATA
+
+EMAIL=`grep ^email= ${DATA}/param  | sed -e 's/^email=//'`
+BREED=`grep ^breed= ${DATA}/param  | sed -e 's/^breed=//'`
+MALE=`grep ^male= ${DATA}/param  | sed -e 's/^male=//'`
+FEMALE=`grep ^female= ${DATA}/param  | sed -e 's/^female=//'`
+DATEFORMAT=`grep ^dateformat= ${DATA}/param  | sed -e 's/^dateformat=//'`
+DATESEP=`grep ^datesep= ${DATA}/param  | sed -e 's/^datesep=//'`
+GETTAR=`grep ^get_tar= ${DATA}/param  | sed -e 's/^get_tar=//'`
+
+# remove special characters:
+BREED=`echo $BREED |tr -cd '[:alnum:]'`
+# BREED=`echo $BREED |tr -cd '[:graph:]'`  # läßt noch () durch, was die Shell verwirrt
+# BREED=`echo $BREED |tr -s '$üÜöÖäÄß ()[]{}' '.'`
+MALE=`echo $MALE |tr -s '$üÜöÖäÄß ()[]{}' '.'`
+FEMALE=`echo $FEMALE |tr -s '$üÜöÖäÄß ()[]{}' '.'`
+
+if [ "$GETTAR" == "yes" ]; then
+    TAR="-g on"
+fi
+if [ -n "$DATESEP" ]; then
+    DATESEP="-s $DATESEP"
+fi
+
+echo "Now running run_popreport_file ...." >>$LOG
+echo "PATH: $PATH " >> $LOG
+echo "APIIS_HOME: $APIIS_HOME " >> $LOG
+echo "DATA: $DATA " >> $LOG
+#. $APIIS_HOME/bin/run_popreport_file \
+#    -b "$BREED" \
+#    -d ${DATA}/datafile \
+#    -m "$MALE" \
+#    -f "$FEMALE" \
+#    -y $DATEFORMAT $DATESEP \
+#    -e $EMAIL $TAR \
+#    -I $DATA \
+#    -P $PROJ_DIR \
+#    -D >>$LOG 2>&1
+$INSTALLDIR/test_run_popreport_file -b "$BREED" -d "${DATA}/datafile" -m "$MALE" -f "$FEMALE" -y $DATEFORMAT $DATESEP -e $EMAIL $TAR -I $DATA -P $PROJ_DIR -D >>$LOG 2>&1
+# PARAMS="-b \"$BREED\" -d ${DATA}/datafile -m \"$MALE\" -f \"$FEMALE\" -y $DATEFORMAT $DATESEP -e $EMAIL $TAR -I $DATA -D"
+# EXE="$APIIS_HOME/bin/run_popreport_file"
+# su -s /bin/bash -lc "$EXE $PARAMS" popreport
+echo "Running run_popreport_file done" >>$LOG
+
+mv $DATA $DONE
 
 #' ## Call test-run-prp
 #' Call the test-version of run_popreport_file
