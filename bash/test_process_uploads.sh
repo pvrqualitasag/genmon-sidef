@@ -29,7 +29,7 @@ set -o pipefail   # return value of pipeline is value of last command to exit wi
 #' ### Paths to shell tools
 #+ shell-tools, eval=FALSE
 ECHO=/bin/echo                             # PATH to echo                            #
-DATE=/bin/date                             # PATH to date                            #
+# DATE=/bin/date                             # PATH to date                            #
 MKDIR=/bin/mkdir                           # PATH to mkdir                           #
 BASENAME=/usr/bin/basename                 # PATH to basename function               #
 DIRNAME=/usr/bin/dirname                   # PATH to dirname function                #
@@ -75,7 +75,7 @@ usage () {
 #+ start-msg-fun, eval=FALSE
 start_msg () {
   $ECHO "********************************************************************************"
-  $ECHO "Starting $SCRIPT at: "`$DATE +"%Y-%m-%d %H:%M:%S"`
+  $ECHO "Starting $SCRIPT at: "`date +"%Y-%m-%d %H:%M:%S"`
   $ECHO "Server:  $SERVER"
   $ECHO
 }
@@ -87,7 +87,7 @@ start_msg () {
 #+ end-msg-fun, eval=FALSE
 end_msg () {
   $ECHO
-  $ECHO "End of $SCRIPT at: "`$DATE +"%Y-%m-%d %H:%M:%S"`
+  $ECHO "End of $SCRIPT at: "`date +"%Y-%m-%d %H:%M:%S"`
   $ECHO "********************************************************************************"
 }
 
@@ -97,7 +97,7 @@ end_msg () {
 log_msg () {
   local l_CALLER=$1
   local l_MSG=$2
-  local l_RIGHTNOW=`$DATE +"%Y%m%d%H%M%S"`
+  local l_RIGHTNOW=`date +"%Y%m%d%H%M%S"`
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
