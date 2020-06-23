@@ -266,7 +266,7 @@ echo "$SCRIPT -- TAR:        $TAR " >> $LOG
 #    -I $DATA \
 #    -P $PROJ_DIR \
 #    -D >>$LOG 2>&1
-. $INSTALLDIR/test_run_popreport_file -b "$BREED" -d "${DATA}/datafile" -m "$MALE" -f "$FEMALE" -y $DATEFORMAT $DATESEP -e $EMAIL $TAR -I $DATA -P $PROJ_DIR -D >>$LOG 2>&1
+$INSTALLDIR/test_run_popreport_file -b "$BREED" -d "${DATA}/datafile" -m "$MALE" -f "$FEMALE" -y $DATEFORMAT $DATESEP -e $EMAIL $TAR -I $DATA -P $PROJ_DIR -D >>$LOG 2>&1
 # PARAMS="-b \"$BREED\" -d ${DATA}/datafile -m \"$MALE\" -f \"$FEMALE\" -y $DATEFORMAT $DATESEP -e $EMAIL $TAR -I $DATA -D"
 # EXE="$APIIS_HOME/bin/run_popreport_file"
 # su -s /bin/bash -lc "$EXE $PARAMS" popreport
