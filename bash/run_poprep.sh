@@ -58,14 +58,17 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -b <breed_name> -p <pedigree_data_file> -e <email_address> -m <male_char> -f <female_char> -d <date_format> -s <data_sep> -i <incoming_dir>"
+  $ECHO "Usage: $SCRIPT -b <breed_name> -p <pedigree_data_file> -e <email_address> -l <prp_logfile_path> -m <male_char> -f <female_char> -g <group> -d <date_format> -s <data_sep> -u <user> -i <incoming_dir>"
   $ECHO "  where -b <breed_name>          --  name of the breed"
   $ECHO "        -p <pedigree_data_file>  --  pedigree data file of the breed to be analysed"
   $ECHO "        -e <email_address>       --  e-mail address"
-  $ECHO "        -m <male_char>           --  character representing male individual in pedigree"
   $ECHO "        -f <female_char>         --  character representing female individual in pedigree"
+  $ECHO "        -g <group>               --  group to which the user belongs with which we run poprep"
+  $ECHO "        -l <prp_logfile_path>    --  path to poprep logfile"
+  $ECHO "        -m <male_char>           --  character representing male individual in pedigree"
   $ECHO "        -d <date_format>         --  format for dates in pedigree"
   $ECHO "        -s <date_sep>            --  separator character for dates in pedigree"
+  $ECHO "        -u <user>                --  user under which we run poprep"
   $ECHO "        -i <incoming_dir>        --  directory from where pedigrees are analysed"
   $ECHO ""
   exit 1
@@ -162,14 +165,37 @@ FEMALECHAR='F'
 DATEFORMAT='YYYY-MM-DD'
 DATESEP='-'
 INCOMINGDIR='incoming'
-
-while getopts ":b:p:e:m:f:d:s:i:h" FLAG; do
+PRPLOGFILEPATH=/home/zws/prp/prplog/popreport.log
+USER=`whoami`
+GROUP=`whoami`
+while getopts ":b:p:e:l:m:f:g:d:s:u:i:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     b)
       BREEDNAME=$OPTARG
+      ;;
+    d)
+      DATEFORMAT=$OPTARG
+      ;;
+    e)
+      EMAILADDRESS=$OPTARG
+      ;;
+    f)
+      FEMALECHAR=$OPTARG
+      ;;
+    g)
+      GROUP=$OPTARG
+      ;;
+    i)
+      INCOMINGDIR=$OPTARG
+      ;;
+    l)
+      PRPLOGFILEPATH=$OPTARG
+      ;;
+    m)
+      MALECHAR=$OPTARG
       ;;
     p)
       if test -f $OPTARG; then
@@ -178,23 +204,11 @@ while getopts ":b:p:e:m:f:d:s:i:h" FLAG; do
         usage "$OPTARG cannot be found as pedigree file ..."
       fi
       ;;
-    e)
-      EMAILADDRESS=$OPTARG
-      ;;
-    m)
-      MALECHAR=$OPTARG
-      ;;
-    f)
-      FEMALECHAR=$OPTARG
-      ;;
-    d)
-      DATEFORMAT=$OPTARG
-      ;;
     s)
       DATESEP=$OPTARG
       ;;
-    i)
-      INCOMINGDIR=$OPTARG
+    u)
+      USER=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -218,11 +232,14 @@ if test "$PEDIGREEFILE" == ""; then
   usage "-p <pedigree_data_file> not defined"
 fi
 
+#' ## Path To Incoming Directory
+#' The path to the incoming directory
+INCOMINGPATH=${PROJECTROOT}/${INCOMINGDIR}
 
 #' ## Definition of Project Directory
 #' Project is defined based on current date
 DATENOW=$(date +"%Y-%m-%d-%H-%M-%S")
-PROJDIR=${PROJECTROOT}/${INCOMINGDIR}/${DATENOW}
+PROJDIR=${INCOMINGPATH}/${DATENOW}
 
 #' ## Prepare Requirements
 #' Start to create a directory for the current project
@@ -253,7 +270,13 @@ log_msg "$SCRIPT" " * APIIS_HOME: $APIIS_HOME"
 #' ## Running PopRep
 #' PopRep is run with the prepared input
 log_msg "$SCRIPT" ' * Running poprep ...'
-$INSTALLDIR/test_process_uploads.sh -i /var/lib/postgresql/incoming -l /home/zws/prp/prplog/popreport.log -u zws -g zws -a /home/popreport/production/apiis -b $BREEDNAME
+# $INSTALLDIR/test_process_uploads.sh -i /var/lib/postgresql/incoming -l /home/zws/prp/prplog/popreport.log -u zws -g zws -a /home/popreport/production/apiis -b $BREEDNAME
+$APIIS_HOME/bin/process_uploads.sh -i $INCOMINGPATH \
+  -l $PRPLOGFILEPATH \
+  -u zws \
+  -g zws \
+  -a $APIIS_HOME \
+  -p /var/lib/postgresql/projects
 
 
 
