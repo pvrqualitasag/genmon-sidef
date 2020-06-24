@@ -200,7 +200,7 @@ define_environment_variables () {
   if [ `grep 'APIIS_HOME' $BASHRC | wc -l` -eq 0 ]
   then
     log_msg 'define_environment_variables' " * Add APIIS_HOME to $BASHRC ..."
-    (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> $BASHRC
+    (echo;echo '# add apiis_home';echo 'export APIIS_HOME=/home/popreport/production/apiis') >> $BASHRC
     echo 'export PATH=$PATH:$APIIS_HOME/bin' >> $BASHRC
   else
     log_msg 'define_environment_variables' " * FOUND APIIS_HOME in $BASHRC ..."
