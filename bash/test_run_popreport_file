@@ -158,7 +158,7 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
-APIIS_HOME=${P_APIISHOME:-'/home/popreport/production/apiis'}
+# APIIS_HOME=${P_APIISHOME:-'/home/popreport/production/apiis'}
 
 if [ -z $APIIS_HOME ]; then
     echo APIIS_HOME is not set
