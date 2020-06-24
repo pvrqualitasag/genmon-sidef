@@ -164,6 +164,7 @@ if [ -z $APIIS_HOME ]; then
     echo APIIS_HOME is not set
     exit
 fi
+echo " *** run_poprep_file: APIIS_HOME:     $APIIS_HOME ..."
 
 BINDIR=${APIIS_HOME}/bin
 LIBDIR=${APIIS_HOME}/lib/popreport
