@@ -20,7 +20,7 @@
 #' General behavior of the script is driven by the following settings
 #+ bash-env-setting, eval=FALSE
 set -o errexit    # exit immediately, if single command exits with non-zero status
-set -o nounset    # treat unset variables as errors
+# set -o nounset    # treat unset variables as errors
 set -o pipefail   # return value of pipeline is value of last command to exit with non-zero status
                   #  hence pipe fails if one command in pipe fails
 
@@ -243,6 +243,11 @@ write_parameter_file
 #+ move-pedigree-file
 log_msg "$SCRIPT" ' * Copy pedigree file ...'
 copy_pedigree_file
+
+
+#' ## Check Variables
+#' The value of APIIS_HOME is checked
+log_msg "$SCRIPT" " * APIIS_HOME: $APIIS_HOME"
 
 
 #' ## Running PopRep
