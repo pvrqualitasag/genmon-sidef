@@ -158,11 +158,11 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
 # some configuration:
-INCOMING=${P_INDIR-'/var/lib/postgresql/incoming'}
-LOG=${P_LOG-'/var/log/popreport.log'}
-USER=${P_USER-'www-data'}
-GROUP=${P_GROUP-'popreport'}
-APIIS_HOME=${P_APIISHOME-'/home/popreport/production/apiis'}
+INCOMING=${P_INDIR:-'/var/lib/postgresql/incoming'}
+LOG=${P_LOG:-'/var/log/popreport.log'}
+USER=${P_USER:-'www-data'}
+GROUP=${P_GROUP:-'popreport'}
+APIIS_HOME=${P_APIISHOME:-'/home/popreport/production/apiis'};export APIIS_HOME
 PROJ_DIR=${P_PROJ_DIR:-'/var/lib/postgresql/projects'}
 # end configuration
 #PATH=${APIIS_HOME}/bin:$PATH
