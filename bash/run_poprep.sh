@@ -164,10 +164,11 @@ MALECHAR='M'
 FEMALECHAR='F'
 DATEFORMAT='YYYY-MM-DD'
 DATESEP='-'
-INCOMINGDIR='incoming'
+INCOMINGPATH='incoming'
 PRPLOGFILEPATH=/home/zws/prp/prplog/popreport.log
 USER=`whoami`
 GROUP=`whoami`
+PRPPROJPATH='projects'
 while getopts ":b:p:e:l:m:f:g:d:s:u:i:h" FLAG; do
   case $FLAG in
     h)
@@ -189,7 +190,7 @@ while getopts ":b:p:e:l:m:f:g:d:s:u:i:h" FLAG; do
       GROUP=$OPTARG
       ;;
     i)
-      INCOMINGDIR=$OPTARG
+      INCOMINGPATH=$OPTARG
       ;;
     l)
       PRPLOGFILEPATH=$OPTARG
@@ -203,6 +204,9 @@ while getopts ":b:p:e:l:m:f:g:d:s:u:i:h" FLAG; do
       else
         usage "$OPTARG cannot be found as pedigree file ..."
       fi
+      ;;
+    r)
+      PRPPROJPATH=$OPTARG
       ;;
     s)
       DATESEP=$OPTARG
@@ -232,9 +236,33 @@ if test "$PEDIGREEFILE" == ""; then
   usage "-p <pedigree_data_file> not defined"
 fi
 
+
 #' ## Path To Incoming Directory
 #' The path to the incoming directory
-INCOMINGPATH=${PROJECTROOT}/${INCOMINGDIR}
+if [ "$INCOMINGPATH" == "" ]
+then
+  INCOMINGPATH=${PROJECTROOT}/incoming
+else
+  if [ "${INCOMINGPATH:0:1}" != "/" ]
+  then
+    INCOMINGPATH=${PROJECTROOT}/${INCOMINGPATH}
+  fi
+fi
+
+#' ## Path to PopRep Project Directory
+#' The project path for poprep is specified
+if [ "$PRPPROJPATH" == "" ]
+then
+  PRPPROJPATH=${PROJECTROOT}/projects
+else
+  # check whether path is specified as absolute path or not
+  if [ "${PRPPROJPATH:0:1}" != "/" ]
+  then
+    PRPPROJPATH=${PROJECTROOT}/${PRPPROJPATH}
+  fi
+fi
+
+
 
 #' ## Definition of Project Directory
 #' Project is defined based on current date
@@ -264,7 +292,12 @@ copy_pedigree_file
 
 #' ## Check Variables
 #' The value of APIIS_HOME is checked
-log_msg "$SCRIPT" " * APIIS_HOME: $APIIS_HOME"
+log_msg "$SCRIPT" " * APIIS_HOME:     $APIIS_HOME"
+log_msg "$SCRIPT" " * INCOMINGPATH:   $INCOMINGPATH"
+log_msg "$SCRIPT" " * PRPLOGFILEPATH: $PRPLOGFILEPATH"
+log_msg "$SCRIPT" " * USER:           $USER"
+log_msg "$SCRIPT" " * GROUP:          $GROUP"
+log_msg "$SCRIPT" " * PRPPROJPATH:    $PRPPROJPATH"
 
 
 #' ## Running PopRep
@@ -273,10 +306,10 @@ log_msg "$SCRIPT" ' * Running poprep ...'
 # $INSTALLDIR/test_process_uploads.sh -i /var/lib/postgresql/incoming -l /home/zws/prp/prplog/popreport.log -u zws -g zws -a /home/popreport/production/apiis -b $BREEDNAME
 $APIIS_HOME/bin/process_uploads.sh -i $INCOMINGPATH \
   -l $PRPLOGFILEPATH \
-  -u zws \
-  -g zws \
+  -u $USER \
+  -g $GROUP \
   -a $APIIS_HOME \
-  -p /var/lib/postgresql/projects
+  -p $PRPPROJPATH
 
 
 
