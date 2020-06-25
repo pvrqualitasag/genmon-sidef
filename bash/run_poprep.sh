@@ -302,6 +302,7 @@ log_msg "$SCRIPT" " * PRPLOGFILEPATH: $PRPLOGFILEPATH"
 log_msg "$SCRIPT" " * USER:           $USER"
 log_msg "$SCRIPT" " * GROUP:          $GROUP"
 log_msg "$SCRIPT" " * PRPPROJPATH:    $PRPPROJPATH"
+log_msg "$SCRIPT" " * DEBUG:          $DEBUG"
 
 
 #' ## Running PopRep
