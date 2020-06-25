@@ -1,0 +1,32 @@
+---
+title: "Current Status"
+author: "Peter von Rohr"
+date: "6/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+
+
+## Problems
+
+* 2020-06-25: Currently Population Structure Report is generated. Inbreeding report and Monitoring report are missing. A potential problem is 
+
+```
+$ tail /var/lib/postgresql/projects/PPP_S6f7IWgJRVpII/Popreport_testbreed_2020-06-25-14.33/run_popreport.stderr_tail1000 
+add_gen_didier: error while loading shared libraries: libgfortran.so.3: cannot open shared object file: No such file or directory
+add_gen_didier failed: 32512
+add_gen_didier: error while loading shared libraries: libgfortran.so.3: cannot open shared object file: No such file or directory
+add_gen_didier failed: 32512
+add_gen_didier: error while loading shared libraries: libgfortran.so.3: cannot open shared object file: No such file or directory
+add_gen_didier failed: 32512
+add_gen_didier: error while loading shared libraries: libgfortran.so.3: cannot open shared object file: No such file or directory
+add_gen_didier failed: 32512
+Can't find any file with pattern testbreed_[0-9][0-9][0-9][0-9].agr from an agr-run_parallel-run. Terminated!
+Executing of program inbreeding_report failed: 65280
+
+```

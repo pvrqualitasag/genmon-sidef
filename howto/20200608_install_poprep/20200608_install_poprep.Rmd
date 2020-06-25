@@ -200,8 +200,9 @@ After the first installation of the database, the following command can be used
 
 ```
 BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
-BINDROOTCNTR=/var/lib/postgresql
-./simg/genmon-sidef/bash/si_prp_start.sh -b $BINDROOTHOST/incoming:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects
+BINDROOTCNTRPG=/var/lib/postgresql
+BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
+./simg/genmon-sidef/bash/si_prp_start.sh -b $BINDROOTHOST/incoming:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS
 ```
 
 Starting a shell into the started instance
