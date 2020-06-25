@@ -2,7 +2,8 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production /root/production
+  /home/quagadmin/source/popreport/home/popreport/production /root/source/popreport/production
+  /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root/source/popreport
 
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
@@ -59,10 +60,14 @@ From: ubuntu:18.04
   echo popreport:pass | chpasswd
   
   # prepare directory for poprep
-  mv /root/production /home/popreport
+  mv /root/source/production /home/popreport
   chown -R popreport: /home/popreport/production
   chmod -R 777 /home/popreport/production
 
+  # move libgfortran.so.3
+  mv /root/source/popreport/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
+  ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
+  
   # add apiis_home to .bashrc
   (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
   echo 'export PATH=$PATH:$APIIS_HOME/bin' >> /home/popreport/.bashrc
