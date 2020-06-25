@@ -169,7 +169,8 @@ PRPLOGFILEPATH=/home/zws/prp/prplog/popreport.log
 USER=`whoami`
 GROUP=`whoami`
 PRPPROJPATH='projects'
-while getopts ":b:p:e:l:m:f:g:d:s:u:i:h" FLAG; do
+DEBUG=''
+while getopts ":b:p:e:l:m:f:g:d:s:u:i:hZ" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -213,6 +214,9 @@ while getopts ":b:p:e:l:m:f:g:d:s:u:i:h" FLAG; do
       ;;
     u)
       USER=$OPTARG
+      ;;
+    Z) 
+      DEBUG='true'
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -309,7 +313,8 @@ $APIIS_HOME/bin/process_uploads.sh -i $INCOMINGPATH \
   -u $USER \
   -g $GROUP \
   -a $APIIS_HOME \
-  -p $PRPPROJPATH
+  -p $PRPPROJPATH \
+  -Z $DEBUG
 
 
 
