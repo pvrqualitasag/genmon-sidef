@@ -200,8 +200,8 @@ After the first installation of the database, the following command can be used
 
 ```
 BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
-BINDROOTCNTR=/var/lib/postresql
-./simg/genmon-sidef/bash/si_prp_start.sh -b $BINDROOTHOST/incoming/:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects
+BINDROOTCNTR=/var/lib/postgresql
+./simg/genmon-sidef/bash/si_prp_start.sh -b $BINDROOTHOST/incoming:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects
 ```
 
 Starting a shell into the started instance
@@ -216,7 +216,7 @@ sibash instance://siprp
 The requirements of process_uploads.sh are satisfied by the following command
 
 ```
-./simg/genmon-sidef/bash/run_poprep.sh -b testbreed -p test_pedigree.dat.txt
+./simg/genmon-sidef/bash/run_poprep.sh -b testbreed -p test_pedigree.dat.txt -Z
 ```
 
 

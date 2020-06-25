@@ -159,7 +159,7 @@ start_msg
 PROJECTROOT=/var/lib/postgresql
 BREEDNAME='test_breed'
 PEDIGREEFILE=''
-EMAILADDRESS='fbzws-quagzws@gmail.com'
+EMAILADDRESS='none@neverland.no' #'fbzws-quagzws@gmail.com'
 MALECHAR='M'
 FEMALECHAR='F'
 DATEFORMAT='YYYY-MM-DD'
