@@ -2,7 +2,7 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production /root/source/popreport
+  /home/quagadmin/source/popreport/home/popreport/production /root/source/popreport/production
   /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root/source/popreport
 
 %post
@@ -11,18 +11,26 @@ From: ubuntu:18.04
   apt-get upgrade -y
   
   # basic system
-  apt-get install -y vim build-essential wget sudo git apt-utils software-properties-common curl gdebi-core time tzdata locales
+  apt-get install -y vim build-essential wget sudo git apt-utils software-properties-common curl gdebi-core time tzdata locales lsb-release gnupg libreadline-dev zlib1g-dev 
 
   # locales
   locale-gen en_US.UTF-8
   locale-gen de_CH.UTF-8
 
-  # pg
+  # pg from distribution
+  #apt-get update -y
+  #echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+  #wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+  #apt-get install -y postgresql postgresql-contrib
+  # pg 9.6
   apt-get update -y
-  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
-  wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-  apt-get install -y postgresql-9.4 postgresql-contrib-9.4
-
+  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  gdebi --n postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  rm -rf postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  gdebi --n postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  rm -rf postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  
   # poprep-req
   apt-get update -y
   apt-get install -y mutt
