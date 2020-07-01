@@ -2,7 +2,7 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production /root/source/popreport/production
+  /home/quagadmin/source/popreport/home/popreport/production /root/source/popreport
   /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root/source/popreport
 
 %post
