@@ -2,8 +2,8 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %files
-  /home/quagadmin/source/popreport/home/popreport/production /root/popreport/production
-  /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root/popreport
+  /home/quagadmin/source/popreport/home/popreport/production /root/production
+  /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root
 
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
@@ -73,7 +73,7 @@ From: ubuntu:18.04
   chmod -R 777 /home/popreport/production
 
   # move libgfortran.so.3
-  mv /root/popreport/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
+  mv /root/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
   ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
   
   # add apiis_home to .bashrc
