@@ -98,30 +98,28 @@ From: ubuntu:18.04
   echo popreport:pass | chpasswd
   
   # prepare directory for poprep
-  #mv /root/production /home/popreport
-  #chown -R popreport: /home/popreport/production
-  #chmod -R 777 /home/popreport/production
+  mv /root/production /home/popreport
+  chown -R popreport: /home/popreport/production
+  chmod -R 777 /home/popreport/production
 
   # move libgfortran.so.3
-  #mv /root/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
-  #ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
+  mv /root/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
+  ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
   
   # add apiis_home to .bashrc
-  #(echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
-  #echo 'export PATH=$PATH:$APIIS_HOME/bin' >> /home/popreport/.bashrc
+  (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
+  echo 'export PATH=$PATH:$APIIS_HOME/bin' >> /home/popreport/.bashrc
 
   # check and install additional perl- and apt-packages
-  #/home/popreport/production/apiis/bin/apiis-test-dependencies -i -d
+  /home/popreport/production/apiis/bin/apiis-test-dependencies -i -d
   
   # create pg-directories
-  #for p in incoming done projects
-  #do 
-  #  mkdir -p /var/lib/postgresql/$p
-  #  chmod -R 777 /var/lib/postgresql/$p
-  #done
+  for p in incoming done projects
+  do 
+    mkdir -p /var/lib/postgresql/$p
+    chmod -R 777 /var/lib/postgresql/$p
+  done
 
   # permissions for postgres
-  #chmod -R 777 /var/run/postgresql
-
-
+  chmod -R 777 /var/run/postgresql
 
