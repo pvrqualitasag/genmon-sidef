@@ -282,6 +282,7 @@ start_pg_server () {
 #' Check wheter we can access the database
 #+ has-pg-access-fun
 has_pg_access () {
+  log_msg 'has_pg_access' " ** Running $PSQL -l ..."
     $PSQL -l >/dev/null 2>&1
     return $?
 }
