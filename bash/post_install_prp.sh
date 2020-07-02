@@ -506,20 +506,20 @@ init_pg_server
 #' ### Start the PG-db-server
 #' After initialisation the db-server must be started
 #+ start-pg-db-server
-log_msg "$SCRIPT" ' * Starting pg server ...'
-start_pg_server
+# log_msg "$SCRIPT" ' * Starting pg server ...'
+# start_pg_server
 
 
 #' ### Configure PG
 #' Configurationf of pg database
 #+ configure-pg
-log_msg "$SCRIPT" ' * Configure pg db ...'
-configure_postgresql
+# log_msg "$SCRIPT" ' * Configure pg db ...'
+# configure_postgresql
 
 
 #' check whether the pg db-server is running
-log_msg "$SCRIPT" ' * Check whether pg server is running ...'
-pg_server_running
+# log_msg "$SCRIPT" ' * Check whether pg server is running ...'
+# pg_server_running
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
