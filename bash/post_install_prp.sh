@@ -513,8 +513,8 @@ start_pg_server
 #' ### Configure PG
 #' Configurationf of pg database
 #+ configure-pg
-# log_msg "$SCRIPT" ' * Configure pg db ...'
-# configure_postgresql
+log_msg "$SCRIPT" ' * Configure pg db ...'
+configure_postgresql
 
 
 #' check whether the pg db-server is running
