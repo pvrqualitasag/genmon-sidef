@@ -49,17 +49,27 @@ From: ubuntu:18.04
   # pg 9.6
   #apt-get update -y
   # pg-client
-  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-client-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  gdebi --n postgresql-client-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  rm -rf postgresql-client-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-client-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #gdebi --n postgresql-client-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #rm -rf postgresql-client-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
   # pg  
-  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  gdebi --n postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  rm -rf postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #gdebi --n postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #rm -rf postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
   # pg-contrib
-  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  gdebi --n postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  rm -rf postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #gdebi --n postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #rm -rf postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  # pg 9.4
+  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.4/postgresql-client-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  gdebi --n postgresql-client-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  rm -rf postgresql-client-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.4/postgresql-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  gdebi --n postgresql-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  rm -rf postgresql-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.4/postgresql-contrib-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  gdebi --n postgresql-contrib-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
+  rm -rf postgresql-contrib-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
   
   # poprep-req
   apt-get update -y
