@@ -10,12 +10,36 @@ From: ubuntu:18.04
   apt-get update -y
   apt-get upgrade -y
   
-  # basic system
-  apt-get install -y vim build-essential wget sudo git apt-utils software-properties-common curl gdebi-core time tzdata locales lsb-release gnupg libreadline-dev zlib1g-dev 
-
   # locales
+  echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+  apt-get install -y locales
+
   locale-gen en_US.UTF-8
   locale-gen de_CH.UTF-8
+
+  # time
+  apt-get install -y time 
+  apt-get install -y tzdata 
+
+  # set your timezone
+  ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime  
+  dpkg-reconfigure --frontend noninteractive tzdata
+  
+  # basic system
+  apt-get install -y vim 
+  apt-get install -y build-essential 
+  apt-get install -y wget 
+  apt-get install -y sudo 
+  apt-get install -y git 
+  apt-get install -y apt-utils 
+  apt-get install -y software-properties-common 
+  apt-get install -y curl 
+  apt-get install -y gdebi-core 
+  apt-get install -y lsb-release 
+  apt-get install -y gnupg 
+  apt-get install -y libreadline-dev 
+  apt-get install -y zlib1g-dev 
+
 
   # pg from distribution
   #apt-get update -y
@@ -23,13 +47,13 @@ From: ubuntu:18.04
   #wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
   #apt-get install -y postgresql postgresql-contrib
   # pg 9.6
-  apt-get update -y
-  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  gdebi --n postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  rm -rf postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  gdebi --n postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
-  rm -rf postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #apt-get update -y
+  #wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #gdebi --n postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #rm -rf postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #wget http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #gdebi --n postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+  #rm -rf postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
   
   # poprep-req
   apt-get update -y
@@ -68,34 +92,30 @@ From: ubuntu:18.04
   echo popreport:pass | chpasswd
   
   # prepare directory for poprep
-  mv /root/production /home/popreport
-  chown -R popreport: /home/popreport/production
-  chmod -R 777 /home/popreport/production
+  #mv /root/production /home/popreport
+  #chown -R popreport: /home/popreport/production
+  #chmod -R 777 /home/popreport/production
 
   # move libgfortran.so.3
-  mv /root/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
-  ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
+  #mv /root/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
+  #ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
   
   # add apiis_home to .bashrc
-  (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
-  echo 'export PATH=$PATH:$APIIS_HOME/bin' >> /home/popreport/.bashrc
+  #(echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
+  #echo 'export PATH=$PATH:$APIIS_HOME/bin' >> /home/popreport/.bashrc
 
   # check and install additional perl- and apt-packages
-  /home/popreport/production/apiis/bin/apiis-test-dependencies -i -d
+  #/home/popreport/production/apiis/bin/apiis-test-dependencies -i -d
   
   # create pg-directories
-  for p in incoming done projects
-  do 
-    mkdir -p /var/lib/postgresql/$p
-    chmod -R 777 /var/lib/postgresql/$p
-  done
+  #for p in incoming done projects
+  #do 
+  #  mkdir -p /var/lib/postgresql/$p
+  #  chmod -R 777 /var/lib/postgresql/$p
+  #done
 
   # permissions for postgres
-  chmod -R 777 /var/run/postgresql
-
-  # set your timezone
-  ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime  
-  dpkg-reconfigure --frontend noninteractive tzdata
+  #chmod -R 777 /var/run/postgresql
 
 
 
