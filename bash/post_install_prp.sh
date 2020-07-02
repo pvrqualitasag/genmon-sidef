@@ -506,8 +506,8 @@ init_pg_server
 #' ### Start the PG-db-server
 #' After initialisation the db-server must be started
 #+ start-pg-db-server
-# log_msg "$SCRIPT" ' * Starting pg server ...'
-# start_pg_server
+log_msg "$SCRIPT" ' * Starting pg server ...'
+start_pg_server
 
 
 #' ### Configure PG
