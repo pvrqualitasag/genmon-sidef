@@ -98,4 +98,6 @@ grep: /home/popreport/production/apiis/bin/CVS: Is a directory
 This means that table 'tmp3_log_ne' is created in the script 'prmon_log_reg.pl'. The script 'prmon_log_reg.pl' is called in 'Create_inbreeding_tables.pl'. The script 'run_popreport' is called from 'run_popreport'. 
 
 
+Additional log-statements for debugging the problem of not creating the prmon_monitor report are added to 'prmon_log_of_Inbreeding_year.pl'. 
+
 
