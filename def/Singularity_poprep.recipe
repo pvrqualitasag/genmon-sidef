@@ -4,7 +4,6 @@ From: ubuntu:18.04
 %files
   /home/quagadmin/source/prprepo/home/popreport/production /root/production
   /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root
-  #/home/quagadmin/simg/genmon-sidef/input/pg-9.6-deb.txt /root
 
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
