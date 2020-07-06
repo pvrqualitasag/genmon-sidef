@@ -1,0 +1,79 @@
+---
+title: "Basics of psql"
+author: "Peter von Rohr"
+date: "7/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+Collection of important or interesting commands using `psql` to be used as cheatsheet.
+
+
+## Usage Modes
+The client 'psql' can be used as command line tools specifying everything as command line arguments. It can also be used in an interactive mode. The we start the tool with 
+
+```
+psql -U postgres -d PPP_a0sZpo91andcs
+```
+
+This brings us to a prompt. The interactive mode is ended with 
+
+```
+PPP_a0sZpo91andcs=# \q
+```
+
+
+## List of Databases
+
+```
+$ psql -U postgres -l
+#                                     List of databases
+#       Name        |    Owner    | Encoding |   Collate   |    Ctype    | Access privileges 
+#-------------------+-------------+----------+-------------+-------------+-------------------
+# PPP_a0sZpo91andcs | apiis_admin | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+# postgres          | zws         | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+# template0         | zws         | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/zws           +
+#                   |             |          |             |             | zws=CTc/zws
+# template1         | zws         | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/zws           +
+#                   |             |          |             |             | zws=CTc/zws
+#(4 rows)
+#
+```
+
+
+## Tables in a Database
+
+```
+psql -U postgres -c 'SELECT * FROM pg_catalog.pg_tables' -d PPP_a0sZpo91andcs
+```
+
+List of tables starting with 'tmp2'
+
+```
+psql -U postgres -c "SELECT * FROM pg_catalog.pg_tables where tablename like 'tmp2%'" -d PPP_a0sZpo91andcs
+# schemaname  |    tablename     | tableowner  | tablespace | hasindexes | hasrules | hastriggers | rowsecurity 
+#-------------+------------------+-------------+------------+------------+----------+-------------+-------------
+# apiis_admin | tmp2_gen_depth   | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_generations | apiis_admin |            | t          | f        | f           | f
+# apiis_admin | tmp2_pedcompl    | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_table1      | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_table2      | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_table3      | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_table4      | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_table5      | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_table6      | apiis_admin |            | f          | f        | f           | f
+# apiis_admin | tmp2_table7      | apiis_admin |            | f          | f        | f           | f
+#(10 rows)
+
+```
+
+The select that does not work seams to be on table 'tmp2_table5'
+
+```
+psql -U postgres -c "select count(*) from apiis_admin.tmp2_table5" -d PPP_a0sZpo91andcs
+```
+

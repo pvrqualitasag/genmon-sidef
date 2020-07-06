@@ -1,0 +1,101 @@
+---
+title: "Debugging prmon_monitor"
+author: "Peter von Rohr"
+date: "7/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+Protocol for debugging the generation of prmon_monitor
+
+
+## Problem
+The problem has been identified that the sql-statement in variable $SQL4 returns 0 rows.
+
+
+## SQL
+The sql-statement ($sql4) which causes the problem is:
+
+
+```
+SELECT a.year,
+                   b.ne_num AS ne_cens,
+                   b.ne AS ne_deltafp,
+                   c.ne_deltafg,
+                   d.ne_agr,
+                   e.ne_log,
+                   f.ne_ecg
+            FROM   tmp2_table5                                              AS a,
+                   (SELECT year, ne_num, ne FROM tmp2_table5)               AS b,
+                   (SELECT year, deltafg_ne AS ne_deltafg FROM tmp2_table7) AS c,
+                   (SELECT year, agr_ne AS ne_agr FROM tmp2_table6)         AS d,
+                   (SELECT year, log_ne AS ne_log FROM tmp3_log_ne)         AS e,
+                   (SELECT year, ne_ecg FROM tmp3_ecg_ne)                   AS f
+            WHERE a.year = b.year AND
+                  a.year = c.year AND
+                  a.year = d.year AND
+                  a.year = e.year AND
+                  a.year = f.year
+            ORDER BY a.year desc
+```
+
+First, the single selects from the join are tested.
+
+```
+SELECT year, ne_num, ne FROM apiis_admin.tmp2_table5;
+SELECT year, deltafg_ne AS ne_deltafg FROM apiis_admin.tmp2_table7;
+SELECT year, agr_ne AS ne_agr FROM apiis_admin.tmp2_table6;
+SELECT year, log_ne AS ne_log FROM apiis_admin.tmp3_log_ne; -- 0 rows
+SELECT year, ne_ecg FROM apiis_admin.tmp3_ecg_ne;
+```
+
+The complete join 
+
+```
+SELECT a.year,
+                   b.ne_num AS ne_cens,
+                   b.ne AS ne_deltafp,
+                   c.ne_deltafg,
+                   d.ne_agr,
+                   e.ne_log,
+                   f.ne_ecg
+            FROM   apiis_admin.tmp2_table5                                              AS a,
+                   (SELECT year, ne_num, ne FROM apiis_admin.tmp2_table5)               AS b,
+                   (SELECT year, deltafg_ne AS ne_deltafg FROM apiis_admin.tmp2_table7) AS c,
+                   (SELECT year, agr_ne AS ne_agr FROM apiis_admin.tmp2_table6)         AS d,
+                   (SELECT year, log_ne AS ne_log FROM apiis_admin.tmp3_log_ne)         AS e,
+                   (SELECT year, ne_ecg FROM apiis_admin.tmp3_ecg_ne)                   AS f
+            WHERE a.year = b.year AND
+                  a.year = c.year AND
+                  a.year = d.year AND
+                  a.year = e.year AND
+                  a.year = f.year
+            ORDER BY a.year desc;
+-- 0 rows
+```
+
+The problem is caused by the fact that table 'tmp3_log_ne' is empty. A grep for this table name produces the following results
+
+```
+grep 'tmp3_log_ne' /home/popreport/production/apiis/bin/*
+grep: /home/popreport/production/apiis/bin/CVS: Is a directory
+/home/popreport/production/apiis/bin/prmon_log_reg.pl:my @tables = qw/tmp3_log_animal tmp3_log_ne/;
+/home/popreport/production/apiis/bin/prmon_log_reg.pl:# NE in tmp3_log_ne:
+/home/popreport/production/apiis/bin/prmon_log_reg.pl:    "CREATE TABLE tmp3_log_ne (year real, log_avg decimal, log_ne decimal)";
+/home/popreport/production/apiis/bin/prmon_log_reg.pl:my $sql20 = "INSERT INTO tmp3_log_ne (year,log_avg, log_ne) VALUES (?,?,?)";
+/home/popreport/production/apiis/bin/prmon_log_reg.pl:    my $sql21 = "UPDATE tmp3_log_ne SET log_ne = NULL  WHERE  log_avg = 0";
+/home/popreport/production/apiis/bin/prmon_monitor.pl:                   (SELECT year, log_ne AS ne_log FROM tmp3_log_ne)         AS e,
+/home/popreport/production/apiis/bin/prmon_monitor.pl:                 FROM tmp3_log_ne a, (SELECT max(year) AS year
+/home/popreport/production/apiis/bin/prmon_monitor.pl:                                      FROM tmp3_log_ne) AS b
+/home/popreport/production/apiis/bin/prmon_test_decision_tree.pl:    my $sql_1 = "SELECT a.year,'&', a.ne_num,'&', a.ne as deltafp_ne,'&', c.deltafg_ne,'&', d.agr_ne,'&', e.log_ne,'&', f.ne_ecg  FROM tmp2_table5 a,  tmp2_table7 c,  tmp2_table6 d, tmp3_log_ne e, tmp3_ecg_ne f, (select max(year) as max_year from tmp2_table5) as b where a.year = c.year and a.year = d.year and a.year = e.year and a.year = f.year and a.year > (b.max_year - $gi0 - $gi0 ) order by a.year desc";
+
+```
+
+This means that table 'tmp3_log_ne' is created in the script 'prmon_log_reg.pl'. The script 'prmon_log_reg.pl' is called in 'Create_inbreeding_tables.pl'. The script 'run_popreport' is called from 'run_popreport'. 
+
+
+

@@ -190,9 +190,12 @@ The poprep project directories are bound when starting the singularity container
 
 ```
 BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
-BINDROOTCNTR=/var/lib/postresql
-singularity instance start --bind $BINDROOTHOST/incoming/:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects /home/quagadmin/simg/img/poprep/prp.simg siprp
-SINGUALRITY_SHELL=/bin/bash singularity shell instance://siprp
+BINDROOTCNTRPG=/var/lib/postgresql
+BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
+singularity instance start --bind $BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS /home/quagadmin/simg/img/poprep/prp.simg siprp
+# start shell
+sibash instance://siprp
+# start prp postinstall
 ./simg/genmon-sidef/bash/post_install_prp.sh
 ```
 
@@ -202,7 +205,7 @@ After the first installation of the database, the following command can be used
 BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
 BINDROOTCNTRPG=/var/lib/postgresql
 BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
-./simg/genmon-sidef/bash/si_prp_start.sh -b $BINDROOTHOST/incoming:$BINDROOTCNTR/incoming,$BINDROOTHOST/done:$BINDROOTCNTR/done,$BINDROOTHOST/projects:$BINDROOTCNTR/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS
+./simg/genmon-sidef/bash/si_prp_start.sh -b $BINDROOTHOST/incoming:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS
 ```
 
 Starting a shell into the started instance
@@ -211,6 +214,13 @@ Starting a shell into the started instance
 # SINGUALRITY_SHELL=/bin/bash singularity shell instance://siprp
 sibash instance://siprp
 ```
+
+Stopping the instance
+
+```
+./simg/genmon-sidef/bash/si_prp_stop.sh
+```
+
 
 
 ## Running PopRep
@@ -244,4 +254,19 @@ Usage: run_propreport_file -b <BREED> -d <DATAFILE> -e <EMAIL>
 
 This results in the error `APIIS_HOME is not set` shown in the logfile. 
 
- 
+
+# Stopping DB
+The database is stopped via
+
+```
+./simg/genmon-sidef/bash/pg_stop.sh
+```
+
+
+# Clean up
+
+```
+rm -rf /qualstorzws01/data_projekte/projekte/poprep/projects/* /qualstorzws01/data_projekte/projekte/poprep/incoming/* /qualstorzws01/data_projekte/projekte/poprep/log/* /home/zws/prp/pgdata/* /home/zws/prp/pglog/* /home/zws/prp/prplog/*
+rm -rf /home/zws/prp/pgdata/* /home/zws/prp/pglog/* /home/zws/prp/prplog/*
+```
+

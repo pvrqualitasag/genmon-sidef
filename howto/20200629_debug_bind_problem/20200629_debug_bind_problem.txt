@@ -1,0 +1,47 @@
+#' ---
+#' title: Debugging Bind Path Problem
+#' date:  2020-06-29
+#' ---
+#'
+
+#' # Solution
+#' The original problem was solved when typos in paths of variables used as bind-directories were fixed.
+
+
+#' # Basic Functionality of Bind Path
+
+
+
+#' # Specific Example
+#' Starting with incoming 
+singularity instance start \
+  --bind /qualstorzws01/data_projekte/projekte/poprep/incoming:/var/lib/postgresql/incoming \
+  /home/quagadmin/simg/img/poprep/prp.simg siprp
+
+sibash instance://siprp
+echo test > /var/lib/postgresql/incoming/in.txt # ==> works
+rm /var/lib/postgresql/incoming/in.txt
+exit
+siso siprp
+
+#' Adding done
+singularity instance start \
+--bind /qualstorzws01/data_projekte/projekte/poprep/incoming:/var/lib/postgresql/incoming,/qualstorzws01/data_projekte/projekte/poprep/done:/var/lib/postgresql/done \
+/home/quagadmin/simg/img/poprep/prp.simg siprp
+
+echo test > /var/lib/postgresql/incoming/in.txt # ==> works
+echo done > /var/lib/postgresql/done/done.txt # ==> works
+
+rm /var/lib/postgresql/incoming/in.txt /var/lib/postgresql/done/done.txt
+
+#' Projects
+singularity instance start \
+--bind /qualstorzws01/data_projekte/projekte/poprep/incoming:/var/lib/postgresql/incoming,/qualstorzws01/data_projekte/projekte/poprep/done:/var/lib/postgresql/done,/qualstorzws01/data_projekte/projekte/poprep/projects:/var/lib/postgresql/projects \
+/home/quagadmin/simg/img/poprep/prp.simg siprp
+
+#' APIIS Log
+singularity instance start \
+--bind /qualstorzws01/data_projekte/projekte/poprep/incoming:/var/lib/postgresql/incoming,/qualstorzws01/data_projekte/projekte/poprep/done:/var/lib/postgresql/done,/qualstorzws01/data_projekte/projekte/poprep/projects:/var/lib/postgresql/projects,/qualstorzws01/data_projekte/projekte/poprep/log:/home/popreport/production/apiis/var/log \
+/home/quagadmin/simg/img/poprep/prp.simg siprp
+
+

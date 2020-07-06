@@ -1,0 +1,175 @@
+---
+title: "Postgresql Version Problem"
+author: "Peter von Rohr"
+date: "7/6/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+The influence on the version of the postgresql database on the problem with creating the PopRep monitoring report is investigated. This is done by creating a new image with postgresql version 9.4/9.6. 
+
+
+## Summary
+The version downgrade of postgresql from 10 to 9.4/9.6 does not solve the problem that the monitoring report cannot be generated.
+
+
+
+## Problem
+The use of versions 9.4 or 9.6 prevents the post-installation script to run without any error. 
+
+
+## Solutions
+
+* As a first solution all listed packages under https://www.ubuntuupdates.org/package/postgresql/bionic-pgdg/main/base/postgresql-9.4 are also installed into the image. This did not solve the problem.
+* The second solution consists of entering all database preparation steps interactively.
+
+
+### Interactive Preparation
+
+```
+# variable definition
+PRPWORKDIR=${HOME}/prp
+PGDATADIR=${PRPWORKDIR}/pgdata
+PGLOGDIR=${PRPWORKDIR}/pglog
+PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
+PRPLOGDIR=${PRPWORKDIR}/prplog
+PRPLOGFILE=${PRPLOGDIR}/popreport.log
+ADMINUSER=popreport
+APIISADMIN=apiis_admin
+HELIADMIN=heli
+OSUSER=`whoami`
+PG_PORT=''
+
+# version of pg
+PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}')
+PG_SUBVERSION=''
+if [ -n "$PG_PACKET"  ]; then
+   if [[ $PG_PACKET = *9.* ]]; then
+# subv wird packet bei 10 11 etc
+      PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-9.//')
+   else
+      PG_SUBVERSION=' '
+      echo no subversion
+   fi
+fi
+
+PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-//')
+PG_VERSION=$(echo $PG_ALLVERSION |  cut -d. -f1)
+echo packet_____:$PG_PACKET
+echo version____:$PG_VERSION
+echo subversion_:$PG_SUBVERSION
+echo allversion_:$PG_ALLVERSION
+
+# db command variables
+INITDB="/usr/lib/postgresql/$PG_ALLVERSION/bin/initdb"
+PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
+CREATEDB="/usr/lib/postgresql/$PG_ALLVERSION/bin/createdb"
+CREATEUSER="/usr/lib/postgresql/$PG_ALLVERSION/bin/createuser"
+PGCTL="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_ctl"
+PGISREADY="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_isready"
+ETCPGCONF="/etc/postgresql/$PG_ALLVERSION/main/postgresql.conf"
+INSTALLDIR=/home/zws/simg/genmon-sidef/bash
+PGSTART="$INSTALLDIR/pg_start.sh"
+PGSTOP="$INSTALLDIR/pg_stop.sh"
+
+# init db
+$INITDB -D $PGDATADIR -A trust -U $OSUSER
+#echo $?
+if [ $? -eq 0 ]
+then
+  echo "Initdb successful ..."
+else
+  echo "Initdb was not possible"
+fi
+# Initdb successful ...
+
+# start pg
+$PGCTL -D $PGDATADIR -l $PGLOGFILE start
+if [ $? -eq 0 ]
+then
+  echo "PG server started successfully ..."
+else
+  echo "Cannot start pg server ..."
+fi
+# PG server started successfully ...
+
+# configure
+ETC_DIR="$PGDATADIR"
+$PSQL -l >/dev/null 2>&1
+#echo $?
+if [ $? -ne 0 ]; then
+    echo "You have no right to access postgresql ..."
+else
+    echo "You have the right to access postgresql ..."
+fi
+# You have the right to access postgresql ...
+
+# data directory
+DATA_DIR=$(echo "show data_directory" | $PSQL --tuples-only --quiet --no-align postgres)
+if [ ! -d $DATA_DIR ]; then
+    echo "DATA_DIR $DATA_DIR doesn't exist"
+else
+    echo "DATA_DIR $DATA_DIR exists ..."
+fi
+
+# admin users: $APIISADMIN, $ADMINUSER, postgres, $HELIADMIN
+echo "select usename from pg_user where usename = '$APIISADMIN'" | $PSQL postgres --tuples-only --quiet --no-align | grep -q $APIISADMIN >/dev/null
+#echo $?
+if [ $? -eq 0 ]; then
+      echo "PostgreSQL ADMINUSER $APIISADMIN exists"
+else
+      $CREATEUSER --superuser $APIISADMIN
+      $PGCTL reload -D $DATA_DIR >/dev/null
+      echo "PostgreSQL ADMINUSER $APIISADMIN created"
+fi
+
+# $ADMINUSER
+echo "select usename from pg_user where usename = '$ADMINUSER'" | $PSQL postgres --tuples-only --quiet --no-align | grep -q $ADMINUSER >/dev/null
+#echo $?
+if [ $? -eq 0 ]; then
+      echo "PostgreSQL ADMINUSER $ADMINUSER exists"
+else
+      $CREATEUSER --superuser $ADMINUSER
+      $PGCTL reload -D $DATA_DIR >/dev/null
+      echo "PostgreSQL ADMINUSER $ADMINUSER created"
+fi
+
+# postgres
+echo "select usename from pg_user where usename = 'postgres'" | $PSQL postgres --tuples-only --quiet --no-align | grep -q postgres >/dev/null
+#echo $?
+if [ $? -eq 0 ]; then
+      echo "PostgreSQL ADMINUSER postgres exists"
+else
+      $CREATEUSER --superuser postgres
+      $PGCTL reload -D $DATA_DIR >/dev/null
+      echo "PostgreSQL ADMINUSER postgres created"
+fi
+
+# $HELIADMIN
+echo "select usename from pg_user where usename = '$HELIADMIN'" | $PSQL postgres --tuples-only --quiet --no-align | grep -q $HELIADMIN >/dev/null
+#echo $?
+if [ $? -eq 0 ]; then
+      echo "PostgreSQL ADMINUSER $HELIADMIN exists"
+else
+      $CREATEUSER --superuser $HELIADMIN
+      $PGCTL reload -D $DATA_DIR >/dev/null
+      echo "PostgreSQL ADMINUSER $HELIADMIN created"
+fi
+
+# check hba-conf
+ETC_DIR="$PGDATADIR"
+grep -q "^host  *all  *all .*trust$" $ETC_DIR/pg_hba.conf >/dev/null
+# nothing to do
+
+# check
+$PGISREADY -h localhost 
+#localhost:5432 - accepting connections
+
+```
+
+
+

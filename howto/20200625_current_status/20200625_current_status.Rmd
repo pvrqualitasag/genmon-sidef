@@ -30,3 +30,22 @@ Can't find any file with pattern testbreed_[0-9][0-9][0-9][0-9].agr from an agr-
 Executing of program inbreeding_report failed: 65280
 
 ```
+
+Copying the libgfortran.so.3 from the sources solved the problem and completed the Inbreeding Report. Next problem is with monitoring report.
+
+The error report is 
+
+```
+$ cat /qualstorzws01/data_projekte/projekte/poprep/projects/PPP_SaPcGMP549h8Q/Popreport_testbreed_2020-06-25-17.34/prmon_monitor.stderr
+#####################################################################
+# Running: prmon_monitor.pl -p PPP_SaPcGMP549h8Q -u poprep -P pass -b testbreed
+#####################################################################
+Missing argument in sprintf at /home/popreport/production/apiis/bin/prmon_monitor.pl line 341.
+Missing argument in sprintf at /home/popreport/production/apiis/bin/prmon_monitor.pl line 341.
+Missing argument in sprintf at /home/popreport/production/apiis/bin/prmon_monitor.pl line 341.
+Missing argument in sprintf at /home/popreport/production/apiis/bin/prmon_monitor.pl line 341.
+Missing argument in sprintf at /home/popreport/production/apiis/bin/prmon_monitor.pl line 341.
+Missing argument in sprintf at /home/popreport/production/apiis/bin/prmon_monitor.pl line 341.
+Use of uninitialized value $year_range[0] in hash element at /home/popreport/production/apiis/bin/prmon_monitor.pl line 347.
+Can't use an undefined value as an ARRAY reference at /home/popreport/production/apiis/bin/prmon_monitor.pl line 347.
+```
