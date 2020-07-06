@@ -1,0 +1,9 @@
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-client-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-9.6-dbg_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-contrib-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-plperl-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-plpython-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-plpython3-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-pltcl-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
+http://apt.postgresql.org/pub/repos/apt/pool/main/p/postgresql-9.6/postgresql-server-dev-9.6_9.6.18-1.pgdg18.04+1_amd64.deb
