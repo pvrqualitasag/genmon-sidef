@@ -4,7 +4,7 @@ From: ubuntu:18.04
 %files
   /home/quagadmin/source/prprepo/home/popreport/production /root/production
   /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root
-  /home/quagadmin/simg/genmon-sidef/input/pg-9.6-deb.txt /root
+  #/home/quagadmin/simg/genmon-sidef/input/pg-9.6-deb.txt /root
 
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
@@ -43,10 +43,10 @@ From: ubuntu:18.04
 
 
   # pg from distribution
-  #apt-get update -y
-  #echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
-  #wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-  #apt-get install -y postgresql postgresql-contrib
+  apt-get update -y
+  echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list
+  wget -qO - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+  apt-get install -y postgresql postgresql-contrib
   # pg 9.6
   #apt-get update -y
   # pg-client
@@ -72,7 +72,7 @@ From: ubuntu:18.04
   #gdebi --n postgresql-contrib-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
   #rm -rf postgresql-contrib-9.4_9.4.26-2.pgdg18.04+1_amd64.deb
   # pg 9.6 - all packages
-  cat /root/pg-9.6-deb.txt | while read p;do pn=$(basename $p);echo " * Installing package $pn";wget $p;gdebi --n $pn;rm -rf $pn;sleep 2;done
+  #cat /root/pg-9.6-deb.txt | while read p;do pn=$(basename $p);echo " * Installing package $pn";wget $p;gdebi --n $pn;rm -rf $pn;sleep 2;done
   
   # poprep-req
   apt-get update -y
