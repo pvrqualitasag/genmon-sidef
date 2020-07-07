@@ -113,7 +113,8 @@ From: ubuntu:18.04
   echo popreport:pass | chpasswd
   
   # prepare directory for poprep
-  mv /root/production /home/popreport
+  mv /root/home/quagadmin/source/prprepo/home/popreport/production /home/popreport
+  rm -rf /root/home
   chown -R popreport: /home/popreport/production
   chmod -R 777 /home/popreport/production
 
