@@ -3,6 +3,7 @@ From: ubuntu:18.04
 
 %setup
   tar cf - /home/quagadmin/source/prprepo/home/popreport/production | tar xf - --strip-components=6 -C /root
+  chown -R root:root /root/production
 
 %files
   #/home/quagadmin/source/prprepo/home/popreport/production /root/production
@@ -112,16 +113,15 @@ From: ubuntu:18.04
   useradd popreport -s /bin/bash -m
   echo popreport:pass | chpasswd
   
-  # prepare directory for poprep
-  mv /root/production /home/popreport
-  rm -rf /root/home
-  chown -R popreport: /home/popreport/production
-  chmod -R 777 /home/popreport/production
-
   # move libgfortran.so.3
   mv /root/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
   ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
-  
+
+  # prepare directory for poprep
+  mv /root/production /home/popreport
+  chown -R popreport: /home/popreport/production
+  chmod -R 777 /home/popreport/production
+
   # add apiis_home to .bashrc
   (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
   echo 'export PATH=$PATH:$APIIS_HOME/bin' >> /home/popreport/.bashrc
