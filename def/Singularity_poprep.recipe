@@ -3,7 +3,7 @@ From: ubuntu:18.04
 
 
 %files
-  /home/quagadmin/source/prprepo/home/popreport/production /root
+  #/home/quagadmin/source/prprepo/home/popreport/production /root
   /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root
 
 %post
