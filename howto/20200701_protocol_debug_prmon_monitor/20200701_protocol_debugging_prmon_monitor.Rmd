@@ -100,4 +100,7 @@ This means that table 'tmp3_log_ne' is created in the script 'prmon_log_reg.pl'.
 
 Additional log-statements for debugging the problem of not creating the prmon_monitor report are added to 'prmon_log_of_Inbreeding_year.pl'. 
 
+## Solved problems
 
+* The parsing problem of gnuplot output files in prmon_log_of_Inbreeding_year.pl is fixed, such that values in variable $a4 are read
+* The problem of not finding plt libraries is fixed by conserving the links in the source directory apiis/bin. The deployment is done outside of the simg definition file.
