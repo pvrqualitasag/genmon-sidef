@@ -117,9 +117,9 @@ From: ubuntu:18.04
   ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
 
   # prepare directory for poprep
-  mv /root/production /home/popreport
-  chown -R popreport: /home/popreport/production
-  chmod -R 777 /home/popreport/production
+  #mv /root/production /home/popreport
+  #chmod -R 777 /home/popreport/production
+  #chown -R popreport: /home/popreport/production
 
   # add apiis_home to .bashrc
   (echo;echo '# add apiis_home';echo 'APIIS_HOME=/home/popreport/production/apiis') >> /home/popreport/.bashrc
