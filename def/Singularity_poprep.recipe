@@ -2,7 +2,7 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %setup
-  tar cf - /home/quagadmin/source/prprepo/home/popreport/production | tar xf - --directory /root/production
+  tar cf - /home/quagadmin/source/prprepo/home/popreport/production | tar xf - --directory /root
   
 %files
   #/home/quagadmin/source/prprepo/home/popreport/production /root/production
