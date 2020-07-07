@@ -2,9 +2,8 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %setup
-  tar cf - /home/quagadmin/source/prprepo/home/popreport/production | tar xf - --directory /root
-  chown -R root:root /root/home
-  
+  tar cf - /home/quagadmin/source/prprepo/home/popreport/production | tar xf - --strip-components=6 -C /root
+
 %files
   #/home/quagadmin/source/prprepo/home/popreport/production /root/production
   /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root
@@ -114,7 +113,7 @@ From: ubuntu:18.04
   echo popreport:pass | chpasswd
   
   # prepare directory for poprep
-  mv /root/home/quagadmin/source/prprepo/home/popreport/production /home/popreport
+  mv /root/production /home/popreport
   rm -rf /root/home
   chown -R popreport: /home/popreport/production
   chmod -R 777 /home/popreport/production
