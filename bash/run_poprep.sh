@@ -169,7 +169,7 @@ PRPLOGFILEPATH=/home/zws/prp/prplog/popreport.log
 USER=`whoami`
 GROUP=`whoami`
 PRPPROJPATH='projects'
-DEBUG=''
+DEBUG='false'
 while getopts ":b:p:e:l:m:f:g:d:s:u:i:hZ" FLAG; do
   case $FLAG in
     h)
