@@ -1,0 +1,51 @@
+---
+title: "Poprep Usage Tutorial"
+author: "Peter von Rohr"
+date: "7/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+The basics of how to use PopRep as it is installed on the GenMon server 'fagr.genmon.ch' is explained.
+
+
+## Quick Start
+1. Get access: `ssh zws@fagr.genmon.ch` or via browser. Password as usual.
+2. Start shell of instance 'siprp': `ssprp`
+3. Run poprep: `/home/zws/simg/genmon-sidef/bash/run_poprep.sh -b testbreed -p prp/prpinput/test_pedigree.dat.txt`
+    + string after option -b gives the name of the breed that is analysed
+    + path after option -p specifies the path to the pedigree that is to be analysed
+4. Inspect results: the three pdf-reports from poprep are stored under '/var/lib/postgresql/incoming/done_YYYY-mm-dd-HH-MM-SS'
+
+
+## Technical Explanation
+PopRep is used as a command-line tool as user 'zws' on the server 'fagr.genmon.ch'. The complete PopRep system is installed in a singularity container image. Under user 'zws' an instance called 'siprp' of the singularity container is running. PopRep can only be run using the instance 'siprp' This can be done either via 
+
+* first starting a shell from this instance using the alias 'ssprp'
+* or via prepending 'singularity exec instance://siprp' before the run-script of PopRep. 
+
+PopRep assumes its input in specific formats and directories. The preparatory work before running PopRep is done in the wrapper script '/home/zws/simg/genmon-sidef/bash/run_poprep.sh'. This script needs the name of the breed and the path to the pedigree as input. The optional option -Z lets PopRep to produce more logging output.
+
+In case that PopRep was able to run successfully, the results consists of three reports. These reports are produced as pdf-documents and can be found in the directory '/var/lib/postgresql/incoming/done_YYYY-mm-dd-HH-MM-SS'. Intermediate results or debugging information is available in the directory '/var/lib/postgresql/projects/<project_code>'. The project directory is also the place where one has to search for possible causes of problems, if PopRep failed to run to the end. The subdirectories 'incoming' for the results of PopRep and 'projects' for the additional output of PopRep are only available under '/var/lib/postgresql' from inside of a singularity shell. Outside of a singularity shell the subdirectories 'incoming' and 'projects' can be found under '/qualstorzws01/data_projekte/projekte/poprep'.
+
+
+## Singularity Container
+The image file for the singularity container is stored under '/home/quagadmin/simg/img/poprep/prp.simg'. This is a softlink which points to the real imagefile in the same directory. By default an instance of the singularity container image is running under the name 'siprp'. The shell alias 'sils' can be used to verify whether the instance is running. In the case that the instance is running the following output can be expected
+
+```
+$ sils
+DAEMON NAME      PID      CONTAINER IMAGE
+siprp            2995     /home/quagadmin/simg/img/poprep/20200707175111_prp.simg
+```
+
+NB: The command 'sils' does not work from inside of a singularity shell.
+
+If the instance 'siprp' is not running, it can be started with the script '/home/quagadmin/simg/genmon-sidef/bash/si_prp_start.sh'. This script starts an instance of the singularity image and automatically starts the postgresql database which is required for running PopRep. A running singularity instance can be stopped with the script '/home/quagadmin/simg/genmon-sidef/bash/si_prp_stop.sh'.  
+
+
+
+
