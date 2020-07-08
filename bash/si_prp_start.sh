@@ -114,7 +114,10 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 SINGULARITYINSTANCENAME='siprp'
 SINGULARITYIMAGENAME=/home/quagadmin/simg/img/poprep/prp.simg
-BINDPATH=''
+BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
+BINDROOTCNTRPG=/var/lib/postgresql
+BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
+BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS"
 while getopts ":b:i:n:h" FLAG; do
   case $FLAG in
     h)
