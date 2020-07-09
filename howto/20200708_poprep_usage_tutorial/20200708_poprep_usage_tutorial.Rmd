@@ -22,15 +22,23 @@ The basics of how to use PopRep as it is installed on the GenMon server 'fagr.ge
 4. Inspect results: the three pdf-reports from poprep are stored under '/var/lib/postgresql/incoming/done_YYYY-mm-dd-HH-MM-SS'
 
 
+## Terminology
+'PopRep' is a collection of scripts, compiled programs and a database which can be used for analyzing pedigree data. The scripts are written in bash or perl. The compiled programs consist of compiled binaries of Fortran source code. Postgresql is used as a database system. At this point it is important to note that 'PopRep' is not the name of a single program or executable. 
+
+
 ## Technical Explanation
-PopRep is used as a command-line tool as user 'zws' on the server 'fagr.genmon.ch'. The complete PopRep system is installed in a singularity container image. Under user 'zws' an instance called 'siprp' of the singularity container is running. PopRep can only be run using the instance 'siprp' This can be done either via 
+PopRep is used from the command-line as user 'zws' on the server 'fagr.genmon.ch'. The complete PopRep system is installed in a singularity container image. Under user 'zws' an instance called 'siprp' of the singularity container is running. PopRep can only be run using the instance 'siprp'. This can be done either via 
 
 * first starting a shell from this instance using the alias 'ssprp'
 * or via prepending 'singularity exec instance://siprp' before the run-script of PopRep. 
 
-PopRep assumes its input in specific formats and directories. The preparatory work before running PopRep is done in the wrapper script '/home/zws/simg/genmon-sidef/bash/run_poprep.sh'. This script needs the name of the breed and the path to the pedigree as input. The optional option -Z lets PopRep to produce more logging output.
+The scripts and programs of PopRep can be found inside of the singularity container under the directory '/home/popreport/production'. 
 
-In case that PopRep was able to run successfully, the results consists of three reports. These reports are produced as pdf-documents and can be found in the directory '/var/lib/postgresql/incoming/done_YYYY-mm-dd-HH-MM-SS'. Intermediate results or debugging information is available in the directory '/var/lib/postgresql/projects/<project_code>'. The project directory is also the place where one has to search for possible causes of problems, if PopRep failed to run to the end. The subdirectories 'incoming' for the results of PopRep and 'projects' for the additional output of PopRep are only available under '/var/lib/postgresql' from inside of a singularity shell. Outside of a singularity shell the subdirectories 'incoming' and 'projects' can be found under '/qualstorzws01/data_projekte/projekte/poprep'.
+PopRep assumes its input in specific formats and directories. The preparatory work before running PopRep is done in the wrapper script '/home/zws/simg/genmon-sidef/bash/run_poprep.sh'. This script needs the name of the breed and the path to the pedigree as input. The optional option -Z lets PopRep produce more logging output. The wrapper script copies the pedigree to the directory '/var/lib/postgresql/incoming' and renames it to 'datafile'. It also writes a parameterfile '/var/lib/postgresql/incoming/param' which is required by PopRep.
+
+In case that PopRep was able to run successfully, the results consists of three reports. These reports are produced as pdf-documents and can be found in the directory '/var/lib/postgresql/incoming/done_YYYY-mm-dd-HH-MM-SS'. Intermediate results or debugging information is available in the directory '/var/lib/postgresql/projects/<project_code>'. The project directory is also the place where one has to search for possible causes of problems, if PopRep failed to run to the end. More logging information can also be found in '/home/zws/prp/prplog' containing the logfile of PopRep, '/home/zws/prp/pglog' with the logfile of the database. The directory '/home/popreport/production/apiis/var/log' contains the logfile of apiis which is also part of PopRep. 
+
+The subdirectories 'incoming' for the results of PopRep and 'projects' for the additional output of PopRep are only available under '/var/lib/postgresql' from inside of a singularity shell. Outside of a singularity shell the subdirectories 'incoming' and 'projects' can be found under '/qualstorzws01/data_projekte/projekte/poprep'. The complete directory mapping is shown in the table below.
 
 
 ## Singularity Container
@@ -45,6 +53,23 @@ siprp            2995     /home/quagadmin/simg/img/poprep/20200707175111_prp.sim
 NB: The command 'sils' does not work from inside of a singularity shell.
 
 If the instance 'siprp' is not running, it can be started with the script '/home/zws/simg/genmon-sidef/bash/si_prp_start.sh'. This script starts an instance of the singularity image and automatically starts the postgresql database which is required for running PopRep. A running singularity instance can be stopped with the script '/home/zws/simg/genmon-sidef/bash/si_prp_stop.sh'.  
+
+
+## Directory Mapping
+All output directories of PopRep must be mapped to certain directories of the host system. The mapping is given by the following table. 
+
+```{r echo=FALSE}
+tbl_dir_mapping <- tibble::tibble(Container = c('/var/lib/postgresql/incoming',
+                                                '/var/lib/postgresql/done',
+                                                '/var/lib/postgresql/projects',
+                                                '/home/popreport/production/apiis/var/log'),
+                                  Host      = c('/qualstorzws01/data_projekte/projekte/poprep/incoming',
+                                                '/qualstorzws01/data_projekte/projekte/poprep/done',
+                                                '/qualstorzws01/data_projekte/projekte/poprep/projects',
+                                                '/qualstorzws01/data_projekte/projekte/poprep/log'))
+knitr::kable(tbl_dir_mapping)
+```
+
 
 
 ## Supplementary Tools
