@@ -44,8 +44,23 @@ siprp            2995     /home/quagadmin/simg/img/poprep/20200707175111_prp.sim
 
 NB: The command 'sils' does not work from inside of a singularity shell.
 
-If the instance 'siprp' is not running, it can be started with the script '/home/quagadmin/simg/genmon-sidef/bash/si_prp_start.sh'. This script starts an instance of the singularity image and automatically starts the postgresql database which is required for running PopRep. A running singularity instance can be stopped with the script '/home/quagadmin/simg/genmon-sidef/bash/si_prp_stop.sh'.  
+If the instance 'siprp' is not running, it can be started with the script '/home/zws/simg/genmon-sidef/bash/si_prp_start.sh'. This script starts an instance of the singularity image and automatically starts the postgresql database which is required for running PopRep. A running singularity instance can be stopped with the script '/home/zws/simg/genmon-sidef/bash/si_prp_stop.sh'.  
 
 
+## Supplementary Tools
+If PopRep does not produce the expected results consisting of the three reports, it might be advisable to clean up all projects and the complete postgresql database. Such a cleanup process can only be done if the singularity instance 'siprp' is stopped. The instance 'siprp' can be stopped with the script '/home/zws/simg/genmon-sidef/bash/si_prp_stop.sh'. Once the instance is stopped, the projects and the database can be removed using the script 'cleanup_prp.sh' as shown below.
+
+```
+# stopping instance siprp including the shut-down of the postgresql database
+/home/zws/simg/genmon-sidef/bash/si_prp_stop.sh
+# cleaning up all projects and the database
+/home/zws/simg/genmon-sidef/bash/cleanup_prp.sh
+```
+
+Once the cleanup script has completed, the start script for siprp can be used to prepare PopRep for further analysis.
+
+```
+/home/zws/simg/genmon-sidef/bash/si_prp_start.sh
+```
 
 
