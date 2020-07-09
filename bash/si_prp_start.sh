@@ -61,10 +61,11 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -i <singularity_instance_name> -n <singularity_image_name> -b <bind_path>"
-  $ECHO "  where -i <singularity_instance_name>  --  specify singularity instance name"
-  $ECHO "        -n <singularity_image_name>     --  specify singularity image name"
-  $ECHO "        -b <bind_path>                  --  specify bind path (optional)"
+  $ECHO "Usage: $SCRIPT -i <singularity_instance_name> -n <singularity_image_name> -b <bind_path> -d <pg_data_dir>"
+  $ECHO "  where -i <singularity_instance_name>  --  specify singularity instance name (optional)"
+  $ECHO "        -n <singularity_image_name>     --  specify singularity image name    (optional)"
+  $ECHO "        -b <bind_path>                  --  specify bind path                 (optional)"
+  $ECHO "        -d <pg_data_dir>                --  postgresql data directory         (optional)"
   $ECHO ""
   exit 1
 }
@@ -118,13 +119,17 @@ BINDROOTHOST=/qualstorzws01/data_projekte/projekte/poprep
 BINDROOTCNTRPG=/var/lib/postgresql
 BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
 BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS"
-while getopts ":b:i:n:h" FLAG; do
+PGDATADIR=/home/zws/prp/pgdata
+while getopts ":b:d:i:n:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
     b)
       BINDPATH=$OPTARG
+      ;;
+    d)
+      PGDATADIR=$OPTARG
       ;;
     i)
       SINGULARITYINSTANCENAME=$OPTARG
@@ -183,9 +188,14 @@ fi
 #' ## Start PostgreSQL DB-Server
 #' The pg-db inside the image is started using the start script
 #+ pg-db-start
-log_msg "$SCRIPT" " * Starting pg-db ..."
-singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/pg_start.sh
-
+if [ `ls -1 $PGDATADIR | wc -l` -eq 0 ]
+then
+  log_msg "$SCRIPT" " * Initialise pg-db ..."
+  singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/post_install_prp.sh
+else
+  log_msg "$SCRIPT" " * Starting pg-db ..."
+  singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/pg_start.sh
+fi
 
 #' ## Check Status of DB-Server
 #' Using the pg-command to check whether the DB-server is running
