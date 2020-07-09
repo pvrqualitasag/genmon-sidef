@@ -131,10 +131,10 @@ cleanup_prp_dir () {
   do
     if [ -d "$prp_proj_root/$p" ]
     then
-      log_msg 'cleanup_prp_dir' " ** Cleaning up dir: $prp_proj_root/$p ..."
+      log_msg 'cleanup_prp_dir' " *** Cleaning up dir: $prp_proj_root/$p ..."
       rm -rf $prp_proj_root/$p/*
     else
-      log_msg 'cleanup_prp_dir' " ** Cannot find: $prp_proj_root/$p ..."
+      log_msg 'cleanup_prp_dir' " *** Cannot find: $prp_proj_root/$p ..."
     fi
   done
   # work dir
@@ -143,10 +143,10 @@ cleanup_prp_dir () {
   do
     if [ -d "$prp_wd_root/$p" ]
     then
-      log_msg 'cleanup_prp_dir' " ** Cleaning up dir: $prp_wd_root/$p ..."
+      log_msg 'cleanup_prp_dir' " *** Cleaning up dir: $prp_wd_root/$p ..."
       rm -rf $prp_wd_root/$p/*
     else
-      log_msg 'cleanup_prp_dir' " ** Cannot find: $prp_wd_root/$p ..."
+      log_msg 'cleanup_prp_dir' " *** Cannot find: $prp_wd_root/$p ..."
     fi
   done
 }
