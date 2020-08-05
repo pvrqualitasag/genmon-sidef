@@ -113,10 +113,6 @@ From: ubuntu:18.04
   # postgis
   apt-get install -y postgresql-10-postgis-2.4
   
-  # apache2
-  apt-get update
-  apt-get install apache2
-  
   # install OpenJDK 8 (LTS) from https://adoptopenjdk.net
   curl -sSL "https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u222-b10/OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz" > openjdk8.tar.gz
   mkdir -p /opt/openjdk
@@ -124,15 +120,15 @@ From: ubuntu:18.04
   rm -f openjdk8.tar.gz
   
   # tomcat
-  apt-get install tomcat9
+  #apt-get install tomcat9
   
   # GeoServer
-  curl -sSL "http://sourceforge.net/projects/geoserver/files/GeoServer/2.17.2/geoserver-2.17.2-war.zip" > geoserver-2.17.2-war.zip
-  unzip geoserver-2.17.2-war.zip
-  mv geoserver.war /var/lib/tomcat9/webapps
+  #curl -sSL "http://sourceforge.net/projects/geoserver/files/GeoServer/2.17.2/geoserver-2.17.2-war.zip" > geoserver-2.17.2-war.zip
+  #unzip geoserver-2.17.2-war.zip
+  #mv geoserver.war /var/lib/tomcat9/webapps
   
   # php
-  apt-get install php5-pgsql
+  #apt-get install php5-pgsql
   
   
 
