@@ -1,0 +1,30 @@
+---
+title: "Installation of Genmon"
+author: "Peter von Rohr"
+date: "8/4/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+Installation of Genmon in Singularity Container. The installation includes PopRep for the analysis of pedigrees and all programs for running the GIS and the socio-eco analyses. 
+
+
+## Goal
+The complete set of software programs are to be installed inside of a container. 
+
+
+## Strategy
+Following the approach taken with the installation of PopRep in a container, we want to extend the existing definition file for the poprep container with the missing parts to run the GIS and the Socio-Eco analyses. 
+
+The installation steps follow the instructions given by https://github.com/SolangeD/GENMON/blob/master/install.html.
+
+
+## Step-by-Step Protocol
+This section contains a protocol showing all steps to build a container running all components of GenMon
+
+1. The definition file 'Singularity_poprep-recipe' is taken as a base for the new container image
+2. The parts not included by the definition file of the poprep container are added to the definition file 'Singularity_genmon.recipe'. 
