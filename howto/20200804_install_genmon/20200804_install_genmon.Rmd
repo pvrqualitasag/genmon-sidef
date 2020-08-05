@@ -28,3 +28,46 @@ This section contains a protocol showing all steps to build a container running 
 
 1. The definition file 'Singularity_poprep-recipe' is taken as a base for the new container image
 2. The parts not included by the definition file of the poprep container are added to the definition file 'Singularity_genmon.recipe'. 
+
+
+## Check List based on `install.html`
+The following table gives an overview about the installation status of the different points listed on `install.html`.
+
+```{r, echo=FALSE}
+tbl_install_status <- tibble::tibble(Section = c("OS Install",
+                                                 "Server Basics",
+                                                 "Firewall",
+                                                 "Postgres and Postgis",
+                                                 "Postgres and Postgis",
+                                                 "Install PHP",
+                                                 "Install PHP",
+                                                 "Install GeoServer",
+                                                 "Install GeoServer",
+                                                 "Install GENMON",
+                                                 "Install PopRep"),
+                                     Command = c("",
+                                                 "apt-get install vim build-essential",
+                                                 "ufw ...",
+                                                 "apt-get install postgresql-10-postgis-2.4",
+                                                 "import DB ...",
+                                                 "apt-get install php5-pgsql",
+                                                 "Change config",
+                                                 "curl <geoserver-uri> ;unzip ...;mv",
+                                                 "jdk;tomcat",
+                                                 "...",
+                                                 "..."),
+                                     Status  = c("simg def",
+                                                 "simg def",
+                                                 "host",
+                                                 "simg def",
+                                                 NA,
+                                                 "simg def",
+                                                 NA,
+                                                 "simg def",
+                                                 "simg def",
+                                                 NA,
+                                                 "simg def"))
+knitr::kable(tbl_install_status)
+```
+
+
