@@ -11,7 +11,9 @@
 #' Starting a singularity container image that is running a postgresql-db for PopRep.
 #'
 #' ## Details
-#' After starting the singularity container image, the pg-db-server is also started which makes it possible to have the complete PopRep functionality available immediately after the start of the instance.
+#' After starting the singularity container image, the pg-db-server is also started 
+#' which makes it possible to have the complete PopRep functionality available immediately 
+#' after the start of the instance.
 #'
 #' ## Example
 #' ./si_prp_start.sh -b /home/zws/prp/incoming/:/var/lib/postresql/incoming,\
