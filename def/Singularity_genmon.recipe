@@ -140,7 +140,7 @@ From: ubuntu:18.04
   # open layers 2
   curl -sSL https://github.com/openlayers/ol2/releases/download/release-2.13.1/OpenLayers-2.13.1.tar.gz > OpenLayers-2.13.1.tar.gz
   tar -C /var/www/html/genmon-ch -xzf OpenLayers-2.13.1.tar.gz
-  mv /var/www/html/genmon-ch/OpenLayers-2.13.1.tar.gz /var/www/html/genmon-ch/ol
+  mv /var/www/html/genmon-ch/OpenLayers-2.13.1 /var/www/html/genmon-ch/ol
   rm -rf OpenLayers-2.13.1.tar.gz
   
   # flot
