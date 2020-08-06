@@ -133,6 +133,18 @@ From: ubuntu:18.04
   apt-get update
   apt-get install -y php5.6 php5.6-pgsql
 
+  # phpmailer
+  apt-get update
+  apt-get install libphp-phpmailer
+  
+  # change php config
+  mv /etc/php/5.6/apache2/php.ini /etc/php/5.6/apache2/php.ini.org
+  cat /etc/php/5.6/apache2/php.ini.org | \
+    sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/" | \
+    sed -e "s/post_max_size = 8M/post_max_size = 100M/" | \
+    sed -e "s/max_execution_time = 30/max_execution_time = 10000/" | \
+    sed -e "s/memory_limit = 128M/memory_limit = 1280M/" > /etc/php/5.6/apache2/php.ini
+
   # genmon
   mkdir -p /var/www/html/genmon-ch
   git clone https://github.com/pvrqualitasag/GENMON.git /var/www/html/genmon-ch
@@ -147,7 +159,7 @@ From: ubuntu:18.04
   mkdir -p /var/www/html/genmon-ch/flot
   git clone https://github.com/flot/flot.git /var/www/html/genmon-ch/flot
   
-  # phpmailer
-  mkdir -p /var/www/html/genmon-ch/membres/PHP_Mailer2.0.5
-  git clone https://github.com/PHPMailer/PHPMailer /var/www/html/genmon-ch/membres/PHP_Mailer2.0.5
+  # change owner of webhome
+  chown -R www-data: /var/www
+  
   
