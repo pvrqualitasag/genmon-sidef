@@ -133,3 +133,7 @@ From: ubuntu:18.04
   apt-get update
   apt-get install -y php5.6 php5.6-pgsql
 
+  # genmon
+  mkdir -p /var/www/html/genmon-ch
+  git clone https://github.com/pvrqualitasag/GENMON.git /var/www/html/genmon-ch
+  
