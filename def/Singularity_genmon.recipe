@@ -137,3 +137,17 @@ From: ubuntu:18.04
   mkdir -p /var/www/html/genmon-ch
   git clone https://github.com/pvrqualitasag/GENMON.git /var/www/html/genmon-ch
   
+  # open layers 2
+  curl -sSL https://github.com/openlayers/ol2/releases/download/release-2.13.1/OpenLayers-2.13.1.tar.gz > OpenLayers-2.13.1.tar.gz
+  tar -C /var/www/html/genmon-ch -xzf OpenLayers-2.13.1.tar.gz
+  mv /var/www/html/genmon-ch/OpenLayers-2.13.1.tar.gz /var/www/html/genmon-ch/ol
+  rm -rf OpenLayers-2.13.1.tar.gz
+  
+  # flot
+  mkdir -p /var/www/html/genmon-ch/flot
+  git clone https://github.com/flot/flot.git /var/www/html/genmon-ch/flot
+  
+  # phpmailer
+  mkdir -p /var/www/html/genmon-ch/membres/PHP_Mailer2.0.5
+  git clone https://github.com/PHPMailer/PHPMailer /var/www/html/genmon-ch/membres/PHP_Mailer2.0.5
+  
