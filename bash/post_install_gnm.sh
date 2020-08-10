@@ -395,7 +395,7 @@ pg_server_running () {
 #+ check-container-fun
 check_container () {
   log_msg 'check_container' ' * Checking whether we run in a container ...'
-  if [ `env | grep 'SINGULARITY' | wc -l` eq 0 ]
+  if [ `env | grep 'SINGULARITY' | wc -l` -eq 0 ]
   then
     err_exit "Script is not running in singularity container"
   else
