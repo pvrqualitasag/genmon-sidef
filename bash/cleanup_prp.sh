@@ -166,53 +166,6 @@ prp_proj_root=/qualstorzws01/data_projekte/projekte/poprep
 prp_proj_dirs=(projects incoming log) 
 prp_wd_root=/home/zws/prp
 prp_wd_dirs=(pgdata pglog prplog)
-# a_example=""
-# b_example=""
-# c_example=""
-# while getopts ":a:b:ch" FLAG; do
-#   case $FLAG in
-#     h)
-#       usage "Help message for $SCRIPT"
-#       ;;
-#     a)
-#       a_example=$OPTARG
-# OR for files
-#      if test -f $OPTARG; then
-#        a_example=$OPTARG
-#      else
-#        usage "$OPTARG isn't a regular file"
-#      fi
-# OR for directories
-#      if test -d $OPTARG; then
-#        a_example=$OPTARG
-#      else
-#        usage "$OPTARG isn't a directory"
-#      fi
-#       ;;
-#     b)
-#       b_example=$OPTARG
-#       ;;
-#     c)
-#       c_example="c_example_value"
-#       ;;
-#     :)
-#       usage "-$OPTARG requires an argument"
-#       ;;
-#     ?)
-#       usage "Invalid command line argument (-$OPTARG) found"
-#       ;;
-#   esac
-# done
-# 
-# shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
-
-#' ## Checks for Command Line Arguments
-#' The following statements are used to check whether required arguments
-#' have been assigned with a non-empty value
-#+ argument-test, eval=FALSE
-# if test "$a_example" == ""; then
-#   usage "-a a_example not defined"
-# fi
 
 
 #' ## Check Outside of Instance
