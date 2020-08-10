@@ -107,9 +107,6 @@ From: ubuntu:18.04
     chmod -R 777 /var/lib/postgresql/$p
   done
 
-  # permissions for postgres
-  chmod -R 777 /var/run/postgresql
-  
   # postgis
   apt-get update
   apt-get install -y postgresql-10-postgis-2.4
@@ -162,4 +159,6 @@ From: ubuntu:18.04
   # change owner of webhome
   chown -R www-data: /var/www
   
-  
+  # permissions for postgres
+  chmod -R 777 /var/run/postgresql
+
