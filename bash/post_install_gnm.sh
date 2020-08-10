@@ -250,6 +250,19 @@ get_pg_version () {
     echo allversion_:$PG_ALLVERSION
 }
 
+#' ### Export Postgresql Port
+#' Export the variable that specifies the postgresql port
+#+ export-pg-port-fun
+export_pg_port () {
+  if [ "$PG_PORT" != '' ]
+  then
+    log_msg 'export_pg_port' " ** Postgresql port specified as $PG_PORT ==> exported as PGPORT"
+    export PGPORT=$PG_PORT
+  else
+    log_msg 'export_pg_port' ' ** Use postgresql default port ...'
+  fi
+}
+
 #' ### Initialisation of the PG db-server
 #' All initialisation steps are done in this function
 #+ init-pg-server-fun
@@ -465,16 +478,17 @@ define_environment_variables
 #+ get-pg-version
 get_pg_version
 
+
+#' ### Export Postgresql Port
+#' If alternative port is specified, then export it
+export_pg_port
+
+
 #' ### Postgresql Programs
 #' Explicit definitions of pg programs depending on pg version
 #+ pg-prog-def
 INITDB="/usr/lib/postgresql/$PG_ALLVERSION/bin/initdb"
-if [ "$PG_PORT" == '' ]
-then
-  PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
-else
-  PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql -p $PG_PORT"
-fi
+PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
 CREATEDB="/usr/lib/postgresql/$PG_ALLVERSION/bin/createdb"
 CREATEUSER="/usr/lib/postgresql/$PG_ALLVERSION/bin/createuser"
 PGCTL="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_ctl"
@@ -482,6 +496,7 @@ PGISREADY="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_isready"
 ETCPGCONF="/etc/postgresql/$PG_ALLVERSION/main/postgresql.conf"
 PGSTART="$INSTALLDIR/pg_start.sh"
 PGSTOP="$INSTALLDIR/pg_stop.sh"
+
 
 #' ### Initialisation of PG-DB
 #' The configuration steps of the pg database that require to be run as 
