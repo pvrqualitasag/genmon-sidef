@@ -469,7 +469,12 @@ get_pg_version
 #' Explicit definitions of pg programs depending on pg version
 #+ pg-prog-def
 INITDB="/usr/lib/postgresql/$PG_ALLVERSION/bin/initdb"
-PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
+if [ "$PG_PORT" == '' ]
+then
+  PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
+else
+  PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql -p $PG_PORT"
+fi
 CREATEDB="/usr/lib/postgresql/$PG_ALLVERSION/bin/createdb"
 CREATEUSER="/usr/lib/postgresql/$PG_ALLVERSION/bin/createuser"
 PGCTL="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_ctl"
