@@ -14,7 +14,7 @@
 #' The starting process should also include removing any pid or lockfiles. {Give some more details here.}
 #'
 #' ## Example
-#' ./pg_start.sh -d <data_dir> {Specify an example call of the script.}
+#' ./prp_pg_start.sh -d <data_dir> {Specify an example call of the script.}
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings

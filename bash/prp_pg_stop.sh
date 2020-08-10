@@ -5,16 +5,16 @@
 #' author: Peter von Rohr
 #' ---
 #' ## Purpose
-#' Seamless stopping of a pg-server such that it can be restarted again. {Write a paragraph about what problems are solved with this script.}
+#' Seamless stopping of a pg-server such that it can be restarted again.
 #'
 #' ## Description
-#' Stopping instance of postgresql db-server. {Write a paragraph about how the problems are solved.}
+#' Stopping instance of postgresql db-server.
 #'
 #' ## Details
-#' The stopping process should also include removing any pid or lockfiles. {Give some more details here.}
+#' The stopping process should also include removing any pid or lockfiles. 
 #'
 #' ## Example
-#' ./pg_stop.sh -d <data_dir> {Specify an example call of the script.}
+#' ./prp_pg_stop.sh -d <data_dir>
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
