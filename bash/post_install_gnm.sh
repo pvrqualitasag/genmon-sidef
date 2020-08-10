@@ -303,6 +303,7 @@ has_pg_access () {
 #+ check-create-db-user-fun
 check_create_db_admin () {
   local l_DB_USER=$1
+  log_msg 'check_create_db_admin' " ** Postgresql port as PGPORT: $PGPORT ..."
   log_msg 'check_create_db_admin' " ** Check existence of dbuser: $l_DB_USER ..."
   echo "select usename from pg_user where usename = '$l_DB_USER'" | $PSQL postgres --tuples-only --quiet --no-align | grep -q $l_DB_USER >/dev/null
   if [ $? -eq 0 ]; then
@@ -474,8 +475,9 @@ get_pg_version
 #' If alternative port is specified, then export it
 if [ "$PG_PORT" != '' ]
 then
-  log_msg "$SCRIPT" " ** Postgresql port specified as $PG_PORT ==> exported as PGPORT"
+  log_msg "$SCRIPT" " ** Postgresql port specified as $PG_PORT ..."
   export PGPORT=$PG_PORT
+  log_msg "$SCRIPT" " ** Postgresql port as PGPORT: $PGPORT ..."
 else
   log_msg "$SCRIPT" ' ** Use postgresql default port ...'
 fi
