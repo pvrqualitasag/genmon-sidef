@@ -58,10 +58,8 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -a <a_example> -b <b_example> -c"
-  $ECHO "  where -a <a_example> ..."
-  $ECHO "        -b <b_example> (optional) ..."
-  $ECHO "        -c (optional) ..."
+  $ECHO "Usage: $SCRIPT -d"
+  $ECHO "  where -d  --  run script in dry-run mode ..."
   $ECHO ""
   exit 1
 }
@@ -105,8 +103,13 @@ check_exist_dir_create () {
   local l_check_dir=$1
   if [ ! -d "$l_check_dir" ]
   then
-    log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it ..."
-    $MKDIR -p $l_check_dir
+    if [ "$DRYRUN" == "TRUE" ]
+    then
+      log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it (DRYRUN) ..."
+    else
+      log_msg check_exist_dir_create "CANNOT find directory: $l_check_dir ==> create it ..."
+      $MKDIR -p $l_check_dir
+    fi  
   else
     log_msg check_exist_dir_create "FOUND directory: $l_check_dir ..."
   fi  
@@ -119,6 +122,31 @@ check_exist_dir_create () {
 #' The main body of the script starts here.
 #+ start-msg, eval=FALSE
 start_msg
+
+#' ## Getopts for Commandline Argument Parsing
+#' If an option should be followed by an argument, it should be followed by a ":".
+#' Notice there is no ":" after "h". The leading ":" suppresses error messages from
+#' getopts. This is required to get my unrecognized option code to work.
+#+ getopts-parsing, eval=FALSE
+DRYRUN=""
+while getopts ":dh" FLAG; do
+  case $FLAG in
+    h)
+      usage "Help message for $SCRIPT"
+      ;;
+    d)
+      DRYRUN='TRUE'
+      ;;
+    :)
+      usage "-$OPTARG requires an argument"
+      ;;
+    ?)
+      usage "Invalid command line argument (-$OPTARG) found"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 #' ## Define Constants 
 #' The following constants are specific for the installation environment. 
