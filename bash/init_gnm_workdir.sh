@@ -161,6 +161,8 @@ GNMBINDROOT=/qualstorzws01/data_projekte/projekte/genmon
 GNMINCOMING=${GNMBINDROOT}/incoming
 GNMDONE=${GNMBINDROOT}/done
 GNMPROJECTS=${GNMBINDROOT}/projects
+# apiis var log
+APIISVARLOG=$GNMBINDROOT/log
 
 
 #' ## Create GNM Working Directory
@@ -193,6 +195,10 @@ fi
 if [ "$GNMPROJECTS" != "" ]
 then
   check_exist_dir_create $GNMPROJECTS
+fi
+if [ "$APIISVARLOG" != "" ]
+then
+  check_exist_dir_create $APIISVARLOG
 fi
 
 

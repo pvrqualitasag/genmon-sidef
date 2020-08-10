@@ -129,7 +129,8 @@ PRPBINDROOT=/qualstorzws01/data_projekte/projekte/poprep
 PRPINCOMING=${PRPBINDROOT}/incoming
 PRPDONE=${PRPBINDROOT}/done
 PRPPROJECTS=${PRPBINDROOT}/projects
-
+# apiis var log
+APIISVARLOG=$PRPBINDROOT/log
 
 #' ## Create PRP Working Directory
 #' Create PRP working directory, if it does not exist
@@ -161,6 +162,10 @@ fi
 if [ "$PRPPROJECTS" != "" ]
 then
   check_exist_dir_create $PRPPROJECTS
+fi
+if [ "$APIISVARLOG" != "" ]
+then
+  check_exist_dir_create $APIISVARLOG
 fi
 
 
