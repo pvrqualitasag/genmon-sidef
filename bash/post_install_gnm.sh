@@ -265,6 +265,13 @@ init_pg_server () {
   else
     err_exit "Initdb was not possible"
   fi
+  # if port is specified, then change it
+  if [ "$PG_PORT" != '' ]
+  then
+    log_msg "init_pg_server" " * Change port in postgresql.conf to $PG_PORT ..."
+    mv $PGDATADIR/postgresql.conf $PGDATADIR/postgresql.conf.org
+    cat $PGDATADIR/postgresql.conf.org | sed -e "s/#port = 5432/port = $PG_PORT/" > $PGDATADIR/postgresql.conf
+  fi  
 }
 
 #' ### Start the PG db-server
@@ -423,7 +430,7 @@ ADMINUSER=popreport
 APIISADMIN=apiis_admin
 HELIADMIN=heli
 OSUSER=`whoami`
-PG_PORT=''
+PG_PORT='5433'
 
 
 #' ## Check Container Env
