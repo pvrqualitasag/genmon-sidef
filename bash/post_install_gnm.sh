@@ -379,6 +379,9 @@ configure_postgresql () {
     check_create_db_admin postgres
     log_msg 'configure_postgresql' " * Check admin user: $HELIADMIN ..."
     check_create_db_admin $HELIADMIN
+    log_msg 'configure_postgresql' " * Check admin user: $GEOMEADMIN ..."
+    check_create_db_admin $GEOMEADMIN
+    
     
     # save old pg_hba.conf and prepend a line:
     log_msg 'configure_postgresql' ' * Check hba conf ...'
@@ -433,9 +436,13 @@ PGLOGDIR=${GNMWORKDIR}/pglog
 PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
 GNMLOGDIR=${GNMWORKDIR}/gnmlog
 GNMLOGFILE=${GNMLOGDIR}/popreport.log
+# the following users are dbusers
 ADMINUSER=popreport
 APIISADMIN=apiis_admin
 HELIADMIN=heli
+GEOMEADMIN=geome_admin
+GEOMEPASS=geome
+# with the following user, the pg-db will be inittialised
 OSUSER=`whoami`
 PG_PORT='5433'
 
