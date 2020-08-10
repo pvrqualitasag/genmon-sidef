@@ -308,8 +308,11 @@ check_create_db_admin () {
   if [ $? -eq 0 ]; then
         ok "PostgreSQL ADMINUSER $l_DB_USER exists"
   else
+        log_msg 'check_create_db_admin' " ** Cannot find dbuser: $l_DB_USER ..."
         $CREATEUSER --superuser $l_DB_USER
+        log_msg 'check_create_db_admin' " ** Created dbuser: $l_DB_USER ..."
         $PGCTL reload -D $DATA_DIR >/dev/null
+        log_msg 'check_create_db_admin' " ** Reloaded config from $DATA_DIR ..."
         ok "PostgreSQL ADMINUSER $l_DB_USER created"
   fi
 }
