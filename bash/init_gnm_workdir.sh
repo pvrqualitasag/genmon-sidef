@@ -202,6 +202,10 @@ if [ "$APIISVARLOG" != "" ]
 then
   check_exist_dir_create $APIISVARLOG
 fi
+if [ "$GNMDBDUMP" != "" ]
+then
+  check_exist_dir_create $GNMDBDUMP
+fi
 
 
 
