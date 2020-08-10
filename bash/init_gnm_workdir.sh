@@ -156,6 +156,7 @@ GNMWORKDIR=${HOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
 GNMLOGDIR=${GNMWORKDIR}/gnmlog
+GNMDBDUMP=${GNMWORKDIR}/gnmdbdump
 # gnm pg-bind directories
 GNMBINDROOT=/qualstorzws01/data_projekte/projekte/genmon
 GNMINCOMING=${GNMBINDROOT}/incoming
@@ -163,6 +164,7 @@ GNMDONE=${GNMBINDROOT}/done
 GNMPROJECTS=${GNMBINDROOT}/projects
 # apiis var log
 APIISVARLOG=$GNMBINDROOT/log
+
 
 
 #' ## Create GNM Working Directory
