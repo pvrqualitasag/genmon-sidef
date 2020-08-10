@@ -250,18 +250,6 @@ get_pg_version () {
     echo allversion_:$PG_ALLVERSION
 }
 
-#' ### Export Postgresql Port
-#' Export the variable that specifies the postgresql port
-#+ export-pg-port-fun
-export_pg_port () {
-  if [ "$PG_PORT" != '' ]
-  then
-    log_msg 'export_pg_port' " ** Postgresql port specified as $PG_PORT ==> exported as PGPORT"
-    export PGPORT=$PG_PORT
-  else
-    log_msg 'export_pg_port' ' ** Use postgresql default port ...'
-  fi
-}
 
 #' ### Initialisation of the PG db-server
 #' All initialisation steps are done in this function
@@ -481,7 +469,13 @@ get_pg_version
 
 #' ### Export Postgresql Port
 #' If alternative port is specified, then export it
-export_pg_port
+if [ "$PG_PORT" != '' ]
+then
+  log_msg "$SCRIPT" " ** Postgresql port specified as $PG_PORT ==> exported as PGPORT"
+  export PGPORT=$PG_PORT
+else
+  log_msg "$SCRIPT" ' ** Use postgresql default port ...'
+fi
 
 
 #' ### Postgresql Programs
