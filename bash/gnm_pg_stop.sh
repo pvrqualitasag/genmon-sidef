@@ -192,6 +192,16 @@ get_pg_version
 PGBIN="/usr/lib/postgresql/$PG_ALLVERSION/bin"
 PGCTL=$PGBIN/pg_ctl
 PGISREADY=$PGBIN/pg_isready
+PG_PORT='5433'
+#' ### Export Postgresql Port
+#' If alternative port is specified, then export it
+if [ "$PG_PORT" != '' ]
+then
+  log_msg "$SCRIPT" " ** Postgresql port specified as $PG_PORT ==> exported as PGPORT"
+  export PGPORT=$PG_PORT
+else
+  log_msg "$SCRIPT" ' ** Use postgresql default port ...'
+fi
 
 #' ## Stopping the pg-server
 #' The pg-server is stopped with the pg_ctl command
