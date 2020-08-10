@@ -196,7 +196,7 @@ then
   singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/post_install_prp.sh
 else
   log_msg "$SCRIPT" " * Starting pg-db ..."
-  singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/pg_start.sh
+  singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/prp_pg_start.sh
 fi
 
 #' ## Check Status of DB-Server

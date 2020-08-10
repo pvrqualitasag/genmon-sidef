@@ -149,7 +149,7 @@ fi
 #' Before stopping the singularity instance, we stop the pg-db-server
 #+ stop-pg-db-server
 log_msg "$SCRIPT" ' * Stopping the postgresql db-server ...'
-singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/pg_stop.sh
+singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/prp_pg_stop.sh
 sleep 2
 
 
