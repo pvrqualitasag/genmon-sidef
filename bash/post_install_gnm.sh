@@ -320,6 +320,25 @@ check_create_db_admin () {
   fi
 }
 
+#' ### Change password for a dbadmin account
+#' The geome_admin account requires a specific password which seams to be in the php-code
+#+ change-password-db-admin-fun
+change_password_db_admin () {
+  local l_DB_USER=$1
+  local l_DB_PASS=$2
+  # check whether account for l_DB_USER exists
+  local l_NR_REC=$(echo "select usename from pg_user where usename = '$l_DB_USER'" | $PSQL postgres --tuples-only --quiet --no-align | wc -l)
+  log_msg 'change_password_db_admin' " ** Number of records for ${l_DB_USER}: $l_NR_REC ..."
+  if [ $l_NR_REC -ne 0 ]
+  then
+    log_msg 'change_password_db_admin' " ** Change db-password for: $l_DB_USER ..."
+    echo "ALTER USER $l_DB_USER PASSWORD '$l_DB_PASS'"  | $PSQL postgres
+    ok "Password changed for $l_DB_USER"
+  else
+    err_exit "CANNOT find dbuser: $l_DB_USER"
+  fi
+}
+
 #' ### Check HBA Config
 #' Check configuration in pag_hba.conf
 #+ check-hba-conf-fun
@@ -381,6 +400,8 @@ configure_postgresql () {
     check_create_db_admin $HELIADMIN
     log_msg 'configure_postgresql' " * Check admin user: $GEOMEADMIN ..."
     check_create_db_admin $GEOMEADMIN
+    log_msg 'configure_postgresql' " * Change password for admin user: $GEOMEADMIN ..."
+    change_password_db_admin $GEOMEADMIN $GEOMEPASS
     
     
     # save old pg_hba.conf and prepend a line:
