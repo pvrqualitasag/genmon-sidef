@@ -305,8 +305,10 @@ check_create_db_admin () {
   local l_DB_USER=$1
   log_msg 'check_create_db_admin' " ** Postgresql port as PGPORT: $PGPORT ..."
   log_msg 'check_create_db_admin' " ** Check existence of dbuser: $l_DB_USER ..."
-  echo "select usename from pg_user where usename = '$l_DB_USER'" | $PSQL postgres --tuples-only --quiet --no-align | grep -q $l_DB_USER >/dev/null
-  if [ $? -eq 0 ]; then
+  log_msg 'check_create_db_admin' " ** Running command: select usename from pg_user where usename = '$l_DB_USER'"
+  local l_NR_REC=$(echo "select usename from pg_user where usename = '$l_DB_USER'" | $PSQL postgres --tuples-only --quiet --no-align | wc -l)
+  log_msg 'check_create_db_admin' " ** Number of records for ${l_DB_USER}: $l_NR_REC ..."" 
+  if [ $l_NR_REC -ne 0 ]; then
         ok "PostgreSQL ADMINUSER $l_DB_USER exists"
   else
         log_msg 'check_create_db_admin' " ** Cannot find dbuser: $l_DB_USER ..."
