@@ -441,6 +441,20 @@ check_container () {
   fi
 }
 
+#' ### Import Genmon Database Dump
+#' The database dump is imported from an sql file
+import_gnm_db_dump () {
+  log_msg 'import_gnm_db_dump' " ** Create database GenMon_CH ..."
+  $CREATEDB -O $GEOMEADMIN GenMon_CH
+  log_msg 'import_gnm_db_dump' ' ** Create postgis extension ...'
+  $PSQL -d GenMon_CH -c "CREATE EXTENSION postgis;" 
+  log_msg 'import_gnm_db_dump' " ** Unzipping the zip file: $GNMSRCDIR/${GNMDUMP}.zip ..."
+  unzip $GNMSRCDIR/${GNMDUMP}.zip
+  log_msg 'import_gnm_db_dump' " ** Moving dump into $GNMDBDUMP ..."
+  mv ${GNMDUMP}.sql $GNMDBDUMP
+  log_msg 'import_gnm_db_dump' " ** Import $GNMDBDUMP/${GNMDUMP}.sql ..."
+  $PSQL GenMon_CH < $GNMDBDUMP/${GNMDUMP}.sql
+}
 
 #' ## Main Body of Script
 #' The main body of the script starts here.
@@ -457,6 +471,9 @@ PGLOGDIR=${GNMWORKDIR}/pglog
 PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
 GNMLOGDIR=${GNMWORKDIR}/gnmlog
 GNMLOGFILE=${GNMLOGDIR}/popreport.log
+GNMDBDUMP=${GNMWORKDIR}/gnmdbdump
+GNMSRCDIR=/var/www/html/genmon-ch
+GNMDUMP=empty_GenMon_DB
 # the following users are dbusers
 ADMINUSER=popreport
 APIISADMIN=apiis_admin
@@ -549,7 +566,10 @@ log_msg "$SCRIPT" ' * Configure pg db ...'
 configure_postgresql
 
 
-
+#' ### Import DB Dump
+#' Import the database dump for genmon
+log_msg "$SCRIPT" ' * Import db dump...'
+import_gnm_db_dump
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
