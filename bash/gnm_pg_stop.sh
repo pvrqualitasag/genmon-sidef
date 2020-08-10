@@ -189,13 +189,20 @@ get_pg_version
 #' ### Define Variable
 #' Commands used with pg are defined with variables
 #+ pg-var-def
-PGCTL="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_ctl"
-
+PGBIN="/usr/lib/postgresql/$PG_ALLVERSION/bin"
+PGCTL=$PGBIN/pg_ctl
+PGISREADY=$PGBIN/pg_isready
 
 #' ## Stopping the pg-server
 #' The pg-server is stopped with the pg_ctl command
 #+ pg-server-stop
-$PGCTL -D $DATADIR stop
+if [ `$PGISREADY | grep 'accepting connections' | wc -l` -eq 1 ]
+then
+  log_msg "$SCRIPT" ' * Stop running Postgresql database ...'
+  $PGCTL -D $DATADIR stop
+else
+  log_msg "$SCRIPT" ' * Cannot find running Postgresql database  ...'
+fi
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
