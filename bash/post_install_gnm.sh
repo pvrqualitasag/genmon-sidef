@@ -307,7 +307,7 @@ check_create_db_admin () {
   log_msg 'check_create_db_admin' " ** Check existence of dbuser: $l_DB_USER ..."
   log_msg 'check_create_db_admin' " ** Running command: select usename from pg_user where usename = '$l_DB_USER'"
   local l_NR_REC=$(echo "select usename from pg_user where usename = '$l_DB_USER'" | $PSQL postgres --tuples-only --quiet --no-align | wc -l)
-  log_msg 'check_create_db_admin' " ** Number of records for ${l_DB_USER}: $l_NR_REC ..."" 
+  log_msg 'check_create_db_admin' " ** Number of records for ${l_DB_USER}: $l_NR_REC ..."
   if [ $l_NR_REC -ne 0 ]; then
         ok "PostgreSQL ADMINUSER $l_DB_USER exists"
   else
