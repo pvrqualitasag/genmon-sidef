@@ -104,7 +104,7 @@ log_msg () {
 #+ check-singularity-instance-running-fun
 check_singularity_instance_running () {
   log_msg 'check_singularity_instance_running' " ** Check status of singularity instance $SINGULARITYINSTANCENAME ..." 
-  if [ `singularity instance list | grep $SINGULARITYINSTANCENAME | wc -l` ne 0 ]
+  if [ `singularity instance list | grep $SINGULARITYINSTANCENAME | wc -l` -ne 0 ]
   then
     log_msg 'check_singularity_instance_running' " ** ERROR singularity instance $SINGULARITYINSTANCENAME already running ..."
     exit 1
