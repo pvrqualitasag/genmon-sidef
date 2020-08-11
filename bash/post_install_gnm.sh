@@ -452,6 +452,8 @@ import_gnm_db_dump () {
   unzip $GNMSRCDIR/${GNMDUMP}.zip
   log_msg 'import_gnm_db_dump' " ** Moving dump into $GNMDBDUMP ..."
   mv ${GNMDUMP}.sql $GNMDBDUMP
+  log_msg 'import_gnm_db_dump' " ** Comment out statement that leads to error in $GNMDBDUMP/${GNMDUMP}.sql"
+  sed -i "s/ALTER TABLE public.ofs_ OWNER TO geome_admin;/--ALTER TABLE public.ofs_ OWNER TO geome_admin;/" $GNMDBDUMP/${GNMDUMP}.sql
   log_msg 'import_gnm_db_dump' " ** Import $GNMDBDUMP/${GNMDUMP}.sql ..."
   $PSQL GenMon_CH < $GNMDBDUMP/${GNMDUMP}.sql
 }
