@@ -65,9 +65,169 @@ tbl_install_status <- tibble::tibble(Section = c("OS Install",
                                                  NA,
                                                  "simg def",
                                                  "simg def",
-                                                 NA,
+                                                 "simg def",
                                                  "simg def"))
 knitr::kable(tbl_install_status)
 ```
 
+
+## Open Issues
+This section lists all problems and open issues after the first installation step which is implemented in the singularity definition file. 
+
+
+### Database
+The database must be configured and the database server must be started. Once the database is running, the given file 'empty_GenMon_DB.sql' must be read into the database. The required directories for the data and the logfiles are created by the script 'init_gnm_workdir.sh'. 
+
+The import of the database dump is included in 'post_install_gnm.sh'. When reading 'empty_GenMon_DB.sql' the following error comes up
+
+```
+ERROR:  relation "public.ofs_" does not exist
+```
+
+The reason for this seams to be that the owner of the table 'public.ofs_' is tried to be changed. But this table is not created before. Hence this can be ignored. In the post-installation script 'post_install_gnm.sh' the statement is commented out before reading the database dump.
+
+
+### Webserver
+We have to find out how to run the apache2 webserver in a container. Based on 'https://stackoverflow.com/questions/47297645/binding-ports-when-running-docker-images-in-singularity' there is not network isolation in singularity, at least in older versions. According to 'https://sylabs.io/guides/3.0/user-guide/networking.html' a feature called 'Network virtualisation' can be used in versions 3.0 and later of singularity.
+
+An alternative way is to install nginx and apache2 side-by-side. The setup is such that nginx is the primary server and the requests for a specific port is answered by apache2. This setup is done according to the description under 'https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-as-a-web-server-and-reverse-proxy-for-apache-on-one-ubuntu-18-04-server'. The mentioned description is modified in a way such that the apache2 webserver is running in a singularity container. From what is shown from the logfile nginx does the proxy-redirection, but apache is not responding. We try to solve this by looking into singularity services as described in the next paragraph.
+
+A search for 'singularity hub apache webserver' returned a description of how to run an apache webserver in a container which is available under 'https://github.com/singularityhub/singularity-compose-examples/tree/master/apache-simple#singularity-only'. In that description the arguments '--net' and  '--network-args' specifying a portmap were included in the singularity instance start command. According to the singularity documentation under 'https://sylabs.io/guides/3.0/user-guide/networking.html' this requires v 3.0 and later of the singularity host. Hence we have to upgrade the singularity host on fagr.
+
+
+### PopRep
+The description given in 'install.html' mentions a number of changes to the code of PopRep.  
+
+
+## Upgrade Singularity
+The current version of the singularity container host which comes from the bionic repository is 
+
+```
+$ singularity --version
+2.6.1-dist
+```
+
+We want to upgrade singularity container host to a version past 3.0. The first step to do this is to uninstall the current version. Then we try to install a more current version.
+
+
+### Step 1: Uninstall
+The following command uninstalls the singularity container host
+
+```
+sudo apt purge singularity-container
+```
+
+We can check with
+
+```
+sudo apt list --installed | grep singularity
+```
+
+or
+
+```
+dpkg --list singularity-container
+```
+
+### Step 2: Requirements
+In a first step, the requirements listed on '' are checked
+
+```
+for p in ca-certificates containernetworking-plugins libc6 libseccomp2 squashfs-tools
+do
+  echo " * Checking $p ..."
+  dpkg --list $p
+  sleep 2
+done
+```
+
+From the output of the above, we have to install 'containernetworking-plugins'. 
+
+```
+DWLDIR=/home/quagadmin/source/singularity-container
+if [ ! -d "$DWLDIR" ];then mkdir -p $DWLDIR;fi
+cd $DWLDIR
+wget http://ftp.br.debian.org/debian/pool/main/g/golang-github-containernetworking-plugins/containernetworking-plugins_0.8.6-2_amd64.deb
+sudo dpkg --install containernetworking-plugins_0.8.6-2_amd64.deb
+#rm -rf containernetworking-plugins_0.8.6-2_amd64.deb
+```
+
+
+### Step 3: Install
+
+The new version is downloaded from 
+
+```
+wget http://ftp.br.debian.org/debian/pool/main/s/singularity-container/singularity-container_3.5.2+ds1-1_amd64.deb
+sudo dpkg --install singularity-container_3.5.2+ds1-1_amd64.deb
+```
+
+After the upgrade the previously created container images could still be run. The only change that had to be done was to add the container directory /var/run/postgresql to the directory binding list.
+
+
+## Webserver as Service
+We use the description under 'https://sylabs.io/guides/3.0/user-guide/running_services.html' for the services and 'https://sylabs.io/guides/3.0/user-guide/networking.html' for the network-arguments as a template. 
+
+The following command pulls and builds the container with an nginx webserver inside.
+
+```
+sudo singularity instance start --writable-tmpfs --net --network-args "portmap=8080:80/tcp" docker://nginx web2
+```
+
+The container must be started and can then be tested using 'curl'. 
+
+```
+sudo singularity exec instance://web2 nginx
+$ curl localhost:8080
+10.22.0.1 - - [16/Oct/2018:09:34:25 -0400] "GET / HTTP/1.1" 200 612 "-" "curl/7.58.0" "-"
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+
+### Apache 
+We use apache2 instead of nginx
+
+```
+sudo singularity instance start --writable-tmpfs --net --network-args "portmap=8080:80/tcp" docker://httpd apache2
+```
+
+Starting the server
+
+```
+sudo singularity exec instance://apache2 httpd
+$ curl localhost:8080
+<html><body><h1>It works!</h1></body></html>
+```
+
+
+
+## TODOs
+This section contains problems and issues which have not been resolved yet.
+
+
+### Postgresql Port
+Check whether the environment variable 'PGPORT' which defines on which port postgresql is listening can be defined in the singularity definition file. According to 'https://sylabs.io/guides/3.0/user-guide/environment_and_metadata.html' this can be done with a special label '%environment' in the singularity definition file. The current running version of 'ssgnm' does not seam to need this. 
 
