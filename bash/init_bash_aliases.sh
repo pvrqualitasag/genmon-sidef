@@ -118,7 +118,7 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 ALIASDEFTEMPLATE=`$DIRNAME $INSTALLDIR`/template/bash_aliases
 ALIASTARGET=${HOME}/.bash_aliases
-while getopts ":a:b:ch" FLAG; do
+while getopts ":a:t:ch" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
