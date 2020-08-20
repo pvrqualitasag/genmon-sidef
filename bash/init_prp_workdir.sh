@@ -131,6 +131,8 @@ PRPDONE=${PRPBINDROOT}/done
 PRPPROJECTS=${PRPBINDROOT}/projects
 # apiis var log
 APIISVARLOG=$PRPBINDROOT/log
+# var run for pg
+VARRUNPG=$GNMBINDROOT/run
 
 #' ## Create PRP Working Directory
 #' Create PRP working directory, if it does not exist
@@ -166,6 +168,10 @@ fi
 if [ "$APIISVARLOG" != "" ]
 then
   check_exist_dir_create $APIISVARLOG
+fi
+if [ "$VARRUNPG" != "" ]
+then
+  check_exist_dir_create $VARRUNPG
 fi
 
 
