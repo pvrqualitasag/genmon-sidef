@@ -74,7 +74,6 @@ knitr::kable(tbl_install_status)
 ## Open Issues
 This section lists all problems and open issues after the first installation step which is implemented in the singularity definition file. 
 
-
 ### Database
 The database must be configured and the database server must be started. Once the database is running, the given file 'empty_GenMon_DB.sql' must be read into the database. The required directories for the data and the logfiles are created by the script 'init_gnm_workdir.sh'. 
 
@@ -86,14 +85,12 @@ ERROR:  relation "public.ofs_" does not exist
 
 The reason for this seams to be that the owner of the table 'public.ofs_' is tried to be changed. But this table is not created before. Hence this can be ignored. In the post-installation script 'post_install_gnm.sh' the statement is commented out before reading the database dump.
 
-
 ### Webserver
 We have to find out how to run the apache2 webserver in a container. Based on 'https://stackoverflow.com/questions/47297645/binding-ports-when-running-docker-images-in-singularity' there is not network isolation in singularity, at least in older versions. According to 'https://sylabs.io/guides/3.0/user-guide/networking.html' a feature called 'Network virtualisation' can be used in versions 3.0 and later of singularity.
 
 An alternative way is to install nginx and apache2 side-by-side. The setup is such that nginx is the primary server and the requests for a specific port is answered by apache2. This setup is done according to the description under 'https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-as-a-web-server-and-reverse-proxy-for-apache-on-one-ubuntu-18-04-server'. The mentioned description is modified in a way such that the apache2 webserver is running in a singularity container. From what is shown from the logfile nginx does the proxy-redirection, but apache is not responding. We try to solve this by looking into singularity services as described in the next paragraph.
 
 A search for 'singularity hub apache webserver' returned a description of how to run an apache webserver in a container which is available under 'https://github.com/singularityhub/singularity-compose-examples/tree/master/apache-simple#singularity-only'. In that description the arguments '--net' and  '--network-args' specifying a portmap were included in the singularity instance start command. According to the singularity documentation under 'https://sylabs.io/guides/3.0/user-guide/networking.html' this requires v 3.0 and later of the singularity host. Hence we have to upgrade the singularity host on fagr.
-
 
 ### PopRep
 The description given in 'install.html' mentions a number of changes to the code of PopRep.  
@@ -108,7 +105,6 @@ $ singularity --version
 ```
 
 We want to upgrade singularity container host to a version past 3.0. The first step to do this is to uninstall the current version. Then we try to install a more current version.
-
 
 ### Step 1: Uninstall
 The following command uninstalls the singularity container host
@@ -151,7 +147,6 @@ wget http://ftp.br.debian.org/debian/pool/main/g/golang-github-containernetworki
 sudo dpkg --install containernetworking-plugins_0.8.6-2_amd64.deb
 #rm -rf containernetworking-plugins_0.8.6-2_amd64.deb
 ```
-
 
 ### Step 3: Install
 
@@ -221,6 +216,72 @@ sudo singularity exec instance://apache2 httpd
 $ curl localhost:8080
 <html><body><h1>It works!</h1></body></html>
 ```
+
+
+## Integration
+The findings from above on how to run an apache2 webserver in a singularity instance are now applied to the singularity image that was created before. 
+
+In a first step, the start of a genmon instance is prepared by running 
+
+```
+./simg/genmon-sidef/bash/init_gnm_workdir.sh
+```
+
+Then the instance with GenMon can be started as
+
+```
+sudo singularity instance start  --writable-tmpfs --net --network-args "portmap=8080:8080/tcp" /home/quagadmin/simg/img/genmon/gnm.simg signm
+```
+
+The successful start of the instance can be verified using
+
+```
+$ sudo singularity instance list
+INSTANCE NAME    PID      IP              IMAGE
+signm            22091    10.22.0.5       /home/quagadmin/simg/img/genmon/gnm.simg
+```
+
+The apache webserver then has to be started with 
+
+```
+sudo singularity exec instance://signm httpd
+/.singularity.d/actions/exec: 21: exec: httpd: not found
+```
+
+In '/.singularity.d/actions/exec' all bash scripts contained in '/.singularity.d/env' are executed. In the 'apache2' instance there is the script '10-docker2singularity.sh' contains the extension of the PATH variable with the path to httpd.
+
+Found the apache2 executable and trying to call it directly
+
+```
+sudo singularity exec instance://signm /usr/sbin/apache2
+[Thu Aug 20 15:01:13.761430 2020] [core:warn] [pid 16] AH00111: Config variable ${APACHE_RUN_DIR} is not defined
+apache2: Syntax error on line 80 of /etc/apache2/apache2.conf: DefaultRuntimeDir must be a valid directory, absolute or relative to ServerRoot
+```
+
+Try with based on information in /etc/apache2/apache2.conf
+
+```
+sudo singularity exec instance://signm /usr/sbin/apache2ctl start
+```
+
+Checking leads to 
+
+```
+$ curl localhost:8080
+curl: (7) Failed to connect to localhost port 8080: Connection refused
+```
+
+For some reasons the wrong port was specified in ports.conf. With 
+
+```
+ 1838  sudo singularity instance start --writable-tmpfs --net --network-args "portmap=8080:80/tcp" /home/quagadmin/simg/img/genmon/gnm.simg signm
+ 1839  sudo singularity exec instance://signm /usr/sbin/apache2ctl start
+ 1840  curl localhost:8080
+```
+
+It works.
+
+
 
 
 
