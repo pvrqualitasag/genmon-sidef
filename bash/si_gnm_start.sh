@@ -129,7 +129,8 @@ SINGULARITYIMAGENAME=/home/quagadmin/simg/img/genmon/gnm.simg
 BINDROOTHOST=/qualstorzws01/data_projekte/projekte/genmon
 BINDROOTCNTRPG=/var/lib/postgresql
 BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
-BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS"
+BINDROOTCNTRVARRUNPG=/var/run/postgresql
+BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG"
 PGDATADIR=/home/zws/gnm/pgdata
 SINGULARITYONLY=''
 while getopts ":b:d:i:n:sh" FLAG; do
