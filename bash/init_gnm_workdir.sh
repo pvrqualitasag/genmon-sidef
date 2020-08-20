@@ -164,6 +164,8 @@ GNMDONE=${GNMBINDROOT}/done
 GNMPROJECTS=${GNMBINDROOT}/projects
 # apiis var log
 APIISVARLOG=$GNMBINDROOT/log
+# var run for pg
+VARRUNPG=$GNMBINDROOT/run
 
 
 
@@ -206,7 +208,10 @@ if [ "$GNMDBDUMP" != "" ]
 then
   check_exist_dir_create $GNMDBDUMP
 fi
-
+if [ "$VARRUNPG" != "" ]
+then
+  check_exist_dir_create $VARRUNPG
+fi
 
 
 
