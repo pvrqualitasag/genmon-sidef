@@ -14,7 +14,7 @@
 #' The program renumRRTDMPed takes an exported pedigree as it comes from the database and renumbers it according to the age of the animals. 
 #'
 #' ## Example
-#' ./test_renumRRTDMPed.sh -i <input_pedigree> -p <param_file> 
+#' ./test_renumRRTDMPed.sh -i <input_pedigree>
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -58,10 +58,10 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -i <input_pedigree> -p <param_file> "
-  $ECHO "  where -a <a_example> ..."
-  $ECHO "        -b <b_example> (optional) ..."
-  $ECHO "        -c (optional) ..."
+  $ECHO "Usage: $SCRIPT -i <input_pedigree> -p <param_file>"
+  $ECHO "  where -i <input_pedigree>  --  path to input pedigree"
+  $ECHO "        -p <param_file>      --  path to renumRRTDMPed parameter file  (optional)"
+  $ECHO "        -r <renum_pedi>      --  path to renumRRTDMPed output file     (optional)"
   $ECHO ""
   exit 1
 }
@@ -112,7 +112,8 @@ start_msg
 RENUMPROG=/qualstorzws01/data_zws/pedigree/bin/renumRRTDMPed
 PARAMFILE=renumRRTDMPed.par
 INPUTPEDIGREE=
-while getopts ":i:p:h" FLAG; do
+RENUMPEDIGREE=renum.pedi
+while getopts ":i:p:r:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -126,6 +127,9 @@ while getopts ":i:p:h" FLAG; do
       ;;
     p)
       PARAMFILE=$OPTARG
+      ;;
+    r)
+      RENUMPEDIGREE=$OPTARG
       ;;
     :)
       usage "-$OPTARG requires an argument"
@@ -149,11 +153,14 @@ if test "$PARAMFILE" == ""; then
   usage "-p <param_file> not defined"
 fi
 
+#' ## Definition of Constants
+#' More constants that depend on input are defined here
+LOGFILE="$(basename $INPUTPEDIGREE)".renumLog
 
 #' ## Write Parameter File
-#' Continue to put your code here
+#' Parameter file used by renumRRTDMPed is written.
 #+ write-param-file
-echo "logFile                                      '$INPUTPEDIGREE.renumLog'" > $PARAMFILE
+echo "logFile                                      '$LOGFILE'" > $PARAMFILE
 echo "pediFile                                     '$INPUTPEDIGREE'" >> $PARAMFILE
 echo "missingTVDIDCode                             UUUUUUUUUUUUUU" >> $PARAMFILE
 echo "skipTiereMitFehlerhaftemGeburtsdatum         NO" >> $PARAMFILE
