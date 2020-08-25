@@ -104,7 +104,7 @@ log_msg () {
 #+ check-singularity-instance-running-fun
 check_singularity_instance_running () {
   log_msg 'check_singularity_instance_running' " ** Check status of singularity instance $SINGULARITYINSTANCENAME ..." 
-  if [ `singularity instance list | grep $SINGULARITYINSTANCENAME | wc -l` -ne 0 ]
+  if [ `sudo singularity instance list | grep $SINGULARITYINSTANCENAME | wc -l` -ne 0 ]
   then
     log_msg 'check_singularity_instance_running' " ** ERROR singularity instance $SINGULARITYINSTANCENAME already running ..."
     exit 1
@@ -131,7 +131,7 @@ BINDROOTCNTRPG=/var/lib/postgresql
 BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
 BINDROOTCNTRVARRUNPG=/var/run/postgresql
 BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG"
-PGDATADIR=/home/zws/gnm/pgdata
+PGDATADIR=/home/quagadmin/gnm/pgdata
 SINGULARITYONLY=''
 while getopts ":b:d:i:n:sh" FLAG; do
   case $FLAG in
@@ -193,10 +193,10 @@ check_singularity_instance_running
 if [ "$BINDPATH" == '' ]
 then
   log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME ..."
-  singularity instance start $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
+  sudo singularity instance start --writable-tmpfs --net --network-args "portmap=8080:8080/tcp" $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
 else
   log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME using bind-path $BINDPATH ..."
-  singularity instance start --bind $BINDPATH $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
+  sudo singularity instance start --bind $BINDPATH --writable-tmpfs --net --network-args "portmap=8080:8080/tcp" $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
 fi
 
 
@@ -210,10 +210,10 @@ then
   if [ `ls -1 $PGDATADIR | wc -l` -eq 0 ]
   then
     log_msg "$SCRIPT" " * Initialise pg-db ..."
-    singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/post_install_gnm.sh
+    sudo singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/post_install_gnm.sh
   else
     log_msg "$SCRIPT" " * Starting pg-db ..."
-    singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/gnm_pg_start.sh
+    sudo singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/gnm_pg_start.sh
   fi
   
 fi
