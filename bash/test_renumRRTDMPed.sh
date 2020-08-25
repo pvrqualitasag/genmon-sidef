@@ -166,7 +166,7 @@ echo "missingTVDIDCode                             UUUUUUUUUUUUUU" >> $PARAMFILE
 echo "skipTiereMitFehlerhaftemGeburtsdatum         NO" >> $PARAMFILE
 #echo "listeTiereFuerPedigree                       'relevanteTiere.txt'" >> $PARAMFILE
 echo "idTypInListeTiereFuerPedigree                itbid16" >> $PARAMFILE
-echo "renumberedPediFile                           'renum.pedi'" >> $PARAMFILE
+echo "renumberedPediFile                           '$RENUMPEDIGREE'" >> $PARAMFILE
 
 
 #' ## Run Renum
