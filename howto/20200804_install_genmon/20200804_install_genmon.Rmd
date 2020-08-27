@@ -218,6 +218,13 @@ $ curl localhost:8080
 ```
 
 
+## Changes with Singularity Host Upgrade
+The following changes were noticed when going from singularity host version 2.6.2 to 3.5.2. 
+
+### Building Singularity Images
+The option '--writable' is no longer available for the 'singularity build' command. The way to create a changeable image is to create a sandbox directory with the '--writable' option. Once all the changes are done in that directory it can be converted to a '.sif' image file.
+
+
 ## Integration
 The findings from above on how to run an apache2 webserver in a singularity instance are now applied to the singularity image that was created before. 
 
