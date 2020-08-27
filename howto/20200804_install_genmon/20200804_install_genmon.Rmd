@@ -128,6 +128,11 @@ grep: /var/www/html/genmon-ch/ol: Is a directory
 /var/www/html/genmon-ch/proxy.cgi:                'www.openstreetmap.org', 'sample.avencia.com', 'localhost:8080' ]
 ```
 
+This result reveals several intersting facts about the internal configuration of the GenMon System. 
+
+1. The main GenMon system consisting of all the php-code is configured such that it listens to port 80 and is served by an apache webserver.
+2. The 'geoserver' part listens to port 8080 served by the same apache2 system.
+3. For some parts of the 'geoserver', port 8085 is also required.
 
 
 ## Upgrade Singularity
@@ -256,7 +261,7 @@ $ curl localhost:8080
 The following changes were noticed when going from singularity host version 2.6.2 to 3.5.2. 
 
 ### Building Singularity Images
-The option '--writable' is no longer available for the 'singularity build' command. The way to create a changeable image is to create a sandbox directory with the '--writable' option. Once all the changes are done in that directory it can be converted to a '.sif' image file.
+The option '--writable' is no longer available for the 'singularity build' command. The way to create a changeable image is to create a sandbox directory with the '--sandbox' option. Once all the changes are done in that directory it can be converted to a '.sif' image file.
 
 
 ## Integration
