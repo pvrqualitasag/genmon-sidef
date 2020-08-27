@@ -95,6 +95,40 @@ A search for 'singularity hub apache webserver' returned a description of how to
 ### PopRep
 The description given in 'install.html' mentions a number of changes to the code of PopRep.  
 
+### Install GenMon
+The section 'Install the GENMON code' in the document 'https://github.com/SolangeD/GENMON/blob/master/install.html' describes the domain-name 'localhost' must be replaced by the actual domain-name of the server on which GenMon is installed. A grep for the term 'localhost' gives the following result
+
+```
+grep localhost /var/www/html/genmon-ch/*
+/var/www/html/genmon-ch/connectDataBase.php:	$dbh = pg_connect("host=localhost port=5432 dbname=GenMon_CH user=geome_admin password=geome");
+grep: /var/www/html/genmon-ch/flot: Is a directory
+/var/www/html/genmon-ch/FunctionsGenDiv.php:			OpenLayers.ProxyHost= \"http://localhost/cgi-bin/proxy.cgi?url=\";
+/var/www/html/genmon-ch/FunctionsGenDiv.php:               \"http://localhost:8085/geoserver/cite/wms?\",
+/var/www/html/genmon-ch/FunctionsGenDiv.php:				sld: 'http://localhost/genomap/".$nameXML.".xml',
+/var/www/html/genmon-ch/GenAnimal.php:$_SESSION['hostDirectory'] = "http://localhost/genmon-ch/Data_files/";	// host directory needed by the javaScript script to locate the .json file
+/var/www/html/genmon-ch/GenDivPieChartsMapping.php:$_SESSION['hostDirectory'] = "http://localhost/genmon-ch/Data_files/";	// host directory needed by the javaScript script to locate the .json file
+/var/www/html/genmon-ch/GenOFS.php:$_SESSION['hostDirectory'] = "http://localhost/genmon-ch/Data_files/";	// host directory needed by the javaScript script to locate the .json file
+/var/www/html/genmon-ch/GenStuDb.php:$_SESSION['hostDirectory'] = "http://localhost/genmon-ch/Data_files/";	// host directory needed by the javaScript script to locate the .json file
+/var/www/html/genmon-ch/header.php:		<h1><a href="http://localhost/genmon-ch/index.php"><strong><font color="#FFFFFF">GenMon-CH</font></strong></a></h1>
+/var/www/html/genmon-ch/header.php:			$url="http://localhost/genmon-ch";
+/var/www/html/genmon-ch/install.html:<span class="co">#change the base url. The code assumes you run on localhost. Might want to change it to your real machine address. If so, run:</span>
+/var/www/html/genmon-ch/install.html:<span class="fu">grep</span> -R <span class="st">'localhost'</span> <span class="kw">|</span> <span class="fu">xargs</span> sed -i <span class="st">'s/localhost/yourmachineaddress/g'</span>  
+/var/www/html/genmon-ch/map1.js:		"http://localhost:8080/geoserver/cite/wms?",
+/var/www/html/genmon-ch/map1.js:			sld: 'http://localhost/genmon-ch/mean_inb_lastgi.xml',
+/var/www/html/genmon-ch/map1.js:	var legendbegin="<img src=\"proxy.cgi?url=http://localhost:8080/geoserver/wms%3FREQUEST=GetLegendGraphic%26VERSION=1.0.0%26FORMAT=image/png%26WIDTH=20%26HEIGHT=20%26LAYER=cite:plzo_plz%26sld=http://localhost/genmon-ch/";
+/var/www/html/genmon-ch/map1.js:		"http://localhost:8080/geoserver/cite/wms?",
+/var/www/html/genmon-ch/map1.js:			sld: 'http://localhost/genmon-ch/max_inb_lastgi.xml',
+/var/www/html/genmon-ch/map1.js:		"http://localhost:8080/geoserver/cite/wms?",
+/var/www/html/genmon-ch/map1.js:			sld: 'http://localhost/genmon-ch/mean_introgr_lastgi.xml',
+/var/www/html/genmon-ch/map1.js:		"http://localhost:8080/geoserver/cite/wms?",
+/var/www/html/genmon-ch/map1.js:			sld: 'http://localhost/genmon-ch/num_ind_lastgi.xml',
+/var/www/html/genmon-ch/map1.js:		"http://localhost:8080/geoserver/cite/wms?",
+/var/www/html/genmon-ch/map1.js:			sld: 'http://localhost/genmon-ch/index_socioec.xml',
+grep: /var/www/html/genmon-ch/ol: Is a directory
+/var/www/html/genmon-ch/proxy.cgi:                'www.openstreetmap.org', 'sample.avencia.com', 'localhost:8080' ]
+```
+
+
 
 ## Upgrade Singularity
 The current version of the singularity container host which comes from the bionic repository is 
