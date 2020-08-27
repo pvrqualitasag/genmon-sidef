@@ -138,10 +138,10 @@ From: ubuntu:18.04
   # change apache2 configuration
   mv /etc/apache2/ports.conf /etc/apache2/ports.conf.org
   cat /etc/apache2/ports.conf.org | \
-    sed -e "s/Listen 80/Listen 8080/" > /etc/apache2/ports.conf
-  mv /etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf.org
-  cat /etc/apache2/sites-enabled/000-default.conf.org | \
-    sed -e "s/80/8080/" > /etc/apache2/sites-enabled/000-default.conf
+    sed -e "/^Listen 80.*/a Listen 8080" > /etc/apache2/ports.conf
+#  mv /etc/apache2/sites-enabled/000-default.conf /etc/apache2/sites-enabled/000-default.conf.org
+#    sed -e "s/80/8080/" > /etc/apache2/sites-enabled/000-default.conf
+#  cat /etc/apache2/sites-enabled/000-default.conf.org | \
   
   # change php config
   mv /etc/php/5.6/apache2/php.ini /etc/php/5.6/apache2/php.ini.org
