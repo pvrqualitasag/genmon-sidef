@@ -159,6 +159,9 @@ From: ubuntu:18.04
   mkdir -p /var/www/html/genmon-ch
   git clone https://github.com/pvrqualitasag/GENMON.git /var/www/html/genmon-ch
   
+  # create data files directory for genmon
+  mkdir -p /var/www/html/genmon-ch/Data_files
+  
   # open layers 2
   curl -sSL https://github.com/openlayers/ol2/releases/download/release-2.13.1/OpenLayers-2.13.1.tar.gz > OpenLayers-2.13.1.tar.gz
   tar -C /var/www/html/genmon-ch -xzf OpenLayers-2.13.1.tar.gz
@@ -178,4 +181,8 @@ From: ubuntu:18.04
   # genmon-sidef
   mkdir -p /home/quagadmin/simg/genmon-sidef
   git clone https://github.com/pvrqualitasag/genmon-sidef.git /home/quagadmin/simg/genmon-sidef
+  
+  # run replacement script for localhost in php-scripts
+  /home/quagadmin/simg/genmon-sidef/bash/gnm_replace_localhost.sh
+  
   
