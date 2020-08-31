@@ -261,7 +261,12 @@ $ curl localhost:8080
 The following changes were noticed when going from singularity host version 2.6.2 to 3.5.2. 
 
 ### Building Singularity Images
-The option '--writable' is no longer available for the 'singularity build' command. The way to create a changeable image is to create a sandbox directory with the '--sandbox' option. Once all the changes are done in that directory it can be converted to a '.sif' image file.
+The option '--writable' is no longer available for the 'singularity build' command. The way to create a changeable image is to create a sandbox directory with the '--sandbox' option. Once all the changes are done in that directory it can be converted to a '.sif' image file using the following command
+
+```
+sudo singularity build `date +"%Y%m%d%H%M%S"`_gnm.sif gnm_devel
+```
+
 
 
 ## Integration
@@ -328,6 +333,59 @@ For some reasons the wrong port was specified in ports.conf. With
 It works.
 
 
+## Starting New GenMon Image
+Using the example from the previous section, we start the instance of the new GenMon Image using
+
+```
+sudo singularity instance start  --writable-tmpfs --net --network-args "portmap=90:80/tcp" /home/quagadmin/simg/img/genmon/gnm.sif signm
+```
+
+The previous command can be checked with 
+
+```
+sudo singularity instance list
+```
+
+Starting the apache webserver in the image
+
+```
+sudo singularity exec instance://signm /usr/sbin/apache2ctl start
+curl localhost
+```
+
+The instance is started with multiple portmap arguments
+
+```
+sudo singularity instance start  --writable-tmpfs --net --network-args "portmap=90:80/tcp","portmap=8080:8080/tcp" /home/quagadmin/simg/img/genmon/gnm.sif signm
+```
+
+```
+sudo singularity exec instance://signm /usr/sbin/apache2ctl start
+curl localhost
+curl localhost:90
+curl localhost:8080
+```
+
+Stopping the instance
+
+```
+sudo singularity instance stop signm
+```
+
+## Restart nginx
+The following command can be used to restart nginx
+
+```
+sudo systemctl restart nginx
+```
+
+The status of the server can be checked with
+
+```
+sudo systemctl status nginx
+```
+
+
 
 
 
@@ -338,3 +396,6 @@ This section contains problems and issues which have not been resolved yet.
 ### Postgresql Port
 Check whether the environment variable 'PGPORT' which defines on which port postgresql is listening can be defined in the singularity definition file. According to 'https://sylabs.io/guides/3.0/user-guide/environment_and_metadata.html' this can be done with a special label '%environment' in the singularity definition file. The current running version of 'ssgnm' does not seam to need this. 
 
+
+### Directory Data_files
+Based on several a grep in several php-files, it seams that a subdirectory 'Data_files' is required under '/var/www/html/genmon-ch'. 
