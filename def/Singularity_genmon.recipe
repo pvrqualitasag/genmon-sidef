@@ -183,6 +183,6 @@ From: ubuntu:18.04
   git clone https://github.com/pvrqualitasag/genmon-sidef.git /home/quagadmin/simg/genmon-sidef
   
   # run replacement script for localhost in php-scripts
-  #/home/quagadmin/simg/genmon-sidef/bash/gnm_replace_localhost.sh
+  /home/quagadmin/simg/genmon-sidef/bash/gnm_replace_localhost.sh
   
   
