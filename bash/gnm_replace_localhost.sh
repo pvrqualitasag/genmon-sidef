@@ -1,20 +1,23 @@
 #!/bin/bash
 #' ---
-#' title: __TITLE__
-#' date:  __STARTDATE__
+#' title: GenMon localhost Replacement
+#' date:  2020-08-31
 #' author: Peter von Rohr
 #' ---
 #' ## Purpose
-#' __PURPOSE__ {Write a paragraph about what problems are solved with this script.}
+#' Replacement of hostname 'localhost' in php-scripts.
 #'
 #' ## Description
-#' __DESCRIPTION__ {Write a paragraph about how the problems are solved.}
+#' The php-scripts of GenMon contain 'localhost' as their hostname. This has to 
+#' be changed for a system that is available through the internet.
 #'
 #' ## Details
-#' __DETAILS__ {Give some more details here.}
-#'
+#' All php-scripts in the given php-source directory are searched for the source 
+#' name of the hostname. All occurrences of the source name are replaced with the 
+#' given target name.
+#' 
 #' ## Example
-#' __EXAMPLE__ {Specify an example call of the script.}
+#' ./gnm_replace_localhost.sh
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -141,10 +144,15 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
-if test "$a_example" == ""; then
-  usage "-a a_example not defined"
+if test "$PHPSRCDIR" == ""; then
+  usage "-p <php_src_dir> not defined"
 fi
-
+if test "$HOSTNAMESRC" == ""; then
+  usage "-s <src_hostname> not defined"
+fi
+if test "$HOSTNAMETRG" == ""; then
+  usage "-t <trg_hostname> not defined"
+fi
 
 
 #' ## Replace Source Value for Hostname
