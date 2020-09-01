@@ -158,7 +158,7 @@ fi
 #' ## Replace Source Value for Hostname
 #' Go through all php file in source directory and do the replacement
 #+ replacement
-grep -r "${HOSTNAMESRC}/" *.php | cut -d ':' -f1 | sort -u | while read f;
+grep -r "${HOSTNAMESRC}/*.php" | cut -d ':' -f1 | sort -u | while read f;
 do
   log_msg "$SCRIPT" " * Replacing $HOSTNAMESRC with $HOSTNAMETRG in $f ..."
   mv $f $f.org
