@@ -114,7 +114,7 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 PHPSRCDIR=/var/www/html/genmon-ch
 HOSTNAMESRC=http://localhost
-HOSTNAMETRG=https:fagr.genmon.ch/gnm
+HOSTNAMETRG=https://fagr.genmon.ch/gnm
 while getopts ":p:s:t:h" FLAG; do
   case $FLAG in
     h)
