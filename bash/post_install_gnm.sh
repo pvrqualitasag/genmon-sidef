@@ -260,6 +260,8 @@ init_pg_server () {
   # change owner of $PGDATADIR
   log_msg "init_pg_server" " ** Change owner of $PGDATADIR to ${PGUSER} ..."
   chown -R ${PGUSER}: $PGDATADIR
+  log_msg "init_pg_server" " ** Change owner of $PGLOGDIR to ${PGUSER} ..."
+  chown -R ${PGUSER}: $PGLOGDIR
   # initialise a database for $PGUSER
   log_msg "init_pg_server" " ** Init db ..."
   su -c "$INITDB -D $PGDATADIR -A trust -U $GEOMEADMIN" $PGUSER
@@ -453,6 +455,8 @@ import_gnm_db_dump () {
   su -c "$PSQL -d GenMon_CH -c \"CREATE EXTENSION postgis;\""  $PGUSER
   log_msg 'import_gnm_db_dump' " ** Unzipping the zip file: $GNMSRCDIR/${GNMDUMP}.zip ..."
   unzip $GNMSRCDIR/${GNMDUMP}.zip
+  log_msg 'import_gnm_db_dump' " ** Change owner of $GNMDBDUMP to ${WSUSER} ..."
+  chown -R ${WSUSER}: $GNMDBDUMP
   log_msg 'import_gnm_db_dump' " ** Moving dump into $GNMDBDUMP ..."
   mv ${GNMDUMP}.sql $GNMDBDUMP
   log_msg 'import_gnm_db_dump' " ** Comment out statement that leads to error in $GNMDBDUMP/${GNMDUMP}.sql"
@@ -499,6 +503,8 @@ GEOMEPASS=geome
 PGUSER=postgres
 PG_PORT='5433'
 CONPGDB=$GNMSRCDIR/connectDataBase.php
+# webserver user
+WSUSER=www-data
 
 #' ## Check Container Env
 #' This script must run from inside a container
