@@ -257,8 +257,11 @@ get_pg_version () {
 init_pg_server () {
   # check that data directory does not exist
   check_non_empty_dir_fail_create_non_exist $PGDATADIR
+  # change owner of $PGDATADIR
+  log_msg "init_pg_server" " ** Change owner of $PGDATADIR to ${PGUSER} ..."
+  chown -R ${PGUSER}: $PGDATADIR
   # initialise a database for $PGUSER
-  log_msg "init_pg_server" " * Init db ..."
+  log_msg "init_pg_server" " ** Init db ..."
   su -c "$INITDB -D $PGDATADIR -A trust -U $GEOMEADMIN" $PGUSER
   if [ $? -eq 0 ]
   then
@@ -269,7 +272,7 @@ init_pg_server () {
   # if port is specified, then change it
   if [ "$PG_PORT" != '' ]
   then
-    log_msg "init_pg_server" " * Change port in postgresql.conf to $PG_PORT ..."
+    log_msg "init_pg_server" " ** Change port in postgresql.conf to $PG_PORT ..."
     mv $PGDATADIR/postgresql.conf $PGDATADIR/postgresql.conf.org
     cat $PGDATADIR/postgresql.conf.org | sed -e "s/#port = 5432/port = $PG_PORT/" > $PGDATADIR/postgresql.conf
   fi  
