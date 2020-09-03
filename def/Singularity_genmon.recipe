@@ -172,9 +172,6 @@ From: ubuntu:18.04
   mkdir -p /var/www/html/genmon-ch/flot
   git clone https://github.com/flot/flot.git /var/www/html/genmon-ch/flot
   
-  # change owner of webhome
-  chown -R www-data: /var/www
-  
   # permissions for postgres
   chmod -R 777 /var/run/postgresql
 
@@ -185,4 +182,5 @@ From: ubuntu:18.04
   # run replacement script for localhost in php-scripts
   /home/quagadmin/simg/genmon-sidef/bash/gnm_replace_localhost.sh
   
-  
+  # change owner of webhome
+  chown -R www-data: /var/www  
