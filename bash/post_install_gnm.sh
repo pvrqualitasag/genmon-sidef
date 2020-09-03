@@ -282,8 +282,8 @@ init_pg_server () {
 #' After initialisation the pg-server must be started
 #+ start-pg-server-fun
 start_pg_server () {
-  log_msg 'start_pg_server' ' * Starting pg-db-server ...'
-  $PGCTL -D $PGDATADIR -l $PGLOGFILE start
+  log_msg 'start_pg_server' ' ** Starting pg-db-server ...'
+  su -c "$PGCTL -D $PGDATADIR -l $PGLOGFILE start" $PGUSER
   if [ $? -eq 0 ]
   then
     ok "PG server started successfully ..."
@@ -297,7 +297,7 @@ start_pg_server () {
 #+ has-pg-access-fun
 has_pg_access () {
   log_msg 'has_pg_access' " ** Running $PSQL -l ..."
-    $PSQL -l >/dev/null 2>&1
+    su -c "$PSQL -l >/dev/null 2>&1"  $PGUSER
     return $?
 }
 
@@ -309,15 +309,15 @@ check_create_db_admin () {
   log_msg 'check_create_db_admin' " ** Postgresql port as PGPORT: $PGPORT ..."
   log_msg 'check_create_db_admin' " ** Check existence of dbuser: $l_DB_USER ..."
   log_msg 'check_create_db_admin' " ** Running command: select usename from pg_user where usename = '$l_DB_USER'"
-  local l_NR_REC=$(echo "select usename from pg_user where usename = '$l_DB_USER'" | $PSQL postgres --tuples-only --quiet --no-align | wc -l)
+  local l_NR_REC=$(echo "select usename from pg_user where usename = '$l_DB_USER'" | su -c "$PSQL postgres --tuples-only --quiet --no-align"  $PGUSER | wc -l)
   log_msg 'check_create_db_admin' " ** Number of records for ${l_DB_USER}: $l_NR_REC ..."
   if [ $l_NR_REC -ne 0 ]; then
         ok "PostgreSQL ADMINUSER $l_DB_USER exists"
   else
         log_msg 'check_create_db_admin' " ** Cannot find dbuser: $l_DB_USER ..."
-        $CREATEUSER --superuser $l_DB_USER
+        su -c "$CREATEUSER --superuser $l_DB_USER" $PGUSER
         log_msg 'check_create_db_admin' " ** Created dbuser: $l_DB_USER ..."
-        $PGCTL reload -D $DATA_DIR >/dev/null
+        su -c "$PGCTL reload -D $DATA_DIR >/dev/null" $PGUSER
         log_msg 'check_create_db_admin' " ** Reloaded config from $DATA_DIR ..."
         ok "PostgreSQL ADMINUSER $l_DB_USER created"
   fi
@@ -330,12 +330,12 @@ change_password_db_admin () {
   local l_DB_USER=$1
   local l_DB_PASS=$2
   # check whether account for l_DB_USER exists
-  local l_NR_REC=$(echo "select usename from pg_user where usename = '$l_DB_USER'" | $PSQL postgres --tuples-only --quiet --no-align | wc -l)
+  local l_NR_REC=$(echo "select usename from pg_user where usename = '$l_DB_USER'" | su -c "$PSQL postgres --tuples-only --quiet --no-align"  $PGUSER | wc -l)
   log_msg 'change_password_db_admin' " ** Number of records for ${l_DB_USER}: $l_NR_REC ..."
   if [ $l_NR_REC -ne 0 ]
   then
     log_msg 'change_password_db_admin' " ** Change db-password for: $l_DB_USER ..."
-    echo "ALTER USER $l_DB_USER PASSWORD '$l_DB_PASS'"  | $PSQL postgres
+    echo "ALTER USER $l_DB_USER PASSWORD '$l_DB_PASS'"  | su -c "$PSQL postgres" $PGUSER
     ok "Password changed for $l_DB_USER"
   else
     err_exit "CANNOT find dbuser: $l_DB_USER"
@@ -362,7 +362,7 @@ check_hba_conf () {
         echo "host  all   all   ::1/128        trust" >>$ETC_DIR/pg_hba.conf
         cat $ETC_DIR/pg_hba.conf-saved-$NOW >>$ETC_DIR/pg_hba.conf
         info "Note: $ETC_DIR/pg_hba.conf saved to $ETC_DIR/pg_hba.conf-saved-$NOW and adapted"
-        $PGCTL reload -D $DATA_DIR >/dev/null
+        su -c "$PGCTL reload -D $DATA_DIR >/dev/null" $PGUSER
     fi
 }
 
@@ -387,7 +387,7 @@ configure_postgresql () {
         error "You have no right to access postgresql ..."
     fi
 
-    DATA_DIR=$(echo "show data_directory" | $PSQL --tuples-only --quiet --no-align postgres)
+    DATA_DIR=$(echo "show data_directory" | su -c "$PSQL --tuples-only --quiet --no-align postgres" $PGUSER)
     if [ ! -d $DATA_DIR ]; then
         err_exit "DATA_DIR $DATA_DIR doesn't exist"
     fi
@@ -418,9 +418,9 @@ configure_postgresql () {
 pg_server_running () {
   if [ "$PG_PORT" != '' ]
   then
-    $PGISREADY -h localhost -p $PG_PORT
+    su -c "$PGISREADY -h localhost -p $PG_PORT" $PGUSER
   else
-    $PGISREADY -h localhost 
+    su -c "$PGISREADY -h localhost" $PGUSER
   fi
   # check the return value
   if [ $? -eq 0 ]
@@ -448,9 +448,9 @@ check_container () {
 #' The database dump is imported from an sql file
 import_gnm_db_dump () {
   log_msg 'import_gnm_db_dump' " ** Create database GenMon_CH ..."
-  $CREATEDB -O $GEOMEADMIN GenMon_CH
+  su -c "$CREATEDB -O $GEOMEADMIN GenMon_CH" $PGUSER
   log_msg 'import_gnm_db_dump' ' ** Create postgis extension ...'
-  $PSQL -d GenMon_CH -c "CREATE EXTENSION postgis;" 
+  su -c "$PSQL -d GenMon_CH -c \"CREATE EXTENSION postgis;\""  $PGUSER
   log_msg 'import_gnm_db_dump' " ** Unzipping the zip file: $GNMSRCDIR/${GNMDUMP}.zip ..."
   unzip $GNMSRCDIR/${GNMDUMP}.zip
   log_msg 'import_gnm_db_dump' " ** Moving dump into $GNMDBDUMP ..."
@@ -458,7 +458,7 @@ import_gnm_db_dump () {
   log_msg 'import_gnm_db_dump' " ** Comment out statement that leads to error in $GNMDBDUMP/${GNMDUMP}.sql"
   sed -i "s/ALTER TABLE public.ofs_ OWNER TO geome_admin;/--ALTER TABLE public.ofs_ OWNER TO geome_admin;/" $GNMDBDUMP/${GNMDUMP}.sql
   log_msg 'import_gnm_db_dump' " ** Import $GNMDBDUMP/${GNMDUMP}.sql ..."
-  $PSQL GenMon_CH < $GNMDBDUMP/${GNMDUMP}.sql
+  su -c "$PSQL GenMon_CH < $GNMDBDUMP/${GNMDUMP}.sql" $PGUSER
 }
 
 #' ### Change Port in connectDB Script
