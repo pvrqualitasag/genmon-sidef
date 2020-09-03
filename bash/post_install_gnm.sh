@@ -458,6 +458,15 @@ import_gnm_db_dump () {
   $PSQL GenMon_CH < $GNMDBDUMP/${GNMDUMP}.sql
 }
 
+#' ### Change Port in connectDB Script
+#' The script connectDatabase.php contains the port of the PG DB. This is 
+#' changed to the specified value
+change_pg_port () {
+  log_msg 'change_pg_port' " ** Change port to $PG_PORT in $CONPGDB ..."
+  sed -i "s/port=5432/port=$PG_PORT/" $CONPGDB
+}
+
+
 #' ## Main Body of Script
 #' The main body of the script starts here.
 #+ start-msg, eval=FALSE
@@ -485,7 +494,7 @@ GEOMEPASS=geome
 # with the following user, the pg-db will be inittialised
 OSUSER=`whoami`
 PG_PORT='5433'
-
+CONPGDB=$GNMSRCDIR/connectDataBase.php
 
 #' ## Check Container Env
 #' This script must run from inside a container
@@ -572,6 +581,16 @@ configure_postgresql
 #' Import the database dump for genmon
 log_msg "$SCRIPT" ' * Import db dump...'
 import_gnm_db_dump
+
+
+#' ### Change Port in GenMon
+#' The connectDB script contains the pg port
+if [ "$PG_PORT" != '' ]
+then
+  log_msg "$SCRIPT" " * Change pg port in $CONPGDB to $PG_PORT ..."
+  change_pg_port
+fi  
+
 
 #' ## End of Script
 #+ end-msg, eval=FALSE

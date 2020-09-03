@@ -125,12 +125,14 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 SINGULARITYINSTANCENAME='signm'
-SINGULARITYIMAGENAME=/home/quagadmin/simg/img/genmon/gnm.simg
+QUAGADMINHOME=/home/quagadmin
+SINGULARITYIMAGENAME=$QUAGADMINHOME/simg/img/genmon/gnm.sif
 BINDROOTHOST=/qualstorzws01/data_projekte/projekte/genmon
 BINDROOTCNTRPG=/var/lib/postgresql
 BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
 BINDROOTCNTRVARRUNPG=/var/run/postgresql
-BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG"
+BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$QUAGADMINHOME"
+NETWORKARGS='"portmap=90:80/tcp","portmap=8080:8080/tcp"'
 PGDATADIR=/home/quagadmin/gnm/pgdata
 SINGULARITYONLY=''
 while getopts ":b:d:i:n:sh" FLAG; do
@@ -193,10 +195,10 @@ check_singularity_instance_running
 if [ "$BINDPATH" == '' ]
 then
   log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME ..."
-  sudo singularity instance start --writable-tmpfs --net --network-args "portmap=8080:8080/tcp" $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
+  sudo singularity instance start --writable-tmpfs --net --network-args $NETWORKARGS $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
 else
   log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME using bind-path $BINDPATH ..."
-  sudo singularity instance start --bind $BINDPATH --writable-tmpfs --net --network-args "portmap=8080:8080/tcp" $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
+  sudo singularity instance start --bind $BINDPATH --writable-tmpfs --net --network-args $NETWORKARGS $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
 fi
 
 
