@@ -400,7 +400,21 @@ sudo systemctl status nginx
 ```
 
 
-## 
+## Current Problem
+
+Database log shows
+
+```
+Singularity> cat /home/quagadmin/gnm/pglog/20200903171323_postgres.log
+2020-09-03 17:13:28.697 CEST [857] LOG:  listening on IPv4 address "127.0.0.1", port 5433
+2020-09-03 17:13:28.934 CEST [857] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5433"
+2020-09-03 17:13:29.049 CEST [858] LOG:  database system was shut down at 2020-09-03 17:13:24 CEST
+2020-09-03 17:13:29.101 CEST [857] LOG:  database system is ready to accept connections
+2020-09-03 17:13:29.176 CEST [876] FATAL:  role "postgres" does not exist
+2020-09-03 17:14:31.404 CEST [881] FATAL:  role "postgres" does not exist
+2020-09-03 17:17:46.024 CEST [886] FATAL:  role "root" does not exist
+```
+
 
 
 
