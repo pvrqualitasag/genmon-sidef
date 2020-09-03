@@ -261,12 +261,25 @@ $ curl localhost:8080
 The following changes were noticed when going from singularity host version 2.6.2 to 3.5.2. 
 
 ### Building Singularity Images
-The option '--writable' is no longer available for the 'singularity build' command. The way to create a changeable image is to create a sandbox directory with the '--sandbox' option. Once all the changes are done in that directory it can be converted to a '.sif' image file using the following command
+The option '--writable' is no longer available for the 'singularity build' command. The way to create a changeable image is to create a sandbox directory with the '--sandbox' option. An example call is
+
+```
+sudo singularity build --sandbox gnm_devel ../../genmon-sidef/def/Singularity_genmon.recipe &> `date +"%Y%m%d%H%M%S"`_gnm.log
+```
+
+Once all the changes are done in that directory it can be converted to a '.sif' image file using the following command
 
 ```
 sudo singularity build `date +"%Y%m%d%H%M%S"`_gnm.sif gnm_devel
 ```
 
+Then we create the following link
+
+```
+SIFIMG=gnm.sif
+if [ -e "$SIFIMG" ];then rm $SIFIMG;fi
+ln -s `ls -1tr *.sif | tail -1` $SIFIMG
+```
 
 
 ## Integration
@@ -357,6 +370,7 @@ The instance is started with multiple portmap arguments
 
 ```
 sudo singularity instance start  --writable-tmpfs --net --network-args "portmap=90:80/tcp","portmap=8080:8080/tcp" /home/quagadmin/simg/img/genmon/gnm.sif signm
+sudo singularity instance list
 ```
 
 ```
@@ -386,6 +400,7 @@ sudo systemctl status nginx
 ```
 
 
+## 
 
 
 
