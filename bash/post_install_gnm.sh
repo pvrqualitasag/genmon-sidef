@@ -257,9 +257,9 @@ get_pg_version () {
 init_pg_server () {
   # check that data directory does not exist
   check_non_empty_dir_fail_create_non_exist $PGDATADIR
-  # initialise a database for $OSUSER
+  # initialise a database for $PGUSER
   log_msg "init_pg_server" " * Init db ..."
-  su -c "$INITDB -D $PGDATADIR -A trust -U $OSUSER" $OSUSER
+  su -c "$INITDB -D $PGDATADIR -A trust -U $GEOMEADMIN" $PGUSER
   if [ $? -eq 0 ]
   then
     ok "Initdb successful ..."
@@ -493,7 +493,7 @@ HELIADMIN=heli
 GEOMEADMIN=geome_admin
 GEOMEPASS=geome
 # with the following user, the pg-db will be inittialised
-OSUSER=postgres
+PGUSER=postgres
 PG_PORT='5433'
 CONPGDB=$GNMSRCDIR/connectDataBase.php
 
