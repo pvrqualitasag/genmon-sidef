@@ -144,11 +144,18 @@ then
 fi
 
 
+#' ## Stop Apache
+#' Apache webserver inside of container is stopped
+#+ stop-www
+log_msg "$SCRIPT" ' * Stopping the apache ...'
+sudo singularity exec instance://$SINGULARITYINSTANCENAME /usr/sbin/apache2ctl stop
+sleep 2
+
 #' ## Stop the PostgreSQL DB-Server
 #' Before stopping the singularity instance, we stop the pg-db-server
 #+ stop-pg-db-server
 log_msg "$SCRIPT" ' * Stopping the postgresql db-server ...'
-singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/gnm_pg_stop.sh
+sudo singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/gnm_pg_stop.sh
 sleep 2
 
 
@@ -156,7 +163,7 @@ sleep 2
 #' The singualrity instance is stopped
 #+ singularity-instance-stop
 log_msg "$SCRIPT" " * Stopping the singularity instance $SINGULARITYINSTANCENAME ..."
-singularity instance stop $SINGULARITYINSTANCENAME
+sudo singularity instance stop $SINGULARITYINSTANCENAME
 
 
 #' ## End of Script
