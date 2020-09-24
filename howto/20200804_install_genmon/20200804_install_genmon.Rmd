@@ -415,6 +415,7 @@ Singularity> cat /home/quagadmin/gnm/pglog/20200903171323_postgres.log
 2020-09-03 17:17:46.024 CEST [886] FATAL:  role "root" does not exist
 ```
 
+This seams to be fixed after initialising the database with user 'postgresql'.
 
 
 
