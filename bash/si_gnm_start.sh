@@ -133,7 +133,7 @@ BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
 BINDROOTCNTRVARRUNPG=/var/run/postgresql
 BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$QUAGADMINHOME"
 NETWORKARGS='"portmap=90:80/tcp","portmap=8080:8080/tcp"'
-PGDATADIR=/home/quagadmin/gnm/pgdata
+PGDATADIR=$QUAGADMINHOME/gnm/pgdata
 SINGULARITYONLY=''
 while getopts ":b:d:i:n:sh" FLAG; do
   case $FLAG in
@@ -217,8 +217,14 @@ then
     log_msg "$SCRIPT" " * Starting pg-db ..."
     sudo singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/gnm_pg_start.sh
   fi
-  
 fi
+
+
+#' ## Start Apache
+#' Apache webserver inside of container is stopped
+#+ stop-www
+log_msg "$SCRIPT" ' * Start the apache ...'
+sudo singularity exec instance://$SINGULARITYINSTANCENAME /usr/sbin/apache2ctl start
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
