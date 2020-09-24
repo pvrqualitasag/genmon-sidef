@@ -147,38 +147,10 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-DATADIR=${HOME}/gnm/pgdata
+QUAGADMINHOME=/home/quagadmin
+DATADIR=${QUAGADMINHOME}/gnm/pgdata
 PGVERSIONFILE=$DATADIR/PG_VERSION
-while getopts ":d:h" FLAG; do
-  case $FLAG in
-    h)
-      usage "Help message for $SCRIPT"
-      ;;
-    d)
-      if test -d $OPTARG; then
-        DATADIR=$OPTARG
-      else
-        usage "$OPTARG isn't a directory"
-      fi
-      ;;
-    :)
-      usage "-$OPTARG requires an argument"
-      ;;
-    ?)
-      usage "Invalid command line argument (-$OPTARG) found"
-      ;;
-  esac
-done
 
-shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
-
-#' ## Checks for Command Line Arguments
-#' The following statements are used to check whether required arguments
-#' have been assigned with a non-empty value
-#+ argument-test, eval=FALSE
-if test "$DATADIR" == ""; then
-  usage "-d <data_directory> not defined"
-fi
 
 #' ### Determine Version of PG
 #' The version of pg is determined
