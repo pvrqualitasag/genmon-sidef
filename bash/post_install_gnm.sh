@@ -264,7 +264,8 @@ init_pg_server () {
   chown -R ${PGUSER}: $PGLOGDIR
   # initialise a database for $PGUSER
   log_msg "init_pg_server" " ** Init db ..."
-  su -c "$INITDB -D $PGDATADIR -A trust -U $GEOMEADMIN" $PGUSER
+  # su -c "$INITDB -D $PGDATADIR -A trust -U $GEOMEADMIN" $PGUSER
+  su -c "$INITDB -D $PGDATADIR -A trust -U $PGUSER" $PGUSER
   if [ $? -eq 0 ]
   then
     ok "Initdb successful ..."
@@ -337,7 +338,7 @@ change_password_db_admin () {
   if [ $l_NR_REC -ne 0 ]
   then
     log_msg 'change_password_db_admin' " ** Change db-password for: $l_DB_USER ..."
-    echo "ALTER USER $l_DB_USER PASSWORD '$l_DB_PASS'"  | su -c "$PSQL postgres" $PGUSER
+    echo "ALTER USER $l_DB_USER PASSWORD '${l_DB_PASS}'"  | su -c "$PSQL postgres" $PGUSER
     ok "Password changed for $l_DB_USER"
   else
     err_exit "CANNOT find dbuser: $l_DB_USER"
@@ -399,8 +400,8 @@ configure_postgresql () {
     check_create_db_admin $APIISADMIN
     log_msg 'configure_postgresql' " * Check admin user: $ADMINUSER ..."
     check_create_db_admin $ADMINUSER
-    log_msg 'configure_postgresql' " * Check admin user: postgres ..."
-    check_create_db_admin postgres
+    # log_msg 'configure_postgresql' " * Check admin user: postgres ..."
+    # check_create_db_admin postgres
     log_msg 'configure_postgresql' " * Check admin user: $HELIADMIN ..."
     check_create_db_admin $HELIADMIN
     log_msg 'configure_postgresql' " * Check admin user: $GEOMEADMIN ..."
