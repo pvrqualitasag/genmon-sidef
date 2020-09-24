@@ -193,6 +193,7 @@ PGBIN="/usr/lib/postgresql/$PG_ALLVERSION/bin"
 PGCTL=$PGBIN/pg_ctl
 PGISREADY=$PGBIN/pg_isready
 PG_PORT='5433'
+PGUSER=postgres
 #' ### Export Postgresql Port
 #' If alternative port is specified, then export it
 if [ "$PG_PORT" != '' ]
@@ -206,10 +207,10 @@ fi
 #' ## Stopping the pg-server
 #' The pg-server is stopped with the pg_ctl command
 #+ pg-server-stop
-if [ `$PGISREADY | grep 'accepting connections' | wc -l` -eq 1 ]
+if [ `su -c "$PGISREADY" $PGUSER | grep 'accepting connections' | wc -l` -eq 1 ]
 then
   log_msg "$SCRIPT" ' * Stop running Postgresql database ...'
-  $PGCTL -D $DATADIR stop
+  su -c "$PGCTL -D $DATADIR stop" $PGUSER
 else
   log_msg "$SCRIPT" ' * Cannot find running Postgresql database  ...'
 fi

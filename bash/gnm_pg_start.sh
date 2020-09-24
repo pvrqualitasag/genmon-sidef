@@ -203,12 +203,14 @@ get_pg_version
 #' Commands used with pg are defined with variables
 #+ pg-var-def
 PGCTL="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_ctl"
+PG_PORT='5433'
+PGUSER=postgres
 LOGFILE=$LOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
 
 #' ## Starting the pg-server
 #' The pg-server is started with the pg_ctl command
 #+ pg-server-stop
-$PGCTL -D $DATADIR -l $LOGFILE start
+su -c "$PGCTL -D $DATADIR -l $LOGFILE start" $PGUSER
 
 
 #' ## End of Script
