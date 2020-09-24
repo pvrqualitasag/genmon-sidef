@@ -209,7 +209,7 @@ fi
 if [ "$SINGULARITYONLY" != "TRUE" ]
 then
   log_msg "$SCRIPT" ' * Start GenMon ...'
-  if [ `ls -1 $PGDATADIR | wc -l` -eq 0 ]
+  if [ `sudo ls -1 $PGDATADIR | wc -l` -eq 0 ]
   then
     log_msg "$SCRIPT" " * Initialise pg-db ..."
     sudo singularity exec instance://$SINGULARITYINSTANCENAME $INSTALLDIR/post_install_gnm.sh
