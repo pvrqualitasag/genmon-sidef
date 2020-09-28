@@ -119,15 +119,21 @@ From: ubuntu:18.04
   rm -f openjdk8.tar.gz
   
   # tomcat
+  apt-get update
   apt-get install -y tomcat9
   
   # maven
+  apt-get update
+  apt-get install -y maven
 #  curl -sSL https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz > apache-maven-3.6.3-bin.tar.gz
 #  tar -C /opt -xzf apache-maven-3.6.3-bin.tar.gz
 #  rm apache-maven-3.6.3-bin.tar.gz
 #  export PATH=/opt/apache-maven-3.6.3/bin:${PATH}
 
   # GeoServer
+  curl -sSL http://sourceforge.net/projects/geoserver/files/GeoServer/2.17.2/geoserver-2.17.2-war.zip > geoserver-2.17.2-war.zip
+  unzip geoserver-2.17.2-war.zip
+  mv geoserver.war /var/lib/tomcat9/webapps
 #  git clone https://github.com/geoserver/geoserver.git
 #  cd geoserver/src
 #  mvn clean install
