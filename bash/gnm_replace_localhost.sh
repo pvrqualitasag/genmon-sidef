@@ -115,6 +115,9 @@ start_msg
 PHPSRCDIR=/var/www/html/genmon-ch
 HOSTNAMESRC=http://localhost
 HOSTNAMETRG=https://fagr.genmon.ch/gnm
+CONNECTDB=/var/www/html/genmon-ch/connectDataBase.php
+OLDPORT=5432
+NEWPORT=5433
 while getopts ":p:s:t:h" FLAG; do
   case $FLAG in
     h)
@@ -165,6 +168,11 @@ do
   cat $f.org | sed -e "s|${HOSTNAMESRC}|${HOSTNAMETRG}|" > $f
 done
 
+#' ## Replace Port for PostgreSQL
+#' The genmon database connects on port 5433
+log_msg "$SCRIPT" " * Replacing $OLDPORT by $NEWPORT in $CONNECTDB ..."
+mv $CONNECTDB ${CONNECTDB}.org
+cat ${CONNECTDB}.org | sed -e "s/$OLDPORT/$NEWPORT/" > $CONNECTDB
 
 
 #' ## End of Script
