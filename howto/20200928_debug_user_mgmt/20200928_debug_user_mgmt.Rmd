@@ -1,0 +1,113 @@
+---
+title: "Debug User Management"
+author: "Peter von Rohr"
+date: "9/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
+```
+
+## Disclaimer
+The search for potential problems with user management is described.
+
+
+## Background
+In order to be able to upload breed-specific input data to the GenMon-Website, the user first has to be registered. This is done on the page linked behind the 'Sign up' link on the left of the header.
+
+```{r sign-up-link, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/sign-up-link.odg')
+knitr::include_graphics(path = "odg/sign-up-link.png")
+```
+ 
+
+## Tests
+This section describes the tests that were done. 
+
+* Signed up with new username on webpage on 'sign-up' page.
+* Check whether userinfo is stored in database.
+
+```
+echo "select usename from pg_user where usename = '$l_DB_USER'" | su -c "$PSQL postgres --tuples-only --quiet --no-align"  $PGUSER
+PGUSER=postgres
+PG_ALLVERSION=10
+PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
+echo "select * from pg_user" | su -c "$PSQL postgres --tuples-only --quiet --no-align"  $PGUSER
+postgres|10|t|t|t|t|********||
+apiis_admin|16384|t|t|f|f|********||
+popreport|16385|t|t|f|f|********||
+heli|16386|t|t|f|f|********||
+geome_admin|16387|t|t|f|f|********||
+```
+
+Check the users
+
+```
+GEOMUSER=geome_admin
+GEOMEPASS=geome
+export PGPASSWORD=$GEOMEPASS;echo "select * from membres" | su -c "$PSQL --tuples-only --quiet --no-align" $GEOMUSER
+```
+
+From post_install_gnm.sh:
+
+```
+PG_ALLVERSION=10
+PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
+GEOMUSER=geome_admin
+GEOMEPASS=geome
+export PGPASSWORD=$GEOMEPASS
+$PSQL -d GenMon_CH -c "select * from membres;" -U $GEOMUSER
+```
+
+Show the port
+
+```
+$PSQL -c "SELECT * FROM pg_settings WHERE name = 'port';" $PGUSER
+# shows
+#  name | setting | unit |                       category                       |                short_desc                | extra_desc |  context   | vartype |       source #       | min_val | max_val | enumvals | boot_val | reset_val |                 sourcefile                 | sourceline | pending_restart 
+# ------+---------+------+------------------------------------------------------+------------------------------------------+------------+------------+---------+-------------# -------+---------+---------+----------+----------+-----------+--------------------------------------------+------------+-----------------
+#  port | 5433    |      | Connections and Authentication / Connection Settings | Sets the TCP port the server listens on. |            | postmaster | integer |  configuration file | 1       | 65535   |          | 5432     | 5433      | /home/quagadmin/gnm/pgdata/postgresql.conf |         63 | f
+# (1 row)
+# 
+```
+
+### Login After Restart 
+After a restart of the database, the login does not work. As existing users, we still have
+
+```
+PG_ALLVERSION=10
+PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
+GEOMUSER=geome_admin
+GEOMEPASS=geome
+export PGPASSWORD=$GEOMEPASS
+$PSQL -d GenMon_CH -c "select * from membres;" -U $GEOMUSER
+# id |    pseudo    |             password             |              mail              |     signup     |   lastvisit    | adm  
+#----+--------------+----------------------------------+--------------------------------+----------------+----------------+------
+# 1  | mirjam       | 5944b57690f1833d1c77b10fda717e55 | mirjam.spengeler@qualitasag.ch | 20200928095641 | 20200928095641 | user
+# 2  | petervonrohr | 50d06c38f28d7274ebd3356cedadc973 | peter.vonrohr@qualitasag.ch    | 20200928104341 | 20200928112819 | user
+```
+
+The db-select in 'login.php' is
+
+```
+PSEUDO=petervonrohr
+PG_ALLVERSION=10
+PSQL="/usr/lib/postgresql/$PG_ALLVERSION/bin/psql"
+GEOMUSER=geome_admin
+GEOMEPASS=geome
+export PGPASSWORD=$GEOMEPASS
+$PSQL -d GenMon_CH -c "select password from membres where pseudo='$PSEUDO';" -U $GEOMUSER
+```
+
+The password check is verified in the test-php page 'test.php'. The problem was that in connectDB.php, the port was wrong (5432 instead of 5433).
+
+
+# TODO
+This contains steps that must be verified
+
+* Modifications of poprep given in install.html
+* Change of upload parameters in php config => see install.html
+
