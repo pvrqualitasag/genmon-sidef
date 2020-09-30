@@ -196,6 +196,7 @@ then
       log_msg "$SCRIPT" " * Force update of $$SIFSOURCEFILE ..."
       rm $SIFSOURCEFILE
     fi
+    log_msg "$SCRIPT" " * Building $SIFSOURCEFILE from $SIFSANDBOXDIR"
     sudo singularity build $SIFSOURCEFILE $SIFSANDBOXDIR
     ln -s $SIFSOURCEFILE $SIFTRGLINK
   fi
