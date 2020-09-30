@@ -58,10 +58,11 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -s <sif_source_file> -l <sif_target_link> -f"
-  $ECHO "  where -s <sif_source_file>  --  source sif-file"
+  $ECHO "Usage: $SCRIPT -s <sif_source_file> -l <sif_target_link> -u"
+  $ECHO "  where -f <sif_source_file>  --  source sif-file"
   $ECHO "        -l <sif_target_link>  --  link of sif-target"
-  $ECHO "        -f                    --  force update"
+  $ECHO "        -s <sandbox_dir>      --  singularity sandbox directory"
+  $ECHO "        -u                    --  force update"
   $ECHO ""
   exit 1
 }
@@ -118,15 +119,17 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-SIFSOURCEFILE=""
-SIFTRGLINK=""
+SIFROOTDIR=/home/quagadmin/simg/img/genmon
+SIFSANDBOXDIR=${SIFROOTDIR}/gnm_devel
+SIFSOURCEFILE=''
+SIFTRGLINK=${SIFROOTDIR}/gnm.sif
 FORCEUPDATE='FALSE'
-while getopts ":s:l:fh" FLAG; do
+while getopts ":f:l:s:uh" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
-    s)
+    f)
      if test -f $OPTARG; then
        SIFSOURCEFILE=$OPTARG
      else
@@ -136,7 +139,14 @@ while getopts ":s:l:fh" FLAG; do
     l)
       SIFTRGLINK=$OPTARG
       ;;
-    f)
+    s)
+      if test -d $OPTARG; then
+        SIFSANDBOXDIR=$OPTARG
+     else
+       usage "$OPTARG isn't a valid sif sandbox directory"
+     fi
+      ;;
+    u)
       FORCEUPDATE='TRUE'
       ;;
     :)
@@ -154,13 +164,22 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
-if test "$SIFSOURCEFILE" == ""; then
-  usage "-s <sif_source_file> not defined"
+if test "$SIFSANDBOXDIR" == ""; then
+  usage "-s <sif_sandbox_directory> not defined"
 fi
 if test "$SIFTRGLINK" == ""; then
   usage "-l <sif_link> not defined"
 fi
 
+
+#' ## Defaults
+#' Assign defaults to variables not specified.
+#+ assign-defaults
+if [ "$SIFSOURCEFILE" == '' ]
+then
+  SIFSOURCEFILE=${SIFROOTDIR}/`date +"%Y%m%d%H%M%S"`_gnm.sif
+  log_msg "$SCRIPT" " * Default gnm-sif-source-file to $SIFSOURCEFILE ..."
+fi
 
 #' ## Update 
 #' Continue to put your code here
@@ -172,11 +191,22 @@ then
   then
     log_msg "$SCRIPT" " * Force update of link $SIFTRGLINK to  $SIFSOURCEFILE..."
     rm $SIFTRGLINK
-    link_gnm_sif $SIFSOURCEFILE $SIFTRGLINK
+    if [ -f "$SIFSOURCEFILE" ]
+    then
+      log_msg "$SCRIPT" " * Force update of $$SIFSOURCEFILE ..."
+      rm $SIFSOURCEFILE
+    fi
+    sudo singularity build $SIFSOURCEFILE $SIFSANDBOXDIR
+    ln -s $SIFSOURCEFILE $SIFTRGLINK
   fi
 else
   log_msg "$SCRIPT" " * Linking " $SIFTRGLINK to  $SIFSOURCEFILE
-  link_gnm_sif $SIFSOURCEFILE $SIFTRGLINK
+  if [ ! -f "$SIFSOURCEFILE" ]
+  then
+    log_msg "$SCRIPT" " * Building $SIFSOURCEFILE from $SIFSANDBOXDIR"
+    sudo singularity build $SIFSOURCEFILE $SIFSANDBOXDIR
+  fi  
+  ln -s $SIFSOURCEFILE $SIFTRGLINK
 fi
 
 
