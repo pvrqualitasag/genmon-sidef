@@ -117,7 +117,6 @@ check_exist_dir_create () {
 }
 
 
-
 #' ## Main Body of Script
 #' The main body of the script starts here.
 #+ start-msg, eval=FALSE
@@ -167,8 +166,8 @@ APIISVARLOG=$GNMBINDROOT/log
 # var run for pg
 VARRUNPG=$GNMBINDROOT/run
 # data-files
-DATAFILE=$GNMBINDROOT/Data_files
-
+DATAFILEDIR=$GNMBINDROOT/Data_files
+DATAFILEOWNER=www-data
 
 
 #' ## Create GNM Working Directory
@@ -214,9 +213,14 @@ if [ "$VARRUNPG" != "" ]
 then
   check_exist_dir_create $VARRUNPG
 fi
-if [ "$DATAFILE" != "" ]
+if [ "$DATAFILEDIR" != "" ]
 then
-  check_exist_dir_create $DATAFILE
+  check_exist_dir_create $DATAFILEDIR
+  if [ "$DATAFILEOWNER" != "" ]
+  then
+    log_msg "$SCRIPT" " * Changing ownership of $DATAFILEDIR to $DATAFILEOWNER ..."
+    chown ${DATAFILEOWNER}: $DATAFILEDIR
+  fi
 fi
 
 
