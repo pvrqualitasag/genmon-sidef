@@ -166,6 +166,8 @@ GNMPROJECTS=${GNMBINDROOT}/projects
 APIISVARLOG=$GNMBINDROOT/log
 # var run for pg
 VARRUNPG=$GNMBINDROOT/run
+# data-files
+DATAFILE=$GNMBINDROOT/Data_files
 
 
 
@@ -212,7 +214,10 @@ if [ "$VARRUNPG" != "" ]
 then
   check_exist_dir_create $VARRUNPG
 fi
-
+if [ "$DATAFILE" != "" ]
+then
+  check_exist_dir_create $DATAFILE
+fi
 
 
 #' ## End of Script
