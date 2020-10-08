@@ -506,6 +506,8 @@ PG_PORT='5433'
 CONPGDB=$GNMSRCDIR/connectDataBase.php
 # webserver user
 WSUSER=www-data
+# popreport e-mail
+PRPEMAILADDRESS='none@neverland.no'
 
 #' ## Check Container Env
 #' This script must run from inside a container
@@ -590,17 +592,29 @@ configure_postgresql
 
 #' ### Import DB Dump
 #' Import the database dump for genmon
+#+ import-gnm-dump
 log_msg "$SCRIPT" ' * Import db dump...'
 import_gnm_db_dump
 
 
 #' ### Change Port in GenMon
 #' The connectDB script contains the pg port
+#+ change-pg-port
 if [ "$PG_PORT" != '' ]
 then
   log_msg "$SCRIPT" " * Change pg port in $CONPGDB to $PG_PORT ..."
   change_pg_port
 fi  
+
+
+#' ### Change E-Mail Address For PopRep
+#' One of the poprep parameters is an e-Mail address. This should be changed 
+#' to a default value which causes poprep not to send e-mails.
+#+ change-poprep-email
+if [ "$PRPEMAILADDRESS" != '' ]
+then
+  log_msg "$SCRIPT" " * Change poprep e-mail to $PRPEMAILADDRESS ..."
+fi
 
 
 #' ## End of Script
