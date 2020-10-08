@@ -105,9 +105,275 @@ $PSQL -d GenMon_CH -c "select password from membres where pseudo='$PSEUDO';" -U 
 The password check is verified in the test-php page 'test.php'. The problem was that in connectDB.php, the port was wrong (5432 instead of 5433).
 
 
+## Data Upload Problem
+After a breed is added, we need to upload data. This causes an error. Once the breed is added the data can be uploaded via the `more` button in the `Summary Table` of the listed  breeds (see screenshots). 
+
+```{r add-breed-data, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/add-breed-data.odg')
+knitr::include_graphics(path = "odg/add-breed-data.png")
+```
+
+In `GenStuDb.php` the data directory for the uploaded files is defined. The current value for this directory is `/var/www/html/genmon-ch/Data_files/`. Since, the system runs in a container, it is possible that we do not have write-access to this directory. Hence it might be necessary to include that directory into the volume binding argument.  
+
+
+### 413 Request Entity Too Large
+Accoring to https://www.cyberciti.biz/faq/linux-unix-bsd-nginx-413-request-entity-too-large/ this is caused by a missing 'client_max_body_size' config option in nginx. The option was set to 5G and was inserted in the server-directive of the fagr nginx configuration.
+
+
+### Incorrect number of column
+The existing pedigrees must be extended by columns 'plz|introg|inb_gen|cryo'. One way of solving this is to go via 'Assisted Upload'. This is done in AddStudy.php and GenAnimal.php. The data files seam to be uploaded, but after that poprep does not start. Maybe it is a problem with the file permissions.
+
+
+### Poprep Start
+After the upload the file is copied into the directory '/var/www/html/genmon-ch/Data_files/'. From there it should be moved to the 'incoming' directory of poprep. Maybe it is a problem with the file permissions. The problem is investigated with the sample dataset. 
+
+After changing the file owner of '/var/lib/postgresql/{incoming, done, projects}' to 'www-data', the uploaded data are moved into '/var/lib/postgresql/incoming/`date`'. The problem is the call of 'PopRep.php' at the end of 'GenStuDb.php'. 
+
+Poprep changes from 'install.html'
+
+```
+Install PopRep
+
+Note: the poprep code will be run from a web-portal. Therefore, we here show the methodology to use PopRep with the "www-data" user 
+# Install all modules needed by PopRep
+sudo apt-get install texlive-full                                   ==> done in simg def
+sudo apt-get install texinfo                                        ==> done in simg def
+sudo vim /etc/papersize #change the default paper size in latex     ==> done in simg def
+a4 (instead of letter; + Esc + ZZ (to save))
+sudo paperconfig -p a4                                              ==> done in simg def
+sudo apt-get install gnuplot                                        ==> done in simg def
+sudo apt-get install pdftk                                          ==> done in simg def
+sudo apt-get install zip                                            ==> done in simg def
+sudo apt-get install unzip                                          ==> done in simg def
+sudo apt-get install gfrotran                                       ==> done in simg def
+sudo apt-get install transfig                                       ==> done in simg def
+sudo apt-get install xinetd                                         ==> done in simg def 
+# prepare folder and copy code                                      ==> done in simg def
+cd /home
+sudo mkdir popreport
+cd popreport
+sudo mkdir production                                               ==> done in simg def
+sudo chmod 777 production                                           ==> done in simg def
+The poprep code is somewhat difficult to access. You find a version in the QS@breeding virtual machine. http://www.qs-at-breeding.net/
+Copy apiis folder in production folder 
+Some files need to be changed to accept new parameters required for GENMON
+* inbreeding_report
+
+At the end of the script, before the graph Log(1-inbreeding) is plotted, insert:
+
+        my $sql_solange = "create table tmp2_ne (method text, ne int, description text)";
+        my $sql_solange2 = "insert into tmp2_ne (method, ne, description) values ('Ne_DeltaFg', $f_ne, ' '), ('Ne_Deltafg', $add_ne, ' ')";
+        my $sql_refs1=$dbh->prepare($sql_solange);
+        $sql_refs1->execute();
+        $sql_refs1->finish();
+        my $sql_refs2=$dbh->prepare($sql_solange2);
+        $sql_refs2->execute();
+        $sql_refs2->finish();
+        $dbh->commit;
+
+* run_popreport_file ==> ok
+
+Right after the project name is created (PROJ=`$BINDIR/mk_rand_string`), insert:
+
+    cat ~/.pgpass | sed 's/PPP_[a-zA-Z0-9]*:/'${PROJ}':/' >~/.pgpass-test && mv ~/.pgpass-test ~/.pgpass #EG: not this line
+    chmod 0600 ~/.pgpass #EG: not this line
+    
+When the database is created, add the w option ==> never issue password question
+
+    createdb -U apiis_admin -E utf-8 -w $PROJ >>$LOG 2>&1 
+    
+When data is entered into the database, add the -U flag and specify user apiis_admin
+
+    psql -U apiis_admin -q -f ${PROJ_DIR}/${PROJ}.dump $PROJ >>$LOG 2>&1 #EG: pas -U
+
+Comment the line  rm -rf $PROJ_DIR 
+
+    # rm -rf $PROJ_DIR 
+
+Comment the line cat ~/.apiisrc | sed -e "/${PROJ}/d" >~/.apiisrc-$PROJ && mv ~/.apiisrc-$PROJ ~/.apiisrc
+
+    #cat ~/.apiisrc | sed -e "/${PROJ}/d" >~/.apiisrc-$PROJ && mv ~/.apiisrc-$PROJ ~/.apiisrc
+
+* handle_pedi_file ==> done
+
+After  the line  my ( @in_arr, @in_desc ); change the 2 following lines with:
+
+    @in_desc = (qw/animal sire dam birthdate sex plz introgression inb_gen cryo/);
+    @in_arr = split /\|/, $line, 9; #EG: @in_arr = split /\|/, $line;
+
+5 lines below, instead of the "for $i ( 0 .. 4 ) {", put
+
+    for $i ( 0 .. 8 ) { #EG: 0..4
+    
+After the if block if ( $i == 3 ) { # birthdate can be empty...} add
+
+    if ( $i == 5 || $i == 6 || $i == 7 || $i == 8) { #EG: not this if
+        $in_arr[$i] = '-9999';
+        next COL;
+    }
+    
+A few lines below, in the else clause, change the next statement to
+
+     next COL if ($i == 3 || $i == 5 || $i == 6 || $i == 7 || $i == 8); #EG: next COL if $i==3; 
+     
+At the variable definition my ( @sth2_db_animals, @sth2_db_sires, @sth2_db_dams, @sth2_bdt, @sth2_db_sex); Add the variables
+
+    my ( @sth2_db_animals, @sth2_db_sires, @sth2_db_dams, @sth2_bdt, @sth2_db_sex, @sth2_plz, @sth2_introgression, @sth2_inb_gen, @sth2_cryo);
+        
+A few lines below, after the push @sth2_db_sex, $db_sex_of{ $pedref->{$key}[3] }; add the following lines: 
+
+    push @sth2_plz,    $pedref->{$key}[4]; 
+    push @sth2_introgression,    $pedref->{$key}[5]; 
+    push @sth2_inb_gen,    $pedref->{$key}[6]; 
+    push @sth2_cryo,    $pedref->{$key}[7]; 
+    
+A few lines below, afther the  $sth2->bind_param_array( 5, \@sth2_db_sex ); add the following lines: 
+
+    $sth2->bind_param_array( 6, \@sth2_plz ); 
+    $sth2->bind_param_array( 7, \@sth2_introgression ); 
+    $sth2->bind_param_array( 8, \@sth2_inb_gen ); 
+    $sth2->bind_param_array( 9, \@sth2_cryo );
+    $sth2->bind_param_array( 10, $db_breed ); 
+
+
+After "$pedref->{$animal}[3] = $arr_ref->[4];    # sex", instead of the "$pedref->{$animal}[5] = 0;     # clean flag", add:
+
+    $pedref->{$animal}[4] = $arr_ref->[5]; 
+    $pedref->{$animal}[5] = $arr_ref->[6];
+    $pedref->{$animal}[6] = $arr_ref->[7];
+    $pedref->{$animal}[7] = $arr_ref->[8];
+        
+
+
+# install perl package -> run perl script from poprep       ==> done in simg def
+cd /home/popreport/production/apiis/bin
+sudo chmod +x apiis-test-dependencies
+sudo ./apiis-test-dependencies -i -d
+# prepare folder with rights for www-data user              ==> done in simg def
+cd /var/lib/postgresql
+sudo mkdir incoming
+sudo mkdir done
+sudo mkdir projects
+sudo chown -R www-data: incoming
+sudo chown -R www-data: projects
+# Change permission in the /var/log/popreport.log           ==> done in simg def
+cd /var/log/
+sudo vim popreport.log # and save your file
+sudo chown www-data: popreport.log
+# define enviro variable for apache, root and non-root user (change the user-name by your chosen user-name)
+# Not sure if still necessary                                          ==> done
+sudo vim /etc/apache2/envvars
+export APIIS_HOME=/home/popreport/production/apiis
+=> ESC + ZZ (pour sauver)
+sudo service apache2 restart
+vim ~/.bashrc
+export APIIS_HOME=/home/popreport/production/apiis
+export PATH=$PATH:$APIIS_HOME/bin
+sudo su
+vim ~/.bashrc
+export APIIS_HOME=/home/popreport/production/apiis
+export PATH=$PATH:$APIIS_HOME/bin
+sudo vim /etc/sudoers                                                 ==> done
+Defaults    env_keep +="APIIS_HOME"
+exit
+# define project section in .apiisrc                                  ==> done
+sudo su
+echo "[PROJECTS]" >/var/www/.apiisrc
+echo 'dummy = $APIIS_HOME/projects' >>/var/www/.apiisrc
+chown www-data: /var/www/.apiisrc
+exit
+# create necessary username in pgsql                                  ==> done
+createuser -s -P apiis_admin #password postgres
+createuser -s -P popreport #password pass
+createuser -s -P heli #password pass
+exit
+# make needed files executable and change rights                   ==> done in simg def
+cd /home/popreport/production/
+sudo chmod 777 -R apiis
+# Change postgres authentication methods
+sudo vim /etc/postgresql/9.3/main/pg_hba.conf                          ==> done
+local all all md5 (instead of peer)
+sudo service postgresql restart
+# configure the var/www/.pgpass that stores the database password. The PPP_ddddddddddddd is changed by the database name.  ==> done
+sudo chmod 0600 /var/www/
+cd /var/www
+sudo vim .pgpass
+Add:
+*:*:PPP_ddddddddddddd:apiis_admin:PWD_for_apiis_admin_user (supposedly postgres)
+*:*:template1:apiis_admin:PWD_for_apiis_admin_user (supposedly postgres)
+*:*:GenMon_CH:geome_admin_admin:PWD_for_geom_admin_user (supposedly geome)
+*:*:template1:geome_admin_admin:PWD_for_geom_admin_user (supposedly geome)
+sudo chown www-data: .pgpass
+sudo chmod 0600 .pgpass
+sudo service postgresql restart
+# in php code, need to check that the code ran succefully
+```
+
+
+### APIIS DB Connection
+It seams that apiis cannot connect to pg-db. The error 
+
+```
+less /var/lib/postgresql/projects/PPP_WdyqcWHrbo1eA/run_popreport_file.debug
+ *** handle_pedi: Get apiis db obi ...
+Error:
+   id: _____________ 1
+   type: ___________ DB
+   severity: _______ CRIT
+   from: ___________ _connect_db
+   msg_short: ______ Cannot connect user 'apiis_admin' to database.
+   msg_long: _______ Database error: DBI connect(
+                  __    dbname=PPP_WdyqcWHrbo1eA;host=localhost;port=5432',
+                  __    apiis_admin',...) failed: could not connect to server:
+                  __    Connection refused
+                  __ Is the server running on host "localhost" (127.0.0.1) and
+                  __    accepting
+                  __ TCP/IP connections on port 5432? at
+                  __    /home/popreport/production/apiis/lib/Apiis/DataBase/Ini
+                  __    t.pm line 227.
+Died at severity level ERR on your request
+ at /home/popreport/production/apiis/bin/handle_pedi_file line 370.
+
+```
+
+The offending command in 'handle_pedi_file' is most likely:
+
+```
+my $thisobj = Apiis::DataBase::User->new(
+    id       => 'heli',
+    password => 'pass',
+);
+```
+
+The question is whether it is possible to specify the pg_port somewhere. Found the configuration of the db_port in model.dtd. Change the value with
+
+```
+Singularity> cp $APIIS_HOME/etc/model.dtd $APIIS_HOME/etc/model.dtd.org
+Singularity> cat $APIIS_HOME/etc/model.dtd.org | sed -e "s/5432/5433/" > $APIIS_HOME/etc/model.dtd
+```
+
+This did not solve the problem. The port is also specified in the XML-file of the model which is called <project-name>.xml. This file is created based on '${APIIS_HOME}/lib/popreport/dummy.xml'. The port is changed by
+
+```
+Singularity> cp ${APIIS_HOME}/lib/popreport/dummy.xml ${APIIS_HOME}/lib/popreport/dummy.xml.org
+Singularity> cat ${APIIS_HOME}/lib/popreport/dummy.xml.org | sed -e "s/5432/5433/" > ${APIIS_HOME}/lib/popreport/dummy.xml
+```
+
+In 'handle_pedigree' the insert-statement into the table 'animal' was extended to the additional columns in the pedigree consisting of 'plz', 'introgression', 'inb_gen',  and 'cryo_cons'.
+
+
 # TODO
 This contains steps that must be verified
 
 * Modifications of poprep given in install.html
 * Change of upload parameters in php config => see install.html
+* Add creation of Data_Files directory and do 'chown www-data: Data_Files' on that directory. That directory must be in the bind-volume list. ==> done
+* Change owner of 'incoming', 'done' and 'projects' in /var/lib/postgresql
+Singularity> chown www-data: /var/lib/postgresql/incoming
+Singularity> chown www-data: /var/lib/postgresql/done
+Singularity> chown www-data: /var/lib/postgresql/projects/
+* Change owner of popreport.log
+chown www-data: /home/quagadmin/gnm/gnmlog/popreport.log 
+* Change E-Mail address in GenStuDb.php
 
+ 
