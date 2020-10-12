@@ -359,7 +359,86 @@ Singularity> cp ${APIIS_HOME}/lib/popreport/dummy.xml ${APIIS_HOME}/lib/poprepor
 Singularity> cat ${APIIS_HOME}/lib/popreport/dummy.xml.org | sed -e "s/5432/5433/" > ${APIIS_HOME}/lib/popreport/dummy.xml
 ```
 
+### DB Design
 In 'handle_pedigree' the insert-statement into the table 'animal' was extended to the additional columns in the pedigree consisting of 'plz', 'introgression', 'inb_gen',  and 'cryo_cons'.
+
+
+### PopRep Links
+Links in /home/popreport/production/apiis_home_links.txt were applied to the installed program. This problem is caused when copying the 'popreport' directory into the container. 
+
+
+### Explicit Port
+In 
+
+```
+Singularity> grep -r -n 5432 /home/popreport/production/apiis/bin/*
+/home/popreport/production/apiis/bin/mk_texdocu_modelfile:183:                                      dbport=     "5432" dbuser=     "apiis_admin" dbencoding= "utf8"
+/home/popreport/production/apiis/bin/prmon_ecg_data.pl:54:my $dbh = DBI->connect("dbi:Pg:dbname=$project_name;port=5432;user=apiis_admin",
+/home/popreport/production/apiis/bin/prmon_log_reg.pl:64:my $dbh = DBI->connect( "dbi:Pg:dbname=$project_name;port=5432;
+/home/popreport/production/apiis/bin/prmon_monitor.pl:53:    DBI->connect( "dbi:Pg:dbname=$project_name;port=5432;user=apiis_admin",
+/home/popreport/production/apiis/bin/prmon_test_decision_tree.pl:52:    DBI->connect( "dbi:Pg:dbname=$project_name;port=5432;user=a
+```
+
+the port to the database is explicitly mentioned. Those ports must be changed to the correct port number. 
+
+```
+for f in /home/popreport/production/apiis/bin/mk_texdocu_modelfile \
+/home/popreport/production/apiis/bin/prmon_ecg_data.pl \
+/home/popreport/production/apiis/bin/prmon_log_reg.pl \
+/home/popreport/production/apiis/bin/prmon_monitor.pl \
+/home/popreport/production/apiis/bin/prmon_test_decision_tree.pl
+do
+  echo " * Processing $f ..."
+  mv $f $f.org
+  cat $f.org | sed -e "s/5432/5433/" > $f
+  sleep 2
+done
+```
+
+Port numbers must also be changed in 
+
+```
+cd ../projects/prmon/bin
+grep -r -n 5432 * | cut -d ':' -f1 | while read f
+do
+  echo " * Processing $f ..."
+  mv $f $f.org
+  cat $f.org | sed -e "s/5432/5433/" > $f
+  sleep 2
+done
+
+```
+
+Correct the previously wrongly changed links
+
+```
+cd /home/popreport/production/apiis/bin
+ls -1 pr*.org | while read f
+do
+  echo " * Processing $f ..."
+  newf=`echo $f | sed -e "s/.org//"`
+  echo " * New file: $newf ..."
+  if [ -e "$newf" ];then rm $newf;fi
+  ln -s ../projects/prmon/bin/$newf $newf
+  sleep 2
+done
+
+ 885  rm pr*.org
+ 888  chown -R popreport: *
+```
+
+
+### Start From php
+When starting PopRep from php, APIIS_HOME is not found. We change the call and prepend an export-statement which defines the variable APIIS_HOME. 
+
+The permission of the following logfile is a problem and was fixed to
+
+```
+  932  chown -R popreport: /home/popreport/production/apiis/var/log/
+  934  chmod 777 /home/popreport/production/apiis/var/log/apiis.log 
+```
+
+
 
 
 # TODO
@@ -375,5 +454,6 @@ Singularity> chown www-data: /var/lib/postgresql/projects/
 * Change owner of popreport.log
 chown www-data: /home/quagadmin/gnm/gnmlog/popreport.log 
 * Change E-Mail address in GenStuDb.php
+* Links listed in /home/popreport/production/apiis_home_links.txt
 
  
