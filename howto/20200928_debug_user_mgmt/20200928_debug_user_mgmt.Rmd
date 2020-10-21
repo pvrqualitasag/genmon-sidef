@@ -455,5 +455,5 @@ Singularity> chown www-data: /var/lib/postgresql/projects/
 chown www-data: /home/quagadmin/gnm/gnmlog/popreport.log 
 * Change E-Mail address in GenStuDb.php
 * Links listed in /home/popreport/production/apiis_home_links.txt
-
+* Install missing fonts: `su -c"mktexpk --mfmode / --bdpi 600 --mag 1+0/600 --dpi 600 ecrm0900" popreport`
  
