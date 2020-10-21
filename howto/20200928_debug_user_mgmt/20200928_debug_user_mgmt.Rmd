@@ -438,7 +438,16 @@ The permission of the following logfile is a problem and was fixed to
   934  chmod 777 /home/popreport/production/apiis/var/log/apiis.log 
 ```
 
+### Monitor From php
+Soft-linking the directory /root/.texlive2017 into the local project directory in the perl-script 'home/popreport/production/apiis/bin/prmon_monitor.pl' allows 'pdflatex' to find the required fonts. 
 
+
+## Debug SQL in php-script
+The following command can be used to check sql-commands from bash
+
+```
+su -c "psql -d GenMon_CH -c \"SELECT * FROM pg_database where datname like 'PPP%';\"" postgres
+```
 
 
 # TODO
