@@ -442,12 +442,109 @@ The permission of the following logfile is a problem and was fixed to
 Soft-linking the directory /root/.texlive2017 into the local project directory in the perl-script 'home/popreport/production/apiis/bin/prmon_monitor.pl' allows 'pdflatex' to find the required fonts. 
 
 
-## Debug SQL in php-script
+## Debug SQL in php-script PopRep.php
+In 'PopRep.php' the PopRep analysis is started using the 'exec'-interface of php to the bash commandline. Once the PopRep analysis is terminated then there is a number of php-commands which post-process the results of PopRep. In what follows, the postprocessing is debugged. This debugging process is done using the basics of postgresql tools and features (see KB). 
+
 The following command can be used to check sql-commands from bash
 
 ```
-su -c "psql -d GenMon_CH -c \"SELECT * FROM pg_database where datname like 'PPP%';\"" postgres
+psql -U postgres -d GenMon_CH -c "SELECT * FROM pg_database where datname like 'PPP%';"
 ```
+
+The first step of the postprocessing is done by renaming some tables. The list of tables is given 
+
+```
+$table_name_oldnew=array(array("breed".$breed_id."_inbryear", "tmp2_table3"),
+	array("breed".$breed_id."_inb_year_sex", "tmp2_table2"),
+	array("breed".$breed_id."_ne", "tmp2_ne"),
+	array("breed".$breed_id."_pedcompl", "tmp2_pedcompl"),
+	array("breed".$breed_id."_ne_deltaF", "tmp2_table5"),
+	array("breed".$breed_id."_transfer", "transfer"),
+	array("breed".$breed_id."_data", "animal"),
+	array("gene_stuff", "gene_stuff"),
+	array("tmp1_gen", "tmp1_gen")); //contains the new name and the old name
+```
+
+The renaming is done in a loop over the above array. We first try to run it for the first entry
+
+```
+pg_dump -t tmp2_table3 -U apiis_admin --no-tablespaces -w PPP_XRnfwLoddXQDc | psql -U geome_admin -w GenMon_CH
+```
+
+The above command results in the problem: 
+
+```
+ERROR:  schema "apiis_admin" does not exist
+LINE 1: CREATE TABLE apiis_admin.tmp2_table3 ( ...
+```
+
+Try to solve with creating a schema. The schema has to be created into a given database
+
+```
+psql -U geome_admin -d GenMon_CH -c "CREATE SCHEMA apiis_admin"
+psql -U geome_admin -d GenMon_CH -c 'select schema_name from information_schema.schemata;'
+    schema_name     
+--------------------
+ pg_toast
+ pg_temp_1
+ pg_toast_temp_1
+ pg_catalog
+ public
+ information_schema
+ apiis_admin
+(7 rows)
+
+```
+
+Testing to read the first part of the dump
+```
+psql -U geome_admin -d GenMon_CH -c "CREATE TABLE apiis_admin.tmp2_table3 (breed numeric,year text,number bigint,a_min numeric,a_max numeric,a_avg numeric,a_dev numeric);"
+```
+
+Check
+
+```
+> psql -U postgres -d GenMon_CH -c "select * from pg_catalog.pg_tables where tablename = 'tmp2_table3';"
+ schemaname  |  tablename  | tableowner  | tablespace | hasindexes | hasrules | hastriggers | rowsecurity 
+-------------+-------------+-------------+------------+------------+----------+-------------+-------------
+ apiis_admin | tmp2_table3 | geome_admin |            | f          | f        | f           | f
+(1 row)
+
+```
+
+Drop the created table
+
+```
+psql -U geome_admin -d GenMon_CH -c "drop table apiis_admin.tmp2_table3"
+```
+
+The result is that the dump of the first table from the poprep database into the new GenMon_CH database worked.
+
+```
+> pg_dump -t tmp2_table3 -U apiis_admin --no-tablespaces -w PPP_XRnfwLoddXQDc | psql -U geome_admin -w GenMon_CH
+SET
+SET
+SET
+SET
+SET
+ set_config 
+------------
+ 
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+ALTER TABLE
+COPY 60
+
+```
+
+Try to do the dump-rename for all the tables in the loop. This worked. Continue to activated post-processing code.
+
 
 
 # TODO
@@ -464,5 +561,8 @@ Singularity> chown www-data: /var/lib/postgresql/projects/
 chown www-data: /home/quagadmin/gnm/gnmlog/popreport.log 
 * Change E-Mail address in GenStuDb.php
 * Links listed in /home/popreport/production/apiis_home_links.txt
-* Install missing fonts: `su -c"mktexpk --mfmode / --bdpi 600 --mag 1+0/600 --dpi 600 ecrm0900" popreport`
+* Install missing fonts: `su -c"mktexpk --mfmode / --bdpi 600 --mag 1+0/600 --dpi 600 ecrm0900" popreport` for root and link into project directory
  
+* Create database for user geom_admin: `su -c "createdb geome_admin" postgres`
+* Create schema: `psql -U geome_admin -d GenMon_CH -c "CREATE SCHEMA apiis_admin"`
+

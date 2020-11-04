@@ -1,0 +1,157 @@
+---
+title: "Postgres Knowledge Base"
+author: "Peter von Rohr"
+date: "10/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+The Webapplication 'GenMon' uses a Postgresql database as backbone storage tool. Because some questions about the infrastructure of a postgresql database came up, some answers are collected here.
+
+
+## Tools
+Interaction with the database is done via a set of tools. The set of tools can be split into a set of client tools (https://www.postgresql.org/docs/10/reference-client.html) and a set of server tools (https://www.postgresql.org/docs/10/reference-server.html). For the post-processing of the poprep results, the client tools are more important.
+
+
+## PostgreSQL Client Application
+The client that is used for postgresql is 'psql'. The most important options used so far are
+
+```
+-c command
+--command=command : specify a sql command
+
+-d dbname
+--dbname=dbname : connect to a database
+
+-U username
+--username=username
+
+-w
+--no-password
+
+```
+
+The complete list of options is given at: https://www.postgresql.org/docs/10/app-psql.html
+
+
+## Meaningful Building Blocks
+In what follows the relevant building blocks for the post-processing of the data in the postgresql database are described.
+
+
+## Roles
+Privileges and permissions in the database are mangaged using the concept of roles (https://www.postgresql.org/docs/10/user-manag.html). The list of available roles is available in the catalog 'pg_roles'. It can be shown via the following 'select'-statement.
+
+```
+SELECT rolname FROM pg_roles;
+```
+
+From the bash commandline, the sql-statements can be executed by 
+
+```
+ su -c "psql -c 'SELECT rolname FROM pg_roles;'" postgres
+```
+
+The output of the above command is shown below
+
+```
+> su -c "psql -c 'SELECT rolname FROM pg_roles;'" postgres
+       rolname        
+----------------------
+ postgres
+ pg_monitor
+ pg_read_all_settings
+ pg_read_all_stats
+ pg_stat_scan_tables
+ pg_signal_backend
+ heli
+ geome_admin
+ apiis_admin
+ popreport
+(10 rows)
+
+```
+
+New roles can be created (dropped) by the SQL-statements
+
+```
+CREATE ROLE name;
+DROP ROLE name;
+```
+
+From the bash commandline, the following two wrapper-scripts can be used
+
+```
+createuser name
+dropuser name
+```
+
+To be able to run 'psql' commands with -U <user_name>, a database with the name <user_name> must also be created.
+
+```
+su -c "createdb geome_admin" postgres
+```
+
+Then we can do
+
+```
+psql -U geome_admin -c 'SELECT datname FROM pg_database;'
+```
+
+
+## Databases
+The list of available databases are obtained by 
+
+```
+psql -U postgres -c 'SELECT datname FROM pg_database;'
+```
+
+
+## Schemas
+A database contains one or more named schemas. These schemas in turn contain tables. Besides the tables, schemas also contain other types of objects such as datatypes, functions and operators. 
+
+The list of schemas are shown by
+
+```
+psql -U postgres -c 'select schema_name from information_schema.schemata;'
+    schema_name     
+--------------------
+ pg_toast
+ pg_temp_1
+ pg_toast_temp_1
+ pg_catalog
+ public
+ information_schema
+
+```
+
+When no scheme is specified the 'public' scheme is used per default.
+
+
+## Tables
+The list of tables in a given database are obtained by 
+
+```
+psql -U postgres -d PPP_XRnfwLoddXQDc -c 'select * from pg_catalog.pg_tables;'
+```
+
+The results of each PopRep run is stored in a different database. These databases have the same name as the PopRep projects (PPP_XRnfwLoddXQDc). 
+
+
+
+## PopRep Related Facts
+Dropping all PopRep Databases
+
+```
+psql -U postgres -c "SELECT datname FROM pg_database where datname like 'PPP_%';" | grep PPP | while read d;do echo " * Dropping $d ...";dropdb -U postgres $d;sleep 2;done
+```
+
+Dropping the tables which are renamed in the PopRep-postprocessing
+
+
+
+
+

@@ -1,0 +1,92 @@
+---
+title: "Postprocessing PopRep Results"
+author: "Peter von Rohr"
+date: "10/27/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+The processing steps in GenMon with the PopRep results are described in this document.
+
+
+## Basic Concept
+In the top section of the script 'PopRep.php', the PopRep program is called using the 'exec()' interface of php to the bash shell. PopRep is started with the bash-script 'process_uploads.sh'. This runs the whole PopRep pipeline on the uploaded extended pedigree. The results of PopRep are stored in the PopRep database. The name of the database is the same as the name of the PopRep project that was created for the analysis of the uploaded pedigree. 
+
+The results of PopRep that are used by GenMon are extracted from the PopRep-Project database into the database for GenMon called 'GenMon_CH'. After the transfer of the PopRep-results into the 'GenMon_CH' database, the results are post-processed. In what follows, we try to understand these postprocessing steps.
+
+
+### Running php-script
+All computations including the PopReport analysis and all post-processing steps are done from inside of 'PopRep.php'. This script is either executed when pushing the 'Add'-button on the breed-detail page. 
+
+According to 'https://alvinalexander.com/php/how-to-run-php-script-from-linux-unix-command-line/' and 'https://stackoverflow.com/questions/6965541/run-php-code-in-command-line', the php-script can also be run via the commandline tool called 'php'. 
+
+```
+Singularity> (echo '<?php';echo 'echo "Hello "; echo "Jay\n";';echo '?>') > hello.php
+Singularity> php -f hello.php 
+```
+
+
+## Project
+The first step of the post-processing consists of retrieving the project name from the postgresql system table 'pg_database'. The project name is stored in the php-variable '$project_name'. Based on the 'sql'-statement, it is assumed that only one project with a name starting with 'PPP-' is in the table 'pg_database'. What happens when several users try to run an analysis is not clear at this point.
+
+
+## Table Rename
+Certain PopRep tables are renamed to names that contain the breed ID or name. The following relation between old and new tables is taken from 'PopRep.php'.
+
+```{r table-rename, echo=FALSE, results='asis'}
+tbl_rnm <- tibble::tibble(`New Table` = c('"breed".$breed_id."_inbryear"',
+                                          '"breed".$breed_id."_inb_year_sex"',
+                                          '"breed".$breed_id."_ne"',
+                                          '"breed".$breed_id."_pedcompl"',
+                                          '"breed".$breed_id."_ne_deltaF"',
+                                          '"breed".$breed_id."_transfer"',
+                                          '"breed".$breed_id."_data"',
+                                          'gene_stuff',
+                                          'tmp1_gen'),
+                          `Old Table` = c('tmp2_table3',
+                                          'tmp2_table2',
+                                          'tmp2_ne',
+                                          'tmp2_pedcompl',
+                                          'tmp2_table5',
+                                          'transfer',
+                                          'animal',
+                                          'gene_stuff',
+                                          'tmp1_gen'))
+knitr::kable(tbl_rnm)
+```
+
+The renaming process is done in the `while`-loop between lines 43-71. The first steps in the loop drop any existing tables. After the dropping of the tables, the old tables from the PopRep-database are dumped using the command-line-tool `pg_dump`. The output of `pg_dump` consist of sql-statements which are piped into the `psql` client which imports the dumped data into the GenMon database 'GenMon_CH'. The 'SCHEMA' of the newly imported data into the database 'GenMon_CH' is changed from 'apiis' to 'public'. Whenever the rename is not successful, the PopRep results are removed.
+
+The following bash command can be used to check whether the re-naming was successful.
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin';"
+```
+
+The check shows that we cannot find the table 'breed6_data' which should be the result of dumping and importing the table 'animal'. The problem is debugged by running 'PopRep' alone and by checking the availablility of the different tables.
+
+Between lines 98 to 111 indices of certain tables are renamed. 
+
+
+## Re-coding Sexes
+
+
+
+
+
+
+## Problems, TODOS and FAQ
+
+* `[FAQ]`: What happens with project selection when more than one user is using the system?
+
+
+* `[Problem 1]`: In `FunctionsCalcIndex.php` the computations in function `Min_radius()` can run in an infinite loop. The problem is that the possibility of the `while`-condition not being met is not catched. Furthermore the division in the `while`-loop to compute the percentage can produce a division-by-zero exception. 
+    + `[Solution 1]`: Two `if`-statements are introduced to avoid the division-by-zero exception and the infinite loop.
+    
+    
+* `[Problem 2]`: In `PopRep.php` the database of the PopRep-project is selected form the system table 'pg_database' using the following sql-statement: `SELECT datname FROM pg_database where datname like 'PPP%';` This means that if more than one analysis is running concurrently, it is possible that the wrong PopRep-project database is chosen. 
+
