@@ -215,7 +215,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' Repository root and repository path depend on the user, hence they are 
 #' specified after commandline parsing
 REPOROOT=/home/${REMOTEUSER}/simg
-REPOPATH=$REPOROOT/quagtsp_sidef
+REPOPATH=$REPOROOT/genmon_sidef
 
 #' ## Run Updates
 #' Decide whether to run the update on one server or on all servers on the list
