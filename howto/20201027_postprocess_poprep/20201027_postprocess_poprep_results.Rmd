@@ -67,13 +67,27 @@ The following bash command can be used to check whether the re-naming was succes
 psql -U geome_admin -d GenMon_CH -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin';"
 ```
 
-The check shows that we cannot find the table 'breed6_data' which should be the result of dumping and importing the table 'animal'. The problem is debugged by running 'PopRep' alone and by checking the availablility of the different tables.
+The check shows that we cannot find the table 'breed6_data' which should be the result of dumping and importing the table 'animal'. The problem is debugged by running 'PopRep' alone and by checking the availablility of the different tables. The following command runs PopRep
+
+```
+./simg/genmon-sidef/bash/run_poprep.sh -b ctb20201104 -p /var/www/html/genmon-ch/pdf/data_sample.csv -u www-data -g www-data -i /var/lib/postgresql/incoming -l /home/quagadmin/gnm/gnmlog/popreport.log
+```
+
+After running poprep the following command shows the tables
+
+```
+psql -U postgres -d PPP_KdT39HKhSe7JA -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin';"
+```
+
+This shows that table 'animal' does exist.
+
+
 
 Between lines 98 to 111 indices of certain tables are renamed. 
 
 
 ## Re-coding Sexes
-
+The sex codes are changed in the table 'breed6_data'. 
 
 
 
