@@ -1,0 +1,60 @@
+---
+title: "Preparation of Pedigrees for GenMon"
+output: html_notebook
+---
+
+# Reading Existing Pedigree
+A given pedigree causing problems is read
+
+```{r}
+s_ped_file <-'/Users/pvr/Desktop/PopReport_PFmit_adapt.csv'
+tbl_ped <- readr::read_csv2(file = s_ped_file)
+tbl_ped
+```
+
+The sample pedigree for GenMon can be read
+
+```{r}
+s_sample_ped <- '/Users/pvr/Desktop/data_sample.csv'
+tbl_gnm_sample_ped <- readr::read_delim(file = s_sample_ped, delim = '|')
+tbl_gnm_sample_ped
+```
+
+# Extension
+Extending the pedigree with missing columns.
+
+```{r}
+library(dplyr)
+vec_NA_col <- rep(NA, nrow(tbl_ped))
+tbl_add_col <- tibble::tibble(inb_gen = vec_NA_col, cryo = vec_NA_col)
+tbl_ext <- dplyr::bind_cols(tbl_ped, tbl_add_col)
+tbl_ext %>% 
+  mutate(birth_dt = paste(substr(Geburtsdatum, 7, 10), substr(Geburtsdatum, 4,5), substr(Geburtsdatum, 1,2), sep = '-')) %>%
+  head()
+tbl_ext
+```
+
+# Writing Extended Pedigree
+The pedigree is written to a file
+
+```{r}
+s_ext_result_ped <- '/Users/pvr/Desktop/PopReport_PFmit_adapt_extend.csv'
+readr::write_csv2(tbl_ext, path = s_ext_result_ped, na = "")
+```
+
+
+# Removal of Whitespaces
+The pedigree written above contains spaces. They can be removed using the following commands
+
+```{r}
+s_ext_result_ped_ns <- '/Users/pvr/Desktop/PopReport_PFmit_adapt_extend_ns.csv'
+con_ped <- file(description = s_ext_result_ped)
+vec_ped <- readLines(con = con_ped)
+close(con = con_ped)
+cat(paste0(gsub(pattern = '\\s+', replacement = '', vec_ped), collapse = '\n'), '\n', sep = '', file = s_ext_result_ped_ns, append = FALSE)
+```
+
+
+
+
+
