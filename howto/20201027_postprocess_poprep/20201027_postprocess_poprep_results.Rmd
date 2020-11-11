@@ -73,13 +73,26 @@ The check shows that we cannot find the table 'breed6_data' which should be the 
 ./simg/genmon-sidef/bash/run_poprep.sh -b ctb20201104 -p /var/www/html/genmon-ch/pdf/data_sample.csv -u www-data -g www-data -i /var/lib/postgresql/incoming -l /home/quagadmin/gnm/gnmlog/popreport.log
 ```
 
+The script 'PopRep.php' selects the database name with all the PopRep results with the following statement.
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT datname FROM pg_database where datname like 'PPP%';"
+```
+
+
 After running poprep the following command shows the tables
 
 ```
-psql -U postgres -d PPP_KdT39HKhSe7JA -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin';"
+PRPPROJ=PPP_hWfogGKhaTwlU
+psql -U postgres -d $PRPPROJ -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin';"
 ```
 
-This shows that table 'animal' does exist.
+The following command shows that table 'animal' does exist.
+
+```
+PRPPROJ=PPP_hWfogGKhaTwlU
+psql -U postgres -d $PRPPROJ -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin' and tablename = 'animal';"
+```
 
 
 
@@ -88,6 +101,186 @@ Between lines 98 to 111 indices of certain tables are renamed.
 
 ## Re-coding Sexes
 The sex codes are changed in the table 'breed6_data'. 
+
+## Check Content of Table `breed` 
+
+```
+psql -U postgres -d GenMon_CH -c "select * from breed6_data;"
+```
+
+Any table with a name starting with 'breed'
+
+```
+psql -U postgres -d GenMon_CH -c "select * from pg_catalog.pg_tables where tablename like 'breed_%';"
+```
+
+Tables without a breed-ID
+
+```
+psql -U postgres -d GenMon_CH -c "select * from pg_catalog.pg_tables where substring(tablename from 1 for 6) = 'breed_';"
+```
+
+Drop the tables without a breed_ID
+
+```
+psql -U postgres -d GenMon_CH -c "drop table breed_pedcompl, breed_ne_deltaf, breed_inb_year_sex, breed_transfer, breed_ne, breed_data;"
+```
+
+Drop tables for breed-ID 6
+
+```
+psql -U postgres -d GenMon_CH -c "drop table breed6_inbryear, breed6_pedcompl, breed6_inb_year_sex, breed6_inb_plz, breed6_transfer, breed6_ne, breed6_ne_deltaf;"
+```
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from pg_catalog.pg_tables where tablename like 'breed_%';"
+```
+
+
+# Stepwise Post-Processing 
+## Step 1: Renaming Tables and Indices
+
+What are the tables after the renaming process
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from pg_catalog.pg_tables;"
+```
+
+All tables related to 'breed6'
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from pg_catalog.pg_tables where tablename like 'breed6%';"
+```
+
+The table 'breed6_data'
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed6_data;"
+```
+
+Describe the table
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'breed6_data';"
+```
+
+This shows that columns like `plz` are text and hence cannot be used with an integer in a where condition.
+
+
+## Step 2: Updating sex
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed6_data where db_sex = 117;"
+```
+
+Distinct values of `db_sex`
+
+```
+psql -U geome_admin -d GenMon_CH -c "select distinct db_sex from breed6_data;"
+```
+
+Run the update-statement
+
+```
+psql -U geome_admin -d GenMon_CH -c "UPDATE breed6_data SET db_sex=2 where db_sex=117;"
+psql -U geome_admin -d GenMon_CH -c "UPDATE breed6_data SET db_sex=3 where db_sex=118;"
+psql -U geome_admin -d GenMon_CH -c "select distinct db_sex from breed6_data;"
+```
+
+Frequencies
+
+```
+psql -U geome_admin -d GenMon_CH -c "select db_sex, count(db_sex) as sex_counts from breed6_data group by db_sex order by db_sex;"
+```
+
+SELECT 
+  traveler_answers.choice, 
+  COUNT(traveler_answers.choice) as total_answers
+FROM traveler_answers
+GROUP BY traveler_answers.choice
+ORDER BY traveler_answers.choice 
+
+## Step 3: Update MVC
+
+```
+# columns: 'plz', 'introgression', 'inb_gen', 'cryo'
+# plz
+psql -U geome_admin -d GenMon_CH -c "update breed6_data set plz=NULL where plz='-9999';"
+psql -U geome_admin -d GenMon_CH -c "select plz, count(plz) as plz_counts from breed6_data group by plz order by plz;"
+# introgression
+psql -U geome_admin -d GenMon_CH -c "update breed6_data set introgression=NULL where introgression='-9999';"
+psql -U geome_admin -d GenMon_CH -c "select introgression, count(introgression) as introgression_counts from breed6_data group by introgression order by introgression;"
+# inb_gen
+psql -U geome_admin -d GenMon_CH -c "update breed6_data set inb_gen=NULL where inb_gen='-9999';"
+psql -U geome_admin -d GenMon_CH -c "select inb_gen, count(inb_gen) as inb_gen_counts from breed6_data group by inb_gen order by inb_gen;"
+# cryo
+psql -U geome_admin -d GenMon_CH -c "update breed6_data set cryo_cons=NULL where cryo_cons='-9999';"
+psql -U geome_admin -d GenMon_CH -c "select cryo_cons, count(cryo_cons) as cryo_cons_counts from breed6_data group by cryo_cons order by cryo_cons;"
+
+```
+
+
+## Step 4: Inbreeding
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed6_ne;"
+```
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed6_ne_deltaF;"
+```
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from tmp1_gen;"
+```
+
+Check whether inbreeding column is added
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed6_data;"
+# table description
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'breed6_data';"
+```
+
+
+## Step 5: Further Steps - Type Problems
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'breed6_inb_plz';"
+```
+
+In all tables except 'breed6_data' the plz column is of type integer, hence try a cast
+
+```
+psql -U geome_admin -d GenMon_CH -c "alter table breed6_data alter column plz TYPE INTEGER  USING (plz::integer);"
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'breed6_data';"
+```
+
+More type missmatch
+
+```
+PHP Warning:  pg_query(): Query failed: ERROR:  function avg(text) does not exist
+LINE 4: (select avg(bd.inb_gen) as in, bd.plz as p
+```
+
+caused by the following statement
+
+```
+UPDATE breed".$breed_id."_inb_plz
+SET mean_inb_gen_lastgi =
+(select q.in from
+(select avg(bd.inb_gen) as in, bd.plz as p
+from breed".$breed_id."_data bd
+where extract(year from bd.birth_dt)>=(".$max_year."-".$GI.")
+group by bd.plz) q
+where q.p=breed".$breed_id."_inb_plz.plz)
+```
+
+Unroll
 
 
 
