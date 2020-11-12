@@ -7,6 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
 ```
 
 ## Disclaimer
@@ -280,10 +282,149 @@ group by bd.plz) q
 where q.p=breed".$breed_id."_inb_plz.plz)
 ```
 
-Unroll
+Unroll accoring to log file `/tmp/20201111174602_mylog_postprocess_poprep.log`
+
+```
+UPDATE breed6_inb_plz
+SET mean_inb_lastgi =
+(select q.in from
+(select avg(bd.inbreeding) as in, bd.plz as p
+from breed6_data bd
+where extract(year from bd.birth_dt)>=(2008-8)
+group by bd.plz) q
+where q.p=breed6_inb_plz.plz)
+```
+
+Evaluating the inner select-stmt
+
+```
+psql -U geome_admin -d GenMon_CH -c "select avg(bd.inb_gen) as in, bd.plz as p
+from breed6_data bd
+where extract(year from bd.birth_dt)>=(2008-8)
+group by bd.plz;"
+```
+
+results in 
+
+```
+ERROR:  function avg(text) does not exist
+LINE 1: select avg(bd.inb_gen) as in, bd.plz as p
+```
+
+Casting the column `inb_gen` of table `breed6_data`. Checking data types
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'breed6_data';"
+```
+
+The cast is done by
+
+```
+psql -U geome_admin -d GenMon_CH -c "alter table breed6_data alter column inb_gen TYPE REAL  USING (inb_gen::real);"
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'breed6_data';"
+```
+which solves the above error. Including the next select
+
+```
+psql -U geome_admin -d GenMon_CH -c "select q.in from
+(select avg(bd.inbreeding) as in, bd.plz as p
+from breed6_data bd
+where extract(year from bd.birth_dt)>=(2008-8)
+group by bd.plz) q;"
+```
+
+Running the update, first do a select before the update
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed6_inb_plz;"
+```
+
+Update
+
+```
+psql -U geome_admin -d GenMon_CH -c "UPDATE breed6_inb_plz
+SET mean_inb_lastgi =
+(select q.in from
+(select avg(bd.inbreeding) as in, bd.plz as p
+from breed6_data bd
+where extract(year from bd.birth_dt)>=(2008-8)
+group by bd.plz) q
+where q.p=breed6_inb_plz.plz);"
+```
 
 
+## Step 6: Update Summary
+Check the following statement
 
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT table_name
+FROM information_schema.tables
+WHERE table_schema='public'
+AND table_name LIKE 'plz_socioec_%'
+ORDER BY table_name DESC
+LIMIT 1;"
+
+psql -U geome_admin -d GenMon_CH -c "select * from  plz_socioec_2014;"
+```
+
+
+## Result
+After fixing everything that was found between steps 1 and 6, the script `PopRep.php` runs for the test data without any errors. At this point, we have more indices being computed on the overview-page. 
+
+```{r breed-overview, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/breed-overview.odg')
+knitr::include_graphics(path = "odg/breed-overview.png")
+```
+
+The following indices are still missing
+
+* Effective pop size range
+* Pedig Index
+* Cryo-cons score
+* Global Index
+
+
+# Missing Indices
+The summary table of the breeds is constructed via the following sql-statement, assuming that only the breeds of the user are shown.
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM summary where owner='zwsgnm' order by index_final;"
+```
+
+
+## Effective Population Size
+The table which contains the effective population size is
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM breed6_ne";
+```
+
+In the section entitled by `// Update the effective population size (Ne) table`, the effective population size obtained by method 'Ne_DeltaFp' is entered into the table `breed".$breed_id."_ne`. Check the value that has been entered
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM breed6_ne where method = 'Ne_DeltaFp'";
+```
+
+Run the update statement
+
+```
+psql -U geome_admin -d GenMon_CH -c "UPDATE summary SET ne=null;"
+psql -U geome_admin -d GenMon_CH -c "UPDATE summary SET ne=(SELECT ne FROM breed6_ne where method = 'Ne_DeltaFp') where breed_id = 6;"
+```
+
+Changed entry of effective population size with real value and added method in header of summary table.
+
+
+## Global Index
+The global index is stored in table 'summary' in the column 'index_final'. A grep for the term 'index_final' in all php-files shows that the value for 'index_final' is computed in 
+
+* ChangeWeightDemo.php
+* ChangeWeightFinal.php
+* breed_detail.php
+
+The computation is done in the function 'IndexCalc'. This function is defined in 'FunctionsCalcIndex.php'. 
 
 
 ## Problems, TODOS and FAQ
@@ -296,4 +437,4 @@ Unroll
     
     
 * `[Problem 2]`: In `PopRep.php` the database of the PopRep-project is selected form the system table 'pg_database' using the following sql-statement: `SELECT datname FROM pg_database where datname like 'PPP%';` This means that if more than one analysis is running concurrently, it is possible that the wrong PopRep-project database is chosen. 
-
+ 
