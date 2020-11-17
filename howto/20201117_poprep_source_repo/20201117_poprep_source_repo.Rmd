@@ -1,0 +1,21 @@
+---
+title: "Source Repository for PopReport"
+author: "Peter von Rohr"
+date: "11/17/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+This contains a protocol of setting up a code repository in gogs on https://tsp-repo.thesnppit.net/gogs. 
+
+
+## Why a Repository
+In the current version of the GenMon container, the source code of PopReport is copied from a local tar-ball. This strategy does not port to installation on other systems. One solution to that is to import the sources into a repository. The repository is setup on the already availabel instance of gogs at https://tsp-repo.thesnppit.net/gogs.
+
+
+## Creation of Repository
+The repository name is always a combination of 'user/repository'. Hence, a new user called 'poprep' was created on https://tsp-repo.thesnppit.net/gogs. Under user 'poprep' a new repository called 'poprep' is initialised. 
