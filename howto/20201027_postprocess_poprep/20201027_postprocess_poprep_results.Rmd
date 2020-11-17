@@ -196,12 +196,6 @@ Frequencies
 psql -U geome_admin -d GenMon_CH -c "select db_sex, count(db_sex) as sex_counts from breed6_data group by db_sex order by db_sex;"
 ```
 
-SELECT 
-  traveler_answers.choice, 
-  COUNT(traveler_answers.choice) as total_answers
-FROM traveler_answers
-GROUP BY traveler_answers.choice
-ORDER BY traveler_answers.choice 
 
 ## Step 3: Update MVC
 
