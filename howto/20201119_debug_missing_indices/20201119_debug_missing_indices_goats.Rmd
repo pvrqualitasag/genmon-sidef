@@ -1,0 +1,306 @@
+---
+title: "Debug Missing Indices for Goat Pedigrees"
+author: "Peter von Rohr"
+date: "11/19/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
+```
+
+## Disclaimer
+This protocol documents the debugging process of the problem with missing indices for goat pedigrees.
+
+
+## Problem
+For the goat breeds some of the indices are not computed. The missing indices are shown in the screenshot below.
+
+```{r scsh-index-list, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/scsh-index-list.odg')
+knitr::include_graphics(path = "odg/scsh-index-list.png")
+```
+ 
+
+## Debugging
+The content of the above summary table is based on the database table called 'summary'. 
+
+
+### Table Description
+The description of the database table 'summary' is obtained by 
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'summary';"
+      column_name      |     data_type     | character_maximum_length | column_default | is_nullable 
+-----------------------+-------------------+--------------------------+----------------+-------------
+ breed_id              | bigint            |                          |                | YES
+ breed_name            | character varying |                          |                | YES
+ avg_inb               | real              |                          |                | YES
+ last_year             | text              |                          |                | YES
+ num_ind               | integer           |                          |                | YES
+ index_demo            | real              |                          |                | YES
+ min_radius            | real              |                          |                | YES
+ index_socio_eco       | real              |                          |                | YES
+ index_final           | real              |                          |                | YES
+ ne                    | integer           |                          |                | YES
+ gi                    | integer           |                          |                | YES
+ introgression         | real              |                          |                | YES
+ owner                 | text              |                          |                | YES
+ species               | text              |                          |                | YES
+ public                | integer           |                          |                | YES
+ cryo_cons             | real              |                          |                | YES
+ trend_males           | real              |                          |                | YES
+ trend_females         | real              |                          |                | YES
+ breed_cultural_value  | real              |                          |                | YES
+ breed_num_farms_trend | real              |                          |                | YES
+ ped_compl             | real              |                          |                | YES
+(21 rows)
+
+```
+
+### Table Content
+The content of the database table is shown as follows.
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM summary where owner='zwsgnm' order by index_final;"
+```
+
+
+### Column Name Mapping
+The mapping between column names of the summary table on the website and the table in the database is shown in the following table.
+
+```{r tbl-colname-map, echo=FALSE}
+tbl_cn_map <- tibble::tibble(Web = c('Breed name', 
+                                     'Last year of data',
+                                     'Number individals last GI',
+                                     'Pedigree compl. 6th gen, last GI',
+                                     'Average inbreeding last GI',
+                                     'Effective pop size (Ne_DeltaFp)',
+                                     'Trend males last 5 years',
+                                     'Trend females last 5 years',
+                                     'Pedig Index (0-1)',
+                                     'Introg Index',
+                                     'Geog index (km)',
+                                     'BAS Index (0-1)',
+                                     'Cryo-cons score (0-1)',
+                                     'Global Index (0-1)'),
+                             DB  = c('breed_name',
+                                     'last_year',
+                                     'num_ind',
+                                     'ped_compl',
+                                     'avg_inb',
+                                     'ne',
+                                     'trend_males',
+                                     'trend_females',
+                                     'index_demo',
+                                     'introgression',
+                                     'min_radius',
+                                     'index_socio_eco',
+                                     'cryo_cons',
+                                     'index_final'))
+knitr::kable(tbl_cn_map)
+```
+
+
+### Missing Indices
+From the screen-shot, the missing indices 'Pedig Index' and 'Introg Index' can be mapped to columns 'index_demo' and 'introgression'. The following select gets only the missing columns.
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT breed_id, breed_name, index_demo, introgression, index_final FROM summary where owner='zwsgnm' order by index_final;"
+ breed_id | breed_name  | index_demo | introgression | index_final 
+----------+-------------+------------+---------------+-------------
+       11 | ctb20201112 |       0.56 |         0.078 |       0.648
+        8 | PZ2         |            |               |            
+       10 | PZo2        |            |               |            
+        7 | PZ1         |            |               |            
+        9 | PZo         |            |               |            
+       12 | Pfo3        |            |               |            
+(6 rows)
+```
+
+
+### Search in PHP-Code
+The reason why these columns are missing is searched in the php-code of the GenMon directory '/var/www/html/genmon'
+
+```
+grep -r 'index_demo' /var/www/html/genmon-ch/*
+/var/www/html/genmon-ch/breed_detail.php:	$index_demo=IndexCalc($breed_id,'demo', $_SESSION['user'], $species); //FunctionsCalcIndex.php
+/var/www/html/genmon-ch/ChangeWeightDemo.php:					$index_demo=IndexCalc(pg_fetch_result($db_code0,$k,0),'demo',$user,$_POST["species"]); //IndexCalc: function from the FunctionCalcIndex.php
+/var/www/html/genmon-ch/index2.php:								<td><?php echo pg_fetch_result($data, $i, "\"index_demo\""); 
+/var/www/html/genmon-ch/index2.php:								$color=ColorCode(pg_fetch_result($data, $i, "\"index_demo\""),'index_demo',pg_fetch_result($data, $i, "\"owner\""), pg_fetch_result($data, $i, "\"species\""));?> 
+/var/www/html/genmon-ch/index.php:								<td><?php echo pg_fetch_result($data, $i, "\"index_demo\""); 
+/var/www/html/genmon-ch/index.php:								$color=ColorCode(pg_fetch_result($data, $i, "\"index_demo\""),'index_demo',pg_fetch_result($data, $i, "\"owner\""), pg_fetch_result($data, $i, "\"species\""));?> 
+/var/www/html/genmon-ch/index_species.php:								<td><?php echo pg_fetch_result($data, $i, "\"index_demo\""); 
+/var/www/html/genmon-ch/index_species.php:								$color=ColorCode(pg_fetch_result($data, $i, "\"index_demo\""),'index_demo',pg_fetch_result($data, $i, "\"owner\""), pg_fetch_result($data, $i, "\"species\""));?> 
+
+```
+
+The value for 'index_demo' seams to be computed by the function 'IndexCalc()' in 'FunctionCalcIndex.php'. This computation is based on the content of the database table 'thres_weight'. Because the goat breeds are not assigned any species, the values for the default species are used. These values are 
+
+```
+ psql -U geome_admin -d GenMon_CH -c "SELECT * FROM thres_weight where owner='zwsgnm' and species='default';"
+        criteria         |  t1  |  t2  | weight | crit_type | owner  | species 
+-------------------------+------+------+--------+-----------+--------+---------
+ index_demo              |    0 |    1 |    0.5 | final     | zwsgnm | default
+ breed_num_farms_trend   |   -5 |    0 |    0.1 | SocioEco  | zwsgnm | default
+ index_socio_eco         |    0 |    1 |    0.1 | final     | zwsgnm | default
+ introgression           | 0.15 | 0.03 |   0.15 | final     | zwsgnm | default
+ demog_balance           |    0 |    3 |   0.05 | SocioEco  | zwsgnm | default
+ min_radius              |   20 |   50 |   0.15 | final     | zwsgnm | default
+ evol_job_primary_sector |    0 |   10 |    0.1 | SocioEco  | zwsgnm | default
+ percent_change_wsl      |   94 |  100 |    0.2 | SocioEco  | zwsgnm | default
+ percent_farmer          |    1 |   16 |    0.1 | SocioEco  | zwsgnm | default
+ percent_grazing_surface |    6 |   30 |   0.15 | SocioEco  | zwsgnm | default
+ percent_less_19         |    3 |   10 |   0.05 | SocioEco  | zwsgnm | default
+ ne                      |   50 |  250 |    0.4 | demo      | zwsgnm | default
+ percent_more_65         |   20 |    4 |   0.15 | SocioEco  | zwsgnm | default
+ avg_inb                 |  0.1 | 0.03 |   0.15 | demo      | zwsgnm | default
+ trend_females           |   -5 |    0 |   0.15 | demo      | zwsgnm | default
+ unemployment_rate       |    5 |    2 |      0 | SocioEco  | zwsgnm | default
+ trend_males             |   -5 |    0 |   0.15 | demo      | zwsgnm | default
+ ped_compl               |   87 |   97 |   0.15 | demo      | zwsgnm | default
+ cryo_cons               |    0 |    1 |    0.1 | final     | zwsgnm | default
+ breed_cultural_value    |    0 |    1 |    0.1 | SocioEco  | zwsgnm | default
+ ```
+
+Based on the above output of 'grep'-ing for 'index_demo' shows that the computation of 'index_demo' happens either in 'ChangeWeightDemo.php' or in 'breed_detail.php'. In 'ChangeWeightDemo.php', the index is only updated when the breed is associated with a 'species' that is different from 'default'. In 'breed_detail.php' when the 'Ne'-value is changed, then the index is updated also for breeds that are associated with the 'default' species.
+
+
+### Associate Breed to Species
+The species must be associated to a breed when it is created. After creation, the species can probably be assigned on the database. 
+
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT breed_id, breed_name, species, index_demo, introgression, index_final FROM summary where owner='zwsgnm' order by index_final;"
+# update
+psql -U geome_admin -d GenMon_CH -c "update summary set species = 'goat' where breed_id=12;"
+# check update of index_demo
+psql -U geome_admin -d GenMon_CH -c "update summary set index_demo = NULL where breed_id=12;"
+
+```
+
+When associating the breed to a species gets the 'index_demo' computed.
+
+The introgression index is taken from the database table 'breed12_data'. 
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM breed12_data;"
+```
+
+Description of 'bree12_data'
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'breed12_data';"
+  column_name    |          data_type          | character_maximum_length | column_default | is_nullable 
+------------------+-----------------------------+--------------------------+----------------+-------------
+ db_animal        | integer                     |                          |                | YES
+ db_sex           | integer                     |                          |                | YES
+ db_breed         | integer                     |                          |                | YES
+ birth_dt         | date                        |                          |                | YES
+ db_sire          | integer                     |                          |                | YES
+ db_dam           | integer                     |                          |                | YES
+ plz              | integer                     |                          |                | YES
+ introgression    | text                        |                          |                | YES
+ inb_gen          | real                        |                          |                | YES
+ cryo_cons        | text                        |                          |                | YES
+ la_rep           | text                        |                          |                | YES
+ la_rep_dt        | date                        |                          |                | YES
+ last_change_dt   | timestamp without time zone |                          |                | YES
+ last_change_user | text                        |                          |                | YES
+ dirty            | boolean                     |                          |                | YES
+ chk_lvl          | smallint                    |                          |                | YES
+ guid             | integer                     |                          |                | YES
+ owner            | text                        |                          |                | YES
+ version          | integer                     |                          |                | YES
+ synch            | boolean                     |                          |                | YES
+ db_hybrid        | integer                     |                          |                | YES
+ comment          | text                        |                          |                | YES
+ inbreeding       | real                        |                          |                | YES
+```
+
+It seams that the cast of column 'introgression' does not seam to work. Let us check the problem
+
+```
+psql -U geome_admin -d GenMon_CH -c "alter table breed12_data alter column introgression TYPE REAL USING (introgression::real);"
+ERROR:  invalid input syntax for type real: "0,5"
+```
+
+This looks like a problem with decimal separator. 
+
+Let us check the values in the introgression column. 
+
+```
+psql -U geome_admin -d GenMon_CH -c "select introgression, count(introgression) as intro_count from breed12_data group by introgression order by introgression;"
+ introgression | intro_count 
+---------------+-------------
+ 0             |       10634
+ 0,12          |           6
+ 0,25          |           1
+ 0,5           |           3
+ 1             |           1
+(5 rows)
+```
+
+Try to correct this with string replacement. 
+
+```
+psql -U geome_admin -d GenMon_CH -c "select introgression, replace(introgression, ',', '.') from breed12_data where introgression != '0';"
+psql -U geome_admin -d GenMon_CH -c "update breed12_data set introgression=replace(introgression, ',', '.') where introgression != '0' and introgression != '1';"
+
+```
+
+Check replacement
+
+```
+psql -U geome_admin -d GenMon_CH -c "select introgression, count(introgression) as intro_count from breed12_data group by introgression order by introgression;"
+
+```
+
+Try casting again
+
+```
+psql -U geome_admin -d GenMon_CH -c "alter table breed12_data alter column introgression TYPE REAL USING (introgression::real);"
+
+```
+
+worked. The replacement is entered before doing the cast.
+
+Running all the computations in the database that are related to introgression
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed12_inb_plz where mean_introgr_lastgi is not NULL;"
+```
+
+shows that mean_introgr_lastgi is not computed.
+
+```
+psql -U geome_admin -d GenMon_CH -c "UPDATE breed12_inb_plz
+SET mean_introgr_lastgi =
+(select q.in from
+(select avg(bd.introgression) as in, bd.plz as p
+from breed12_data bd
+where extract(year from bd.birth_dt)>=(2020-4)
+group by bd.plz) q
+where q.p=breed12_inb_plz.plz);"
+```
+
+```
+psql -U geome_admin -d GenMon_CH -c "DROP TABLE if exists breed12_intryear;"
+```
+
+```
+psql -U geome_admin -d GenMon_CH -c "create table breed12_intryear as
+(select q.year, count(*) as num, round(cast(avg(q.introgression) as numeric),3) as av, round(cast(max(q.introgression) as numeric),3) as max, round(cast(min(q.introgression) as numeric),3) as min, round(cast(stddev(q.introgression) as numeric),3) as std
+from
+(select extract(year from birth_dt) as year, introgression
+from breed12_data
+where introgression is not null) q
+group by q.year
+order by q.year);"
+psql -U geome_admin -d GenMon_CH -c "select * from breed12_intryear;"
+```
+
