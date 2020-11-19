@@ -18,4 +18,49 @@ In the current version of the GenMon container, the source code of PopReport is 
 
 
 ## Creation of Repository
-The repository name is always a combination of 'user/repository'. Hence, a new user called 'poprep' was created on https://tsp-repo.thesnppit.net/gogs. Under user 'poprep' a new repository called 'poprep' is initialised. 
+The repository name is always a combination of 'user/repository'. Hence, a new user called 'poprep' was created on https://tsp-repo.thesnppit.net/gogs. Under user 'poprep' a new repository called 'poprep' is initialised. The newly created repository can then be cloned. The initial clone-statement resulted in the following error. 
+
+
+```
+$ git clone https://tsp-repo.thesnppit.net/gogs/poprep/poprep.git
+Cloning into 'poprep'...
+fatal: unable to access 'https://tsp-repo.thesnppit.net/gogs/poprep/poprep.git/': server certificate verification failed. CAfile: /etc/ssl/certs/ca-certificates.crt CRLfile: none
+```
+
+According to https://stackoverflow.com/questions/21181231/server-certificate-verification-failed-cafile-etc-ssl-certs-ca-certificates-c, the following solution worked. 
+
+```
+ 2032  echo -n | openssl s_client -showcerts -connect tsp-repo.thesnppit.net:443   2>/dev/null  | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > tsp-rep.crt
+ 2047  sudo su - -c"cat /home/quagadmin/source/prprepo/gogs/tsp-rep.crt >> /etc/ssl/certs/ca-certificates.crt"
+ 2051  rm tsp-rep.crt 
+```
+
+
+## Local Repository
+The source code from the tarball is copied into the local git-repository. All the CVS-related files and directories are removed. 
+
+```
+2100  find . -iname 'cvs*' -exec rm -rf {} \;
+2103  find . -iname '.cvs*' -exec rm -rf {} \;
+```
+
+The new sources from the local repository are pushed to the remote repository using 
+
+```
+ 2110  git add .
+ 2111  git commit -m"First commit of poprep source"
+ 2113  git push origin master
+```
+
+
+## GenMon Branch
+The GenMon web-application requires a number of changes in the poprep sources. These changes are implemented in a branch called 'genmon'. This is created with the following statements. 
+
+```
+
+```
+
+
+
+
+
