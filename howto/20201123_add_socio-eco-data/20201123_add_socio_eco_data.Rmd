@@ -1,0 +1,33 @@
+---
+title: "Add socio-economic data"
+author: "Peter von Rohr"
+date: "11/23/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
+```
+
+## Disclaimer
+This document describes on how to import new socio-economic data. 
+
+
+## Import
+New socio-economic data can be imported using the 'Upload Socio-Economic Data'-button at the bottom of the start page 'index.php'
+
+```{r add-socio-eco-data, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic('odg/add-socio-eco-data.odg')
+knitr::include_graphics(path = "odg/add-socio-eco-data.png")
+```
+ 
+When the import button is clicked, the 'AddDataOFS.php' is called. This page shows a form which allows to specify which variable can be found in which column of the input data. The column names are based on the following select statement.
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from ofs;"
+```
+
+By clicking the 'Upload'-button, the page 'GenOFS.php' is loaded. 
+

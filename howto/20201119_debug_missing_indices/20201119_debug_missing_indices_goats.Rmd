@@ -304,3 +304,25 @@ order by q.year);"
 psql -U geome_admin -d GenMon_CH -c "select * from breed12_intryear;"
 ```
 
+
+## Computation of Pedig Index
+The 'Change Weight' button does not seam to trigger the Pedig Index computation. Example of one breed ('breed_id=13')
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM summary where owner='zwsgnm' and breed_id=13;"
+```
+
+Re-try
+
+```
+psql -U geome_admin -d GenMon_CH -c "update summary set index_demo = null where owner='zwsgnm' and breed_id=13;"
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM summary where owner='zwsgnm' and breed_id=13;"
+```
+
+It works on BreedDetail.
+
+```{r pedig-index, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic('odg/pedig-index.odg')
+knitr::include_graphics(path = "odg/pedig-index.png")
+```
+ 
