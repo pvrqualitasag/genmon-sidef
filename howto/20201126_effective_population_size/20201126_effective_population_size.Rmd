@@ -1,0 +1,37 @@
+---
+title: "Effective Population Size"
+author: "Peter von Rohr"
+date: "11/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+This protocol contains material that helps to understand how the entries in the summary table of effective population size can be influenced.
+
+
+## Background
+The effective population size is computed by poprep and shown in the summary table. The content of the summary table is 
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM summary where owner='zwsgnm';"
+```
+
+The effective population size is stored in the column `ne`. But this field can be changed on the page `breed_detail.php`. With that also all the indices are changed. 
+
+
+## Effective Population Size
+The effective population size (Ne) as computed by poprep is obtained by 
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM breed11_ne;"
+```
+
+The correct statement for selecting the value of Ne
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT Ne FROM breed13_ne where method = 'Ne_DeltaFp';"
+```
