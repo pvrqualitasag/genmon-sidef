@@ -2,11 +2,15 @@
 title: "Cultural Value"
 author: "Peter von Rohr"
 date: "11/30/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
 ```
 
 ## Disclaimer
@@ -17,3 +21,32 @@ This page gives a protocol on the work of cultural values.
 The question here is how to define cultural values when using the fast-upload. Cultural value can be specified when using the assisted upload on `AddStudy.php`. 
 
 
+## Update Breed Info
+The breed information concerning 
+
+* cultural value
+* cryo-conservation
+* trend of number of farms
+
+can now be updated on a separate page called `UpdateBreed.php`. This page can be reached from the `breed_detail.php` page. On that page, there is an additional button to update the breed information. 
+
+```{r breed-detail-to-breed-info, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/breed-detail-to-breed-info.odg')
+knitr::include_graphics(path = "odg/breed-detail-to-breed-info.png")
+```
+ 
+A click on the update button opens the new page to update the breed information.
+
+```{r update-breed, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/update-breed.odg')
+knitr::include_graphics(path = "odg/update-breed.png")
+```
+ 
+
+The radio buttons are converted into values - either 0 or 1 according to the screen-shot above. Then the average is computed and entered into the summary table and into the breed-detail information.
+
+```{r breed-detail-result, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/breed-detail-result.odg')
+knitr::include_graphics(path = "odg/breed-detail-result.png")
+```
+ 
