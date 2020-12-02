@@ -1,0 +1,19 @@
+---
+title: "Cultural Value"
+author: "Peter von Rohr"
+date: "11/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+This page gives a protocol on the work of cultural values.
+
+
+## Background
+The question here is how to define cultural values when using the fast-upload. Cultural value can be specified when using the assisted upload on `AddStudy.php`. 
+
+
