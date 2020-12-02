@@ -33,5 +33,10 @@ psql -U geome_admin -d GenMon_CH -c "SELECT * FROM breed11_ne;"
 The correct statement for selecting the value of Ne
 
 ```
-psql -U geome_admin -d GenMon_CH -c "SELECT Ne FROM breed13_ne where method = 'Ne_DeltaFp';"
+psql -U geome_admin -d GenMon_CH -c "SELECT Ne FROM breed11_ne where method = 'Ne_DeltaFp';"
 ```
+
+
+## Solution
+The value for effective population size (Ne) in the summary table for each breed is no longer taken from the radio-buttons on `breed-detail.php` but it is taken from the table `breed<breed_id>_ne`. This change is implemented in `breed_detail.php`. In `index.php` no changes are implemented, except for the former deprecation of the display of the ranges. 
+
