@@ -1,0 +1,110 @@
+---
+title: "Socio Economic Data"
+author: "Peter von Rohr"
+date: "12/3/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+Description of how to get socio-economic data
+
+
+## Strategy
+The update of the socio-economic data is done according to the description given in the tutorial under https://fagr.genmon.ch/gnm/genmon-ch/tutorial.php
+
+
+## Source
+The xlsx-file was downloaded from https://www.bfs.admin.ch/bfs/de/home/statistiken/regionalstatistik/regionale-portraets-kennzahlen/gemeinden.assetdetail.11587763.html and https://www.bfs.admin.ch/bfsstatic/dam/assets/11587763/master
+
+
+## Upload
+The upload can be started from 'index.php' by clicking the upload-button. This brings up 'AddDataOFS.php'. The first step in that script is quering the db-table 'ofs'
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM ofs;"
+```
+
+The above statement is to obtain the column names to be used in the input-fields.
+
+After specifying which column is where in the input file, the upload is handled by 'GenOFS.php'. The uploaded file is stored in '/var/www/html/genmon-ch/Data_files/'. The file is read and the content is imported into a table 'ofs_'.$year where is taken from an inputfield on 'AddDataOFS.php'. Before starting any uploads, the following 'ofs_'-tables are available
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from pg_catalog.pg_tables where tablename like 'ofs%';"
+ schemaname | tablename | tableowner  | tablespace | hasindexes | hasrules | hastriggers | rowsecurity 
+------------+-----------+-------------+------------+------------+----------+-------------+-------------
+ public     | ofs       | geome_admin |            | f          | f        | f           | f
+ public     | ofs_2012  | geome_admin |            | f          | f        | f           | f
+ public     | ofs_2014  | geome_admin |            | f          | f        | f           | f
+(3 rows)
+
+```
+
+Check what is available in 'ofs_2014'
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM ofs_2014;"
+```
+
+At the end of the processing script 'GenOFS.php', the year-specific ofs-table is dropped.
+
+
+## Prepare Data
+The data to be uploaded must be prepared from an xlsx-file and converted into a csv-file with ';' as separator. The description of the table 'ofs_2014' is shown as
+
+
+```
+psql -U geome_admin -d GenMon_CH -c "
+select column_name, data_type, character_maximum_length, column_default, is_nullable
+from   INFORMATION_SCHEMA.COLUMNS 
+where  table_name = 'ofs_2014';"
+
+       column_name       | data_type | character_maximum_length | column_default | is_nullable 
+-------------------------+-----------+--------------------------+----------------+-------------
+ num_ofs                 | real      |                          |                | YES
+ demog_balance           | real      |                          |                | YES
+ median_income           | real      |                          |                | YES
+ unemployment_rate       | real      |                          |                | YES
+ job_primary_sector      | real      |                          |                | YES
+ job_total               | real      |                          |                | YES
+ grazing_surface_ha      | real      |                          |                | YES
+ total_surface_km2       | real      |                          |                | YES
+ job_primary_sector_past | real      |                          |                | YES
+ percent_less_19         | real      |                          |                | YES
+ percent_more_65         | real      |                          |                | YES
+ percent_farmer          | real      |                          |                | YES
+ percent_grazing_surface | real      |                          |                | YES
+ evol_job_primary_sector | real      |                          |                | YES
+(14 rows)
+
+```
+
+According to the description in the tutorial, the columns can be found in
+
+1. num_ofs: bfs number
+2. demog_balance: Increase/decrease in population in the last few years (in %)
+3. median_income: can be replaced by the social assistance rate
+4. unemployment_rate: if not available, might use the social assistance rate (in %)
+5. job_primary_sector: Number of jobs in the primary sector
+6. job_total: Total number of jobs (all three sectors)
+7. grazing_surface_ha: Surface used for animal breeding (in ha) (grünfläche)
+8. total_suface_km2: The total surface of the commune (in km2)
+9. job_primary_sector_past: The number of jobs in the primary sector from a previous year (the year should be decided by the user, and the corresponding threshold set accordingly)
+10. percent_less_19: Percentage of the population younger than 19 years old (in %)
+11. percent_more_65: Percentage of the population older than 65 years old (in %)
+
+
+## Debug Problems 
+When trying to read in the file with socio-economic data from 'gnm_socio_econ_data.csv'. The following statements are taken from the log file which seam to cause the reason for the failure.
+
+```
+psql -U geome_admin -d GenMon_CH -c "select num_ofs from ofs_2018 where num_ofs is not null"
+```
+
+returns 0 rows. The table 'ofs_2018' is empty. Also the table 'ofs_dump' which is used to first put the data is empty.
+
+A possible problem might be that some columns contain missing values. One example is 'unemployment_rate' where in the xlsx-input file contains 'X' for some communities. A possible solution is to replace the 'X' by the mean or median of the community in the same region. For that the region-to-community associations is downloaded from 'https://www.bfs.admin.ch/bfs/de/home/grundlagen/agvch.assetdetail.14709198.html'. 
+

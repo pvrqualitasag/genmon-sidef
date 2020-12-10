@@ -1,0 +1,36 @@
+---
+title: "Aufbereitung Sozio-Oekonomischer Daten für GenMon"
+author: "Peter von Rohr"
+date: "12/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Vorgehen
+Die Aufbereitung der sozio-ökonomischen Daten für GenMon folgt der Beschreibung im Tutorial von GenMon unter https://fagr.genmon.ch/gnm/genmon-ch/tutorial.php. In dieser Beschreibung werden die benötigten Kolonnen für den sozio-ökonomischen Datensatz beschrieben. Die folgende Liste ist aus dem Tutorial kopiert.
+
+1. num_ofs: bfs number
+2. demog_balance: Increase/decrease in population in the last few years (in %)
+3. median_income: can be replaced by the social assistance rate
+4. unemployment_rate: if not available, might use the social assistance rate (in %)
+5. job_primary_sector: Number of jobs in the primary sector
+6. job_total: Total number of jobs (all three sectors)
+7. grazing_surface_ha: Surface used for animal breeding (in ha) (grünfläche)
+8. total_suface_km2: The total surface of the commune (in km2)
+9. job_primary_sector_past: The number of jobs in the primary sector from a previous year (the year should be decided by the user, and the corresponding threshold set accordingly)
+10. percent_less_19: Percentage of the population younger than 19 years old (in %)
+11. percent_more_65: Percentage of the population older than 65 years old (in %)
+
+Aus dieser Liste können die Punkte 2,4,5,8,(9),10,11 aus der Regionalstatistik der Gemeinden vom Bundesamt für Statistik (BFS) entnommen werden. Diese können von https://www.bfs.admin.ch/bfs/de/home/statistiken/regionalstatistik/regionale-portraets-kennzahlen/gemeinden.assetdetail.11587763.html und https://www.bfs.admin.ch/bfsstatic/dam/assets/11587763/master heruntergeladen werden.
+
+Unter Punkt 1 der obigen Liste ist die vom BFS verwendet ID der einzelnen Gemeinden abgelegt. Die Arbeitslosenrate (Punkt 4) wird durch die Quote an Sozialhilfebezügern ersetzt. Alle anderen Punkte werden aus dem xlsx-File direkt übernommen. 
+
+Das mittlere Einkommen, welches unter Punkt 3 gefragt ist, wird aufgrund des mittleren steuerbaren Einkommens für jede Gemeinde von https://www.atlas.bfs.admin.ch/maps/13/de/15131_9164_8282_8281/23873.html heruntergeladen.
+
+Die Punkte 7 und 9 werden aus der Landwirtschaft STAT-TAB-Datenbank extrahiert. 
+
+
+# Aufbereitung der Daten
