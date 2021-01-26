@@ -1,0 +1,131 @@
+---
+title: "Debug GI Number for SHO"
+author: "Peter von Rohr"
+date: "1/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
+```
+
+
+# Disclaimer
+The debugging process for explaining the unexpected numbers for the breed 'SHO' is documented here.
+
+```{r sho-numbers, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path='odg/sho-numbers.odg')
+knitr::include_graphics(path = "odg/sho-numbers.png")
+```
+ 
+
+# Debugging Steps
+This section describes the steps that are done for finding the problems. The general approach is to inspect the current values that are shown on the web-site and find out from where on the database they are coming from. 
+
+## Databases
+First check all the databases that are available on the running postgres instance
+
+```
+Singularity>  psql -U postgres -l
+                                    List of databases
+    Name     |    Owner    | Encoding |   Collate   |    Ctype    |   Access privileges   
+-------------+-------------+----------+-------------+-------------+-----------------------
+ GenMon_CH   | geome_admin | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ geome_admin | postgres    | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ postgres    | postgres    | UTF8     | en_US.UTF-8 | en_US.UTF-8 | 
+ template0   | postgres    | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+             |             |          |             |             | postgres=CTc/postgres
+ template1   | postgres    | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+             |             |          |             |             | postgres=CTc/postgres
+(5 rows)
+```
+
+This indicates that there are no old databases from previous project analyses in PopRep.
+
+
+## Tables
+Inspect the tables in the different databases
+
+```
+psql -U postgres -d GenMon_CH -c 'SELECT * FROM pg_catalog.pg_tables' 
+```
+
+Check the summary table which contains the numbers shown on the main GenMon page
+
+```
+psql -U postgres -d GenMon_CH -c 'SELECT * FROM summary'
+```
+
+Die Informationen zu den Rassen ist gegeben in 
+
+```
+psql -U postgres -d GenMon_CH -c 'select short_name from codes where db_code'
+```
+
+Die Zahl im Feld 'Number individals last GI' erhalten wir mit 
+
+```
+psql -U postgres -d GenMon_CH -c 'SELECT num_ind FROM summary where breed_id = 35'
+```
+
+The field 'num_ind' is inserted in 'PopRep.php' (line 326) with 
+
+```
+UPDATE summary SET num_ind = ".pg_fetch_result($summary1, 0, 1)."
+```
+
+where '$summary1' is defined as the result of the query in '$sql_summary1' with 
+
+```
+$sql_summary1="SELECT sum(a_avg*number)/sum(number) as inb_avg, sum(number) FROM breed".$breed_id."_inbryear WHERE year != 'unknown' and cast(year as integer) >=(".$max_year."-".$GI.")";
+```
+
+Check the content of table 'breed35_inbryear'
+
+```
+psql -U postgres -d GenMon_CH -c 'SELECT * FROM breed35_inbryear'
+```
+
+The variables '$max_year' and '$GI' are determined by
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT distinct max(EXTRACT(YEAR FROM birth_dt)) as max_year FROM breed35_data"
+ max_year 
+----------
+     2019
+(1 row)
+```
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT round(pop,0) FROM tmp1_gen ORDER BY year DESC OFFSET 3 LIMIT 1"
+ round 
+-------
+     6
+(1 row)
+
+```
+
+
+
+
+# Re-Analysis
+The original data is taken for a re-analysis and we check how the results gets to the summary table.
+
+The abbreviations of the breeds are mixed up between GenMon and PopRep. Check the settings in '/home/popreport/production/apiis/bin/./process_uploads.sh'. 
+
+Added a 'debug'-mode in PopRep.php which prints many messages into a logfile and keeps all the data. As a consequence of that the old data from the projects must be removed. This is shown in the log file:
+
+```
+rm -R /var/lib/postgresql/projects/<proj_name>
+# all databases
+psql -U postgres -l
+# only project name
+psql -U postgres -l | grep PPP | cut -d ' ' -f2
+dropdb -U apiis_admin -w <proj_name> # PPP_UOI8oisVv1O9Y
+rm -R /var/lib/postgresql/incoming/*
+```
+
+
+
