@@ -111,8 +111,9 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 SIMGDEF=''
 SIFPATH=''
+SIFDIR=''
 SBDIR=''
-while getopts ":d:h" FLAG; do
+while getopts ":d:f:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -155,9 +156,17 @@ fi
 #+ simg-build
 if [ "$SIFPATH" != '' ]
 then
+  SIFDIR=$(dirname $SIFPATH)
+  if [ ! -d "$SIFDIR" ]
+  then 
+    log_msg "$SCRIPT" " * Creating $SIFDIR ..."
+    mkdir -p $SIFDIR
+  fi  
+  log_msg "$SCRIPT" " * Building from singularity definition: $SIMGDEF to image path: $SIFPATH ..."
   sudo singularity build $SIFPATH $SIMGDEF
 elif [ "$SBDIR" != '' ]
 then
+  log_msg "$SCRIPT" " * Building from singularity definition: $SIMGDEF to sandbox directory: $SBDIR ..."
   sudo singularity build --sandbox $SBDIR $SIMGDEF
 else
   usage "either -f <singularity_image_file> or -s <sandbox_dir> must be defined"
