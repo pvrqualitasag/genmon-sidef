@@ -2,10 +2,6 @@ BootStrap: docker
 From: ubuntu:18.04
 
 
-%files
-  /home/quagadmin/source/prprepo/home/popreport/production /root
-  /home/quagadmin/source/popreport/usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /root
-
 %post
   #sed -i 's/main/main restricted universe/g' /etc/apt/sources.list
   apt-get update -y
@@ -85,12 +81,16 @@ From: ubuntu:18.04
   useradd popreport -s /bin/bash -m
   echo popreport:pass | chpasswd
   
-  # move libgfortran.so.3
-  mv /root/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
-  ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
 
+  # clone repository of poprep
+  git clone https://tsp-repo.thesnppit.net/gogs/poprep/poprep.git -b genmon
+  
+  # move libgfortran.so.3
+  mv poprep/libgfortran/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
+  ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
+  
   # prepare directory for poprep
-  mv /root/production /home/popreport
+  mv poprep/production /home/popreport
   chmod -R 777 /home/popreport/production
   chown -R popreport: /home/popreport/production
 

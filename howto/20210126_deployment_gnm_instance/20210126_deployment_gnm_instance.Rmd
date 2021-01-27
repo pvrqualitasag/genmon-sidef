@@ -1,0 +1,37 @@
+---
+title: "Deployment of GenMon Instance"
+author: "Peter von Rohr"
+date: "1/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+The deployment of a new GenMon Instance is described. The description is split into the following parts
+
+* OS: decide which user should be running and adminstrating the GenMon Instance
+* Conainer 
+* Database
+* PopRep
+* Web-App
+
+
+# Strategy
+For a given OS-user, the deployment must run completely automated. The deployment is implemented in a script that does the complete installation and initialisation. For starting and stopping the GenMon-System separate start- and stop-scripts are written.
+
+
+# Create New OS User
+The first step is to create a new user-accounts at the level of the OS. This can be done using the script 'create_user.sh' from project 'quagzws-htz'. 
+
+```
+/home/quagadmin/source/quagzws-htz/bash/create_user.sh -u gnmzws -s /bin/bash -g 'zwsgrp;sudo' -p MbpTD5ZnK8nQ
+```
+
+After the first login, the password is changed from the initial value to a different password using the command `passwd`.
+
+
+# Initialisation
+The initialisation process contains all steps that have to be done only one per instance. This consists of all steps that include the installation of all software. 
