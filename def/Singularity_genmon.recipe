@@ -83,7 +83,7 @@ From: ubuntu:18.04
   
 
   # clone repository of poprep
-  git clone https://tsp-repo.thesnppit.net/gogs/poprep/poprep.git -b genmon
+  GIT_SSL_NO_VERIFY=true git clone https://tsp-repo.thesnppit.net/gogs/poprep/poprep.git -b genmon
   
   # move libgfortran.so.3
   mv poprep/libgfortran/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
