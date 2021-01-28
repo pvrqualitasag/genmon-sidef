@@ -81,7 +81,6 @@ From: ubuntu:18.04
   useradd popreport -s /bin/bash -m
   echo popreport:pass | chpasswd
   
-
   # clone repository of poprep
   GIT_SSL_NO_VERIFY=true git clone https://tsp-repo.thesnppit.net/gogs/poprep/poprep.git -b genmon
   
@@ -125,19 +124,11 @@ From: ubuntu:18.04
   # maven
   apt-get update
   apt-get install -y maven
-#  curl -sSL https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz > apache-maven-3.6.3-bin.tar.gz
-#  tar -C /opt -xzf apache-maven-3.6.3-bin.tar.gz
-#  rm apache-maven-3.6.3-bin.tar.gz
-#  export PATH=/opt/apache-maven-3.6.3/bin:${PATH}
 
   # GeoServer
   curl -sSL http://sourceforge.net/projects/geoserver/files/GeoServer/2.17.2/geoserver-2.17.2-war.zip > geoserver-2.17.2-war.zip
   unzip geoserver-2.17.2-war.zip
   mv geoserver.war /var/lib/tomcat9/webapps
-#  git clone https://github.com/geoserver/geoserver.git
-#  cd geoserver/src
-#  mvn clean install
-#  mv web/app/target/geoserver.war /var/lib/tomcat9/webapps
 
   # php
   add-apt-repository ppa:ondrej/php
@@ -190,7 +181,5 @@ From: ubuntu:18.04
   
   # change owner of webhome
   chown -R www-data: /var/www  
-  
-%environment
-  export PGPORT=5433
+
   
