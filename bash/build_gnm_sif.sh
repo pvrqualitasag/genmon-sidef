@@ -177,6 +177,11 @@ then
   # add link
   if [ "$SIFLINK" != '' ]
   then
+    if [ -e "$SIFLINK" ]
+    then
+      log_msg "$SCRIPT" " * Removing existing link: $SIFLINK ..."
+      rm $SIFLINK
+    fi
     log_msg "$SCRIPT" " * Adding link from $SIFPATH to $SIFLINK ..."
     ln -s $SIFPATH $SIFLINK
   fi
