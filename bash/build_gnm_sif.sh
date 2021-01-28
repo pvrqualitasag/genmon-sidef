@@ -11,7 +11,11 @@
 #' Build a singularity image file based on a given definition file
 #'
 #' ## Details
-#' The build script includes the download of all software programs required for the download.
+#' The build script runs the build of a singularity image file (sif) or 
+#' of a sandbox directory, depending on the commandline arguments given.  
+#' The specification of the argument -l allows to directly create a link 
+#' to the .sif file built. This works best, when both the path to the sif  
+#' file and the link are given in absolut paths.
 #'
 #' ## Example
 #' ./build_gnm_sif.sh -d <simg_def_file>
@@ -58,9 +62,10 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -d <def_file> -f <singularity_image_file> -s <sandbox_dir>"
+  $ECHO "Usage: $SCRIPT -d <def_file> -f <singularity_image_file> -l <link_to_sif> -s <sandbox_dir>"
   $ECHO "  where -d <def_file>                --  singularity definition file ..."
   $ECHO "        -f <singularity_image_file>  --  (optional) path to singularity image file"
+  $ECHO "        -l <link_to_sif>             --  (optional) link to created singularity image file"
   $ECHO "        -s <sandbox_dir>             --  (optional) path to singularity sandbox directory"
   $ECHO ""
   exit 1
@@ -110,10 +115,12 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 SIMGDEF=''
-SIFPATH=''
+TDATE=$(date +"%Y%m%d%H%M%S")
+SIFPATH="/home/${USER}/simg/img/genmon/${TDATE}_gnm.sif"
 SIFDIR=''
+SIFLINK=''
 SBDIR=''
-while getopts ":d:f:s:h" FLAG; do
+while getopts ":d:f:l:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -127,6 +134,9 @@ while getopts ":d:f:s:h" FLAG; do
       ;;
     f)
       SIFPATH=$OPTARG
+      ;;
+    l)
+      SIFLINK=$OPTARG
       ;;
     s)
       SBDIR=$OPTARG
@@ -164,6 +174,12 @@ then
   fi  
   log_msg "$SCRIPT" " * Building from singularity definition: $SIMGDEF to image path: $SIFPATH ..."
   sudo singularity build $SIFPATH $SIMGDEF
+  # add link
+  if [ "$SIFLINK" != '' ]
+  then
+    log_msg "$SCRIPT" " * Adding link from $SIFPATH to $SIFLINK ..."
+    ln -s $SIFPATH $SIFLINK
+  fi
 elif [ "$SBDIR" != '' ]
 then
   log_msg "$SCRIPT" " * Building from singularity definition: $SIMGDEF to sandbox directory: $SBDIR ..."
@@ -171,7 +187,6 @@ then
 else
   usage "either -f <singularity_image_file> or -s <sandbox_dir> must be defined"
 fi
-
 
 
 #' ## End of Script
