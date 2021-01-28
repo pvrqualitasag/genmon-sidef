@@ -173,11 +173,11 @@ From: ubuntu:18.04
   chmod -R 777 /var/run/postgresql
 
   # genmon-sidef
-  mkdir -p /home/quagadmin/simg/genmon-sidef
-  git clone https://github.com/pvrqualitasag/genmon-sidef.git /home/quagadmin/simg/genmon-sidef
+  mkdir -p /tmp/genmon-sidef
+  git clone https://github.com/pvrqualitasag/genmon-sidef.git /tmp/genmon-sidef
   
   # run replacement script for localhost in php-scripts
-  /home/quagadmin/simg/genmon-sidef/bash/gnm_replace_localhost.sh
+  /tmp/genmon-sidef/bash/gnm_replace_localhost.sh
   
   # change owner of webhome
   chown -R www-data: /var/www  
