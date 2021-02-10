@@ -13,9 +13,14 @@
 #' ## Details
 #' The build script runs the build of a singularity image file (sif) or 
 #' of a sandbox directory, depending on the commandline arguments given.  
+#' The option -f <sif_path> builds a sif under the path given by <sif_path>. 
+#' When giving the option -s <sandbox_dir> a sandbox installation is done 
+#' under the directory <sandbox_dir>. When neither of the options -f nor -s 
+#' is specified, then a sif under a default path (/home/${USER}/simg/img/genmon/${TDATE}_gnm.sif)
+#' is built. 
 #' The specification of the argument -l allows to directly create a link 
 #' to the .sif file built. This works best, when both the path to the sif  
-#' file and the link are given in absolut paths.
+#' file and the link are given by absolute paths.
 #'
 #' ## Example
 #' ./build_gnm_sif.sh -d <simg_def_file>

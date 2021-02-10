@@ -1,0 +1,193 @@
+---
+title: "Check Update Feature of Breed Info"
+author: "Peter von Rohr"
+date: '2021-02-10'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# rmdhelp::show_knit_hook_call()
+knitr::knit_hooks$set(hook_convert_odg = rmdhelp::hook_convert_odg)
+```
+
+# Disclaimer
+The update feature of the page that allows to specify breed-specific information is documented and verified.
+
+
+# Experiments and Tests
+The following values were entered on the Breed-Info Page for the test cattle breed
+
+```{r breed-info-ctb, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/breed-info-ctb.odg')
+knitr::include_graphics(path = "odg/breed-info-ctb.png")
+```
+
+The following entries were recorded in the logfile ''
+ 
+```{r log-screen-shot, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/log-screen-shot.odg')
+knitr::include_graphics(path = "odg/log-screen-shot.png")
+```
+ 
+The result on the main web-site is then shown as
+
+```{r web-result, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/web-result.odg')
+knitr::include_graphics(path = "odg/web-result.png")
+```
+ 
+
+# Index Computation
+The following sql-statements are used when computing the different indices
+
+```
+psql -U postgres -c "select * from thres_weight where owner='zwsgnm' and crit_type='demo' and species='cattle' union select * from thres_weight  where owner='zwsgnm' and  crit_type='demo' and species='default' and not exists (select * from thres_weight where owner='zwsgnm' and crit_type='demo' and species='cattle');"
+```
+
+Show the table with the weights
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT * FROM pg_catalog.pg_tables where tablename like '%thres%'"
+ schemaname |  tablename   | tableowner  | tablespace | hasindexes | hasrules | hastriggers | rowsecurity 
+------------+--------------+-------------+------------+------------+----------+-------------+-------------
+ public     | thres_weight | geome_admin |            | f          | f        | f           | f
+(1 row)
+
+```
+
+Select entries in the table of weights
+
+```
+psql -U postgres -d GenMon_CH -c "select * from thres_weight where owner='zwsgnm' and crit_type='demo' and species='cattle'
+union select * from thres_weight  where owner='zwsgnm' and  crit_type='demo' and species='default'
+ and not exists (select * from thres_weight where owner='zwsgnm' and crit_type='demo' and species='cattle')"
+    criteria    | t1  |  t2  | weight | crit_type | owner  | species 
+---------------+-----+------+--------+-----------+--------+---------
+ trend_males   |  -5 |    0 |   0.15 | demo      | zwsgnm | cattle
+ trend_females |  -5 |    0 |   0.15 | demo      | zwsgnm | cattle
+ avg_inb       | 0.1 | 0.03 |   0.15 | demo      | zwsgnm | cattle
+ ne            |  50 |  250 |    0.4 | demo      | zwsgnm | cattle
+ ped_compl     |  87 |   97 |   0.15 | demo      | zwsgnm | cattle
+(5 rows)
+
+```
+
+The selection in the first loop-round
+
+```
+psql -U postgres -d GenMon_CH -c "select t.weight, t.t1, t.t2 from thres_weight t
+	    where crit_type='demo' and t.criteria='trend_males' and owner='zwsgnm' and species='cattle'
+	    union
+	    select t.weight, t.t1, t.t2 from thres_weight t
+	    where crit_type='demo' and t.criteria='trend_males' and owner='zwsgnm' and species='default'
+	    and not exists (select t.weight, t.t1, t.t2 from thres_weight t
+		  where crit_type='demo' and t.criteria='trend_males' and owner='zwsgnm' and species='cattle')"
+```
+
+Summary select
+
+```
+psql -U postgres -d GenMon_CH -c "select trend_males from summary where breed_id = 11 and trend_males is not null"
+```
+
+Der globale Index wird erneuert. In 'GenAnimalUpdate.php' wird der globale Index und der 'demo'-Index neu berechnet. Der 'demo'-Index ändert aber nicht mit Änderungen von Breed-Info. Gemäss den Eingaben in der Tabelle 'thres_weight' mit 'crit_type' = 'demo' ist der 'demo'-Index nur abhängig von 
+
+* trend_males
+* trend_females
+* avg_inb
+* ne
+* ped_compl
+
+Diese folgenden Grössen werden auf der Breed-Info-Seite (UpdateBreed.php) geändert 
+
+* cultural_value
+* cultural_value_trend
+* number_farm
+* number_farm_past
+* frozen_semen
+* cryo_plan
+
+
+# BAS-Index
+Wie wird der BAS-Index berechnet? In welchem Feld wird BAS-Index abgelegt
+
+```
+psql -U postgres -d GenMon_CH -c "select * from summary where breed_id = 11"
+psql -U postgres -d GenMon_CH -c "select breed_id, breed_name, avg_inb, last_year, index_demo, min_radius, index_socio_eco, index_final 
+from summary where breed_id = 11"
+breed_id | breed_name  | avg_inb | last_year | index_demo | min_radius | index_socio_eco | index_final 
+----------+-------------+---------+-----------+------------+------------+-----------------+-------------
+       11 | ctb20201112 |   0.008 | 2008      |       0.55 |      53.86 |           0.631 |       0.578
+```
+
+Aufgrund des Wertes ist es das Feld 'index_socio_eco'. Dieses Feld wird im Postprocessing der PopRep-Resultate und über die Funktion 'IndexSocioEcPLZ' in FunctionsCalcIndex.php erneuert. 
+
+```
+grep -n -r -i 'update summary set index_socio_eco' /var/www/html/genmon-ch/
+/var/www/html/genmon-ch/FunctionsCalcIndex.php:210:		$sql_breed_index1= "UPDATE summary SET index_socio_eco =
+/var/www/html/genmon-ch/PopRep.php:353:$sql_breed_summary[] = "UPDATE summary SET index_socio_eco =
+/var/www/html/genmon-ch/PostprocessPopRep.php:353:$sql_breed_summary[] = "UPDATE summary SET index_socio_eco =
+```
+
+Die Funktion 'IndexSocioEcPLZ' wird nur in 'ChangeWeightSocioEco.php' bei der Änderung der Gewichte und in 'GenOFS.php' bei der Verarbeitung von neuen Daten vom BFS aufgerufen.
+
+Die Faktoren, welche den BAS-Index beeinflussen sind:
+
+```
+psql -U postgres -d GenMon_CH -c "select * from thres_weight where crit_type = 'SocioEco' and owner = 'zwsgnm' and criteria not like 'breed%'"
+        criteria         | t1 | t2  | weight | crit_type | owner  | species 
+-------------------------+----+-----+--------+-----------+--------+---------
+ evol_job_primary_sector |  0 |  10 |    0.1 | SocioEco  | zwsgnm | default
+ percent_change_wsl      | 94 | 100 |    0.2 | SocioEco  | zwsgnm | default
+ percent_farmer          |  1 |  16 |    0.1 | SocioEco  | zwsgnm | default
+ percent_grazing_surface |  6 |  30 |   0.15 | SocioEco  | zwsgnm | default
+ percent_less_19         |  3 |  10 |   0.05 | SocioEco  | zwsgnm | default
+ percent_more_65         | 20 |   4 |   0.15 | SocioEco  | zwsgnm | default
+ unemployment_rate       |  5 |   2 |      0 | SocioEco  | zwsgnm | default
+ demog_balance           |  0 |   3 |   0.05 | SocioEco  | zwsgnm | default
+```
+
+
+```{r echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) cat("\\pagebreak \n")
+```
+
+
+## Socio-Econ Index
+Computation of IndexSocioEcPLZ must be done in UpdateBreed.php
+
+
+# Summary on Update of Breed Info
+The page to update breed info shown in the screen-shot below allows the user to change the following values
+
+* cultural_value
+* cultural_value_trend
+* number_farm
+* number_farm_past
+* frozen_semen
+* cryo_plan
+
+```{r update-breed-info, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/update-breed-info.odg')
+knitr::include_graphics(path = "odg/update-breed-info.png")
+```
+
+Once the 'Update-Button' is pressed, two indices (Pedig-Index and Global Index) are re-computed. But because the values changed on the update-breed-info page do not influence the Pedig-Index, this value will not change. The Pedig-Index only depends on 
+
+* trend_males
+* trend_females
+* avg_inb
+* ne
+* ped_compl
+
+Hence one could remove the re-computation of the Pedig-Index.
+
+
+
+
+
+
+ 

@@ -37,7 +37,7 @@ After the first login, the password is changed from the initial value to a diffe
 The initialisation process contains all steps that have to be done only one per instance. This consists of all steps that include the installation of all software. The initialisation of an instance is split into two steps.
 
 1. Building the singularity container image
-2. Postprocessing steps
+2. Post-Building steps
 
 
 ## Building Container
@@ -49,3 +49,9 @@ The container is built using the build-script 'build_gnm_sif.sh' with the follow
 -l /home/gnmzws/simg/img/genmon/gnm.sif &> simg/img/genmon/`date +"%Y%m%d%H%M%S"`_gnm.log
 ```
 
+
+## Post-Building Steps
+The Post-Building steps are done using the script `post_install_gnm.sh`. 
+
+
+# Starting the GenMon-System
