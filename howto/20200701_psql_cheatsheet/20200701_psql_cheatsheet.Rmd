@@ -77,3 +77,10 @@ The select that does not work seams to be on table 'tmp2_table5'
 psql -U postgres -c "select count(*) from apiis_admin.tmp2_table5" -d PPP_a0sZpo91andcs
 ```
 
+
+### Table Description
+In other databases such as MySQL or Oracle, there is the function 'describe' which brings up all column names of a table. The description of the database table 'summary' is obtained by 
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'summary';"

@@ -1,0 +1,38 @@
+---
+title: "Backup GenMon Database"
+author: "Peter von Rohr"
+date: "2/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Disclaimer
+With the deadline of the presentation of the first results coming closer, the possibilities of creating a backup of the GenMon database is investigated. 
+
+
+# Database Table Dumps
+According to https://stackoverflow.com/questions/3682866/how-to-create-a-backup-of-a-single-table-in-a-postgres-database#:~:text=Simply%20right%20click%20on%20the,a%20pg_dump%20command%20for%20you. a dump of a table from a database can be done with the following command.
+
+```
+pg_dump --no-owner -d <database_name> -t <table_name> > file.sql
+```
+
+With this we can create a dump of the table 'summary' with
+
+```
+mkdir -p gnm/gnmdbbck
+pg_dump --no-owner -U postgres -d GenMon_CH -t summary > gnm/gnmdbbck/`date +"%Y%m%d%H%M%S"`_summary_table.sql
+```
+
+
+# Database Dumps
+A dump of the complete database 'GenMon_CH' should then work with
+
+```
+pg_dump --no-owner -U postgres -d GenMon_CH > gnm/gnmdbbck/`date +"%Y%m%d%H%M%S"`_genmon_ch_db.sql
+```
+

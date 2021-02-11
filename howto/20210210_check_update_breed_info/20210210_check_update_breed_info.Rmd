@@ -151,13 +151,177 @@ psql -U postgres -d GenMon_CH -c "select * from thres_weight where crit_type = '
 ```
 
 
-```{r echo=FALSE, results='asis'}
-if (knitr::is_latex_output()) cat("\\pagebreak \n")
+
+## Socio-Econ Index
+Computation of IndexSocioEcPLZ must be done in UpdateBreed.php. Determine the year with the following select
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT cast(substring(table_name, 13,4) as integer) as table_name2 FROM information_schema.tables WHERE table_schema='public' and table_name like 'plz_socioec_%' order by table_name2 desc limit 1"
+ table_name2 
+-------------
+        2014
+(1 row)
+
+```
+
+After the re-computation of the socio-econ index
+
+```{r rec-socio-econ, echo=FALSE, hook_convert_odg=TRUE, fig_path="odg"}
+#rmdhelp::use_odg_graphic(ps_path = 'odg/rec-socio-econ.odg')
+knitr::include_graphics(path = "odg/rec-socio-econ.png")
+```
+
+Check the values that were set
+
+```
+psql -U postgres -d GenMon_CH -c "(SELECT round(cast(sum(a.num_ind_lastGI*b.index_socioec)/sum(a.num_ind_lastGI) as numeric),3)
+FROM breed11_inb_plz a, plzo_plz b
+WHERE a.plz=b.plz)"
+ round 
+-------
+ 0.631
+(1 row)
+```
+
+The above value consists of 
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT *
+FROM breed11_inb_plz a, plzo_plz b
+WHERE a.plz=b.plz"
+```
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT * 
+FROM breed11_inb_plz
+where mean_inb_lastgi is not null"
+ plz  | mean_inb_lastgi | max_inb_lastgi | num_ind_lastgi | mean_inb_gen_lastgi | mean_introgr_lastgi 
+------+-----------------+----------------+----------------+---------------------+---------------------
+ 1041 |               0 |              0 |              1 |                     |                0.06
+ 1072 |               0 |              0 |              1 |                     |                0.03
+ 1180 |               0 |              0 |              1 |                     |                0.15
+ 1186 |       0.0184402 |      0.0184402 |              1 |                     |                0.06
+ 1124 |               0 |              0 |              1 |                     |                0.02
+ ...
+```
+
+the above shows the values for 'mean_inb_lastgi', 'max_inb_lastgi', 'num_ind_lastgi', 'mean_inb_gen_lastgi' and 'mean_introgr_lastgi across the plz values. We note that mean_inb_gen_lastgi is null for all records in breed11_inb_plz. 
+
+
+The description of the table `plzo_plz` is obtained by
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS where table_name = 'plzo_plz';"
+
+       column_name       |  data_type   | character_maximum_length | column_default | is_nullable 
+-------------------------+--------------+--------------------------+----------------+-------------
+ plz                     | integer      |                          |                | NO
+ geom                    | USER-DEFINED |                          |                | YES
+ num_ofs                 | integer      |                          |                | YES
+ mean_inb_lastgi         | real         |                          |                | YES
+ max_inb_lastgi          | real         |                          |                | YES
+ num_ind_lastgi          | integer      |                          |                | YES
+ percent_change_wsl      | real         |                          |                | YES
+ demog_balance           | real         |                          |                | YES
+ median_income           | real         |                          |                | YES
+ unemployment_rate       | real         |                          |                | YES
+ percent_farmer          | real         |                          |                | YES
+ percent_grazing_surface | real         |                          |                | YES
+ percent_less_19         | real         |                          |                | YES
+ percent_more_65         | real         |                          |                | YES
+ evol_job_primary_sector | real         |                          |                | YES
+ index_socioec           | real         |                          |                | YES
+ mean_introgr_lastgi     | real         |                          |                | YES
+ mean_inb_gen_lastgi     | real         |                          |                | YES
+(18 rows)
+```
+
+Some interesting fields of `plzo_plz`
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT plz, num_ofs, index_socioec FROM plzo_plz"
+ plz  | num_ofs | index_socioec 
+------+---------+---------------
+ 6574 |    5398 |          0.38
+ 4123 |    2762 |         0.477
+ 1307 |    5487 |         0.741
+ 4582 |    2446 |         0.434
+...
+```
+
+Doing the join between 'breed11_inb_plz' and 'plzo_plz' with the fields selected, we get
+
+```
+psql -U postgres -d GenMon_CH -c "select a.plz, a.num_ind_lastGI, b.index_socioec, a.num_ind_lastGI*b.index_socioec as weight_index
+FROM breed11_inb_plz a, plzo_plz b
+WHERE a.plz=b.plz"
+ plz  | num_ind_lastgi | index_socioec |   weight_index    
+------+----------------+---------------+-------------------
+ 6574 |                |          0.38 |                  
+ 4123 |                |         0.477 |                  
+ 1307 |                |         0.741 |                  
+ 4582 |                |         0.434 |                  
+ 7223 |                |         0.671 |                  
+ 8590 |                |          0.57 |                  
+ 1885 |                |         0.498 |                  
+ 9050 |                |         0.728 |                  
+ 5703 |                |         0.395 |                  
+ 1791 |              1 |          0.56 | 0.560000002384186
+ 8180 |                |         0.534 |                  
+...
+
+```
+
+With the aggregation function
+
+```
+psql -U postgres -d GenMon_CH -c "(SELECT round(cast(sum(a.num_ind_lastGI*b.index_socioec)/sum(a.num_ind_lastGI) as numeric),3)
+FROM breed11_inb_plz a, plzo_plz b
+WHERE a.plz=b.plz)"
+-------
+ 0.631
+(1 row)
+
 ```
 
 
-## Socio-Econ Index
-Computation of IndexSocioEcPLZ must be done in UpdateBreed.php
+
+
+
+The sql-statement that has no consequences on the values in the summary table: 
+
+```
+psql -U postgres -d GenMon_CH -c "(SELECT round(cast((aa.plz_value+bb.cult+cc.farm) as numeric),2)
+FROM (SELECT sum(a.index_socio_eco*b.weight) as plz_value
+FROM summary a, thres_weight b
+WHERE b.crit_type='SocioEco'
+AND b.criteria NOT LIKE 'breed%'
+AND b.owner='zwsgnm'
+AND a.breed_id=11) aa,
+(SELECT d.weight*c.breed_cultural_value as cult
+FROM summary c, thres_weight d
+WHERE d.criteria='breed_cultural_value'
+AND d.owner='zwsgnm'
+AND c.breed_id=11) bb,
+(SELECT f.weight*e.breed_num_farms_trend as farm
+FROM summary e, thres_weight f
+WHERE f.criteria='breed_num_farms_trend'
+AND f.owner='zwsgnm'
+AND e.breed_id=11) cc)"
+ round 
+-------
+ -1.11
+(1 row)
+
+```
+
+
+
+
+```{r echo=FALSE, results='asis'}
+if (knitr::is_latex_output()) cat("\\pagebreak \n")
+```
 
 
 # Summary on Update of Breed Info
@@ -190,4 +354,4 @@ Hence one could remove the re-computation of the Pedig-Index.
 
 
 
- 
+  
