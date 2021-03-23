@@ -1,0 +1,43 @@
+---
+title: "Determine Effective Population Size in GenMon"
+author: "Peter von Rohr"
+date: '2021-02-15'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+The way how the effective population size is determined by GenMon is documented.
+
+
+# Background
+PopRep determines different types of the effective population size ($N_e$). 
+
+
+# Values of Effective Population Size in BreedDetail Page
+The values of $N_e$ are obtained from the table 'breed11_ne' in the database
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT * FROM breed11_ne"
+   method   | ne  | description 
+------------+-----+-------------
+ Ne_DeltaFg | 510 |  
+ Ne_Deltafg | 186 |  
+ Ne_DeltaFp | 256 | 
+(3 rows)
+```
+
+These values are obtained from table 'tmp2_ne' that is exported from the PopRep database.
+
+
+
+# Original Values
+The values in table 'breed11_ne_deltaF' are taken from the PopRep-table 'tmp2_table5'. 
+
+```
+psql -U postgres -d GenMon_CH -c "select * from breed11_ne_deltaF"
+```
+
