@@ -114,6 +114,34 @@ check_singularity_instance_running () {
   fi
 }
 
+#' ### Check for Existence of Bind Directories on Host
+#' Bind directories on host must exist, before container instance can be started with bind-path
+#+ check-exist-host-bind-dir-fun
+check_exist_host_bind_dir () {
+  if [ ! -d "$BINDROOTHOST" ]
+  then
+    log_msg "check_exist_host_bind_dir" " * Cannot find directory for BINDROOTHOST: $BINDROOTHOST ... create it ..."
+    mkdir -p $BINDROOTHOST
+  fi
+  # check whether all binds on host exist
+  echo $BINDPATH | sed -e "s/,/\n/g" | while read p
+  do 
+    log_msg "check_exist_host_bind_dir" " * Checking path-map: $p ..."
+    if [ $(echo "$p" | grep ':' | wc -l) -ne 0 ]
+    then
+      HOSTPATH=$(echo $p | cut -d':' -f1)
+      log_msg "check_exist_host_bind_dir" " ** Checking host path: $HOSTPATH ..."
+      if [ ! -d "$HOSTPATH" ]
+      then
+        log_msg "check_exist_host_bind_dir" " *** Create $HOSTPATH ..."
+        mkdir -p $HOSTPATH
+      fi
+    fi
+    sleep 2
+  done
+  
+}
+
 
 #' ## Main Body of Script
 #' The main body of the script starts here with a start script message.
@@ -197,11 +225,8 @@ EXTENDEDARG=''
 if [ "$BINDPATH" != '' ]
 then
   # check whether bind root exists
-  if [ ! -d "$BINDROOTHOST" ]
-  then
-    log_msg "$SCRIPT" " * Cannot find directory for BINDROOTHOST: $BINDROOTHOST ... create it ..."
-    mkdir -p $BINDROOTHOST
-  fi
+  check_exist_host_bind_dir
+
   EXTENDEDARG="--bind $BINDPATH"
 fi
 if [ "$NETWORKARGS" != '' ]
