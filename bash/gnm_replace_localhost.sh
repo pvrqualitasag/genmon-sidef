@@ -62,7 +62,8 @@ usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
   $ECHO "Usage: $SCRIPT -p <php_src_directory> -s <host_src_name> -t <host_trg_name>"
-  $ECHO "  where -p <php_src_directory>  --  directory with php-source files   (optional)"
+  $ECHO "  where -d <php_src_directory>  --  directory with php-source files   (optional)"
+  $ECHO "        -p <parameter_config>   --  genmon configuration parameter file (optional)"
   $ECHO "        -s <host_src_name>      --  original hostname to be replaced  (optional)"
   $ECHO "        -t <host_trg_name>      --  target value for hostname         (optional)"
   $ECHO ""
@@ -112,19 +113,23 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
+PARAMFILE=''
 PHPSRCDIR=/var/www/html/genmon-ch
 HOSTNAMESRC=http://localhost
 HOSTNAMETRG=https://fagr.genmon.ch/gnm
-CONNECTDB=/var/www/html/genmon-ch/connectDataBase.php
-OLDPORT=5432
-NEWPORT=5433
-while getopts ":p:s:t:h" FLAG; do
+CONPGDB=/var/www/html/genmon-ch/connectDataBase.php
+OLDPGPORT=5432
+NEWPGPORT=5433
+while getopts ":d:p:s:t:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
       ;;
-    p)
+    d)
       PHPSRCDIR=$OPTARG
+      ;;
+    p)
+      PARAMFILE=$OPTARG
       ;;
     s)
       HOSTNAMESRC=$OPTARG
@@ -148,13 +153,22 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
 if test "$PHPSRCDIR" == ""; then
-  usage "-p <php_src_dir> not defined"
+  usage "-d <php_src_dir> not defined"
 fi
 if test "$HOSTNAMESRC" == ""; then
   usage "-s <src_hostname> not defined"
 fi
 if test "$HOSTNAMETRG" == ""; then
   usage "-t <trg_hostname> not defined"
+fi
+
+
+#' ## Read Input from Parameter File
+#' If the parameter file can be found, then read it
+if [ "$PARAMFILE" != '' ]
+then
+  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+  source $PARAMFILE
 fi
 
 
@@ -170,9 +184,9 @@ done
 
 #' ## Replace Port for PostgreSQL
 #' The genmon database connects on port 5433
-log_msg "$SCRIPT" " * Replacing $OLDPORT by $NEWPORT in $CONNECTDB ..."
-mv $CONNECTDB ${CONNECTDB}.org
-cat ${CONNECTDB}.org | sed -e "s/$OLDPORT/$NEWPORT/" > $CONNECTDB
+log_msg "$SCRIPT" " * Replacing $OLDPGPORT by $NEWPGPORT in $CONPGDB ..."
+mv $CONPGDB ${CONPGDB}.org
+cat ${CONPGDB}.org | sed -e "s/$OLDPGPORT/$NEWPGPORT/" > $CONPGDB
 
 
 #' ## End of Script

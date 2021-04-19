@@ -177,7 +177,7 @@ From: ubuntu:18.04
   git clone https://github.com/pvrqualitasag/genmon-sidef.git /tmp/genmon-sidef
   
   # run replacement script for localhost in php-scripts
-  /tmp/genmon-sidef/bash/gnm_replace_localhost.sh
+  /tmp/genmon-sidef/bash/gnm_replace_localhost.sh -p /tmp/genmon-sidef/par/gnm_config.par
   
   # change owner of webhome
   chown -R www-data: /var/www  

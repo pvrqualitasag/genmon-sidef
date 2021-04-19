@@ -50,6 +50,15 @@ The container is built using the build-script 'build_gnm_sif.sh' with the follow
 ```
 
 
+## Start Container Instance
+From the image file that was built, the container is started with the bash script `start_si_gnm.sh`.
+
+```
+cd 
+./simg/genmon-sidef/bash/start_si_gnm.sh -n /home/gnmzws/simg/img/genmon/gnm.sif
+```
+
+
 ## Post-Building Steps
 The Post-Building steps are done using the script `post_install_gnm.sh`. 
 

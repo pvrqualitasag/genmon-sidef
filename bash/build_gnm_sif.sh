@@ -71,6 +71,7 @@ usage () {
   $ECHO "  where -d <def_file>                --  singularity definition file ..."
   $ECHO "        -f <singularity_image_file>  --  (optional) path to singularity image file"
   $ECHO "        -l <link_to_sif>             --  (optional) link to created singularity image file"
+  $ECHO "        -p <parameter_config>        --  (optional) genmon configuration parameter file"
   $ECHO "        -s <sandbox_dir>             --  (optional) path to singularity sandbox directory"
   $ECHO ""
   exit 1
@@ -121,11 +122,13 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 SIMGDEF=''
 TDATE=$(date +"%Y%m%d%H%M%S")
-SIFPATH="/home/${USER}/simg/img/genmon/${TDATE}_gnm.sif"
-SIFDIR=''
-SIFLINK=''
+GNMADMINHOME=${HOME}
+SIFPATH="${GNMADMINHOME}/simg/img/genmon/${TDATE}_gnm.sif"
+SIFDIR=$(dirname $SIFPATH)
+SIFLINK="${GNMADMINHOME}/simg/img/genmon/gnm.sif"
 SBDIR=''
-while getopts ":d:f:l:s:h" FLAG; do
+PARAMFILE=''
+while getopts ":d:f:l:p:s:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -143,6 +146,9 @@ while getopts ":d:f:l:s:h" FLAG; do
     l)
       SIFLINK=$OPTARG
       ;;
+    p)
+      PARAMFILE=$OPTARG
+      ;;
     s)
       SBDIR=$OPTARG
       ;;
@@ -157,12 +163,22 @@ done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
+
 #' ## Checks for Command Line Arguments
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
 #+ argument-test, eval=FALSE
 if test "$SIMGDEF" == ""; then
   usage "-d <def_file> not defined"
+fi
+
+
+#' ## Read Parameter Input
+#' If a parameter file is specified we read the input
+if [ "$PARAMFILE" != '' ]
+then
+  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+  source $PARAMFILE
 fi
 
 

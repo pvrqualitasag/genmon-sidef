@@ -1,0 +1,36 @@
+# directory settings, container build
+GNMADMINHOME=${HOME}
+TDATE=$(date +"%Y%m%d%H%M%S")
+SIFPATH="${GNMADMINHOME}/simg/img/genmon/${TDATE}_gnm.sif"
+SIFDIR=$(dirname $SIFPATH)
+SIFLINK="${GNMADMINHOME}/simg/img/genmon/gnm.sif"
+# post_installation settings
+GNMWORKDIR=${GNMADMINHOME}/gnm
+PGDATADIR=${GNMWORKDIR}/pgdata
+PGLOGDIR=${GNMWORKDIR}/pglog
+PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
+GNMLOGDIR=${GNMWORKDIR}/gnmlog
+GNMLOGFILE=${GNMLOGDIR}/popreport.log
+GNMDBDUMP=${GNMWORKDIR}/gnmdbdump
+GNMSRCDIR=/var/www/html/genmon-ch
+GNMDUMP=empty_GenMon_DB
+# the following users are dbusers
+ADMINUSER=popreport
+APIISADMIN=apiis_admin
+HELIADMIN=heli
+GEOMEADMIN=geome_admin
+GEOMEPASS=geome
+# with the following user, the pg-db will be inittialised
+PGUSER=postgres
+CONPGDB=$GNMSRCDIR/connectDataBase.php
+# old and new version of postgres database port
+OLDPGPORT=5432
+NEWPGPORT=5434
+# webserver user
+WSUSER=www-data
+# popreport e-mail
+PRPEMAILADDRESS='none@neverland.no'
+# replace local host settings
+PHPSRCDIR=/var/www/html/genmon-ch
+HOSTNAMESRC=http://localhost
+HOSTNAMETRG=https://fagr.genmon.ch/gnm
