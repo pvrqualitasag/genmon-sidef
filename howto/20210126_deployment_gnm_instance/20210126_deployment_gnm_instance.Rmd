@@ -41,13 +41,13 @@ The initialisation process contains all steps that have to be done only one per 
 
 
 ## Building Container
-The container is built using the build-script 'build_gnm_sif.sh' with the following parameters.
+The container is built using the build-script 'build_gnm_sif.sh' with the following parameter file.
 
 ```
-./simg/genmon-sidef/bash/build_gnm_sif.sh -d simg/genmon-sidef/def/Singularity_genmon.recipe \
--f /home/gnmzws/simg/img/genmon/`date +"%Y%m%d%H%M%S"`_gnm.sif \
--l /home/gnmzws/simg/img/genmon/gnm.sif &> simg/img/genmon/`date +"%Y%m%d%H%M%S"`_gnm.log
+./simg/genmon-sidef/bash/build_gnm_sif.sh -p simg/genmon-sidef/par/gnm_config.par &> simg/img/genmon/`date +"%Y%m%d%H%M%S"`_gnm.log
 ```
+
+The use of a parameter file for the configuration makes it easier to keep the configuration that is common for multiple scripts consistent.
 
 
 ## Start Container Instance
