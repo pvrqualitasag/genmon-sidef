@@ -164,15 +164,6 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
-#' ## Checks for Command Line Arguments
-#' The following statements are used to check whether required arguments
-#' have been assigned with a non-empty value
-#+ argument-test, eval=FALSE
-if test "$SIMGDEF" == ""; then
-  usage "-d <def_file> not defined"
-fi
-
-
 #' ## Read Parameter Input
 #' If a parameter file is specified we read the input
 if [ "$PARAMFILE" != '' ]
@@ -181,6 +172,15 @@ then
   source $PARAMFILE
 fi
 
+
+
+#' ## Checks for Command Line Arguments
+#' The following statements are used to check whether required arguments
+#' have been assigned with a non-empty value
+#+ argument-test, eval=FALSE
+if test "$SIMGDEF" == ""; then
+  usage "-d <def_file> not defined"
+fi
 
 #' ## Run Singularity Build
 #' Depending on option run the build command

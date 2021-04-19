@@ -1,9 +1,12 @@
 # directory settings, container build
 GNMADMINHOME=${HOME}
+SIMGDIR=${GNMADMINHOME}/simg
+SIMGDEF=${SIMGDIR}/genmon-sidef/def/Singularity_genmon.recipe
 TDATE=$(date +"%Y%m%d%H%M%S")
-SIFPATH="${GNMADMINHOME}/simg/img/genmon/${TDATE}_gnm.sif"
+SIMGIMGDIR=${SIMGDIR}/img
+SIFPATH="${SIMGIMGDIR}/genmon/${TDATE}_gnm.sif"
 SIFDIR=$(dirname $SIFPATH)
-SIFLINK="${GNMADMINHOME}/simg/img/genmon/gnm.sif"
+SIFLINK="${SIMGIMGDIR}/genmon/gnm.sif"
 # post_installation settings
 GNMWORKDIR=${GNMADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
