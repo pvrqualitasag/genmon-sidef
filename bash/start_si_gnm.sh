@@ -197,7 +197,11 @@ EXTENDEDARG=''
 if [ "$BINDPATH" != '' ]
 then
   # check whether bind root exists
-  if [ ! -d "$BINDROOTHOST" ]; then mkdir -p $BINDROOTHOST;fi
+  if [ ! -d "$BINDROOTHOST" ]
+  then
+    log_msg "$SCRIPT" " * Cannot find directory for BINDROOTHOST: $BINDROOTHOST ... create it ..."
+    mkdir -p $BINDROOTHOST
+  fi
   EXTENDEDARG="--bind $BINDPATH"
 fi
 if [ "$NETWORKARGS" != '' ]
