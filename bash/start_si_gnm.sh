@@ -134,7 +134,8 @@ BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
 BINDROOTCNTRVARRUNPG=/var/run/postgresql
 BINDROOTCNTRDATAFILE=/var/www/html/genmon-ch/Data_files
 BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$BINDROOTHOST/Data_files:$BINDROOTCNTRDATAFILE,$GNMADMINHOME"
-NETWORKARGS='"portmap=90:80/tcp","portmap=8080:8080/tcp"'
+# NETWORKARGS='"portmap=90:80/tcp","portmap=8080:8080/tcp"'
+NETWORKARGS=''
 while getopts ":a:b:i:n:w:h" FLAG; do
   case $FLAG in
     h)
@@ -189,17 +190,24 @@ log_msg "$SCRIPT" ' * Check whether singularity instance is running ...'
 check_singularity_instance_running
 
 
+#' ##  Extended Arguments List
+#' Depending on the options given, the arguments are extended
+#+ extend-args
+EXTENDEDARG=''
+if [ "$BINDPATH" != '' ]
+then
+  EXTENDEDARG="--bind $BINDPATH"
+fi
+if [ "$NETWORKARGS" != '' ]
+then
+  EXTENDEDARG="$EXTENDEDARG --net --network-args $NETWORKARGS"
+fi
+
 #' ## Start Singularity Instance
 #' Singularity instance is started
 #+ singularity-instance-start
-if [ "$BINDPATH" == '' ]
-then
-  log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME ..."
-  sudo singularity instance start --writable-tmpfs --net --network-args $NETWORKARGS $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
-else
-  log_msg "$SCRIPT" " * Starting singularity instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME using bind-path $BINDPATH ..."
-  sudo singularity instance start --bind $BINDPATH --writable-tmpfs --net --network-args $NETWORKARGS $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
-fi
+log_msg "$SCRIPT" " * Starting instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME with $EXTENDEDARG ..."
+sudo singularity instance start --writable-tmpfs $EXTENDEDARG $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
 
 
 #' ## End of Script
