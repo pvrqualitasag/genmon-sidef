@@ -196,6 +196,8 @@ check_singularity_instance_running
 EXTENDEDARG=''
 if [ "$BINDPATH" != '' ]
 then
+  # check whether bind root exists
+  if [ ! -d "$BINDROOTHOST" ]; then mkdir -p $BINDROOTHOST;fi
   EXTENDEDARG="--bind $BINDPATH"
 fi
 if [ "$NETWORKARGS" != '' ]
