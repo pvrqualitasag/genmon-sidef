@@ -47,20 +47,20 @@ The container is built using the build-script 'build_gnm_sif.sh' with the follow
 ./simg/genmon-sidef/bash/build_gnm_sif.sh -p simg/genmon-sidef/par/gnm_config.par &> simg/img/genmon/`date +"%Y%m%d%H%M%S"`_gnm.log
 ```
 
-The use of a parameter file for the configuration makes it easier to keep the configuration that is common for multiple scripts consistent.
+The use of a parameter file for the configuration makes it easier to keep the configuration that is common for multiple scripts consistent. With the current setting of having the PopReport repository as a private repository, the clone process asks for username and password. This is solved by converting the PopReport repository as a public repository.
 
 
 ## Start Container Instance
-From the image file that was built, the container is started with the bash script `start_si_gnm.sh`.
+From the image file that was built, the container is started with the bash script `start_si_gnm.sh`. The input is read from the specified parameter file.
 
 ```
 cd 
-./simg/genmon-sidef/bash/start_si_gnm.sh -n /home/gnmzws/simg/img/genmon/gnm.sif
+./simg/genmon-sidef/bash/start_si_gnm.sh -p simg/genmon-sidef/par/gnm_config.par
 ```
 
 
 ## Post-Building Steps
-The Post-Building steps are done using the script `post_install_gnm.sh`. 
+The Post-Building steps required for running GenMon are done using the script `post_install_gnm.sh`. 
 
 
 # Starting the GenMon-System

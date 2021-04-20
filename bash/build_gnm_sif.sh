@@ -67,7 +67,7 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -d <def_file> -f <singularity_image_file> -l <link_to_sif> -s <sandbox_dir>"
+  $ECHO "Usage: $SCRIPT -d <def_file> -f <singularity_image_file> -l <link_to_sif> -p <parameter_config> -s <sandbox_dir>"
   $ECHO "  where -d <def_file>                --  singularity definition file ..."
   $ECHO "        -f <singularity_image_file>  --  (optional) path to singularity image file"
   $ECHO "        -l <link_to_sif>             --  (optional) link to created singularity image file"

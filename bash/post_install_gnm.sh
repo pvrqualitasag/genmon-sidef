@@ -61,7 +61,8 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT"
+  $ECHO "Usage: $SCRIPT -p <parameter_config>"
+  $ECHO "        -p <parameter_config>        --  (optional) genmon configuration parameter file"
   $ECHO ""
   exit 1
 }
@@ -273,11 +274,11 @@ init_pg_server () {
     err_exit "Initdb was not possible"
   fi
   # if port is specified, then change it
-  if [ "$PG_PORT" != '' ]
+  if [ "$NEWPGPORT" != '' ]
   then
-    log_msg "init_pg_server" " ** Change port in postgresql.conf to $PG_PORT ..."
+    log_msg "init_pg_server" " ** Change port in postgresql.conf to $NEWPGPORT ..."
     mv $PGDATADIR/postgresql.conf $PGDATADIR/postgresql.conf.org
-    cat $PGDATADIR/postgresql.conf.org | sed -e "s/#port = 5432/port = $PG_PORT/" > $PGDATADIR/postgresql.conf
+    cat $PGDATADIR/postgresql.conf.org | sed -e "s/#port = 5432/port = $NEWPGPORT/" > $PGDATADIR/postgresql.conf
   fi  
 }
 
@@ -419,9 +420,9 @@ configure_postgresql () {
 #' Verification whether the pg DB-server is running or not
 #+ pg-db-server-check-fun
 pg_server_running () {
-  if [ "$PG_PORT" != '' ]
+  if [ "$NEWPGPORT" != '' ]
   then
-    su -c "$PGISREADY -h localhost -p $PG_PORT" $PGUSER
+    su -c "$PGISREADY -h localhost -p $NEWPGPORT" $PGUSER
   else
     su -c "$PGISREADY -h localhost" $PGUSER
   fi
@@ -470,8 +471,8 @@ import_gnm_db_dump () {
 #' The script connectDatabase.php contains the port of the PG DB. This is 
 #' changed to the specified value
 change_pg_port () {
-  log_msg 'change_pg_port' " ** Change port to $PG_PORT in $CONPGDB ..."
-  sed -i "s/port=5432/port=$PG_PORT/" $CONPGDB
+  log_msg 'change_pg_port' " ** Change port to $NEWPGPORT in $CONPGDB ..."
+  sed -i "s/port=5432/port=$NEWPGPORT/" $CONPGDB
 }
 
 
@@ -484,7 +485,7 @@ start_msg
 #' The following constants are specific for the installation environment. 
 #' In case the installation must be made flexible, the constants can be 
 #' specified as command-line options.
-QUAGADMINHOME=/home/quagadmin
+QUAGADMINHOME=${HOME}
 GNMWORKDIR=${QUAGADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
@@ -502,12 +503,46 @@ GEOMEADMIN=geome_admin
 GEOMEPASS=geome
 # with the following user, the pg-db will be inittialised
 PGUSER=postgres
-PG_PORT='5433'
+NEWPGPORT='15433'
 CONPGDB=$GNMSRCDIR/connectDataBase.php
 # webserver user
 WSUSER=www-data
 # popreport e-mail
 PRPEMAILADDRESS='none@neverland.no'
+
+#' ## Getopts for Commandline Argument Parsing
+#' If an option should be followed by an argument, it should be followed by a ":".
+#' Notice there is no ":" after "h". The leading ":" suppresses error messages from
+#' getopts. This is required to get my unrecognized option code to work.
+#+ getopts-parsing, eval=FALSE
+while getopts ":p:h" FLAG; do
+  case $FLAG in
+    h)
+      usage "Help message for $SCRIPT"
+      ;;
+    p)
+      PARAMFILE=$OPTARG
+      ;;
+    :)
+      usage "-$OPTARG requires an argument"
+      ;;
+    ?)
+      usage "Invalid command line argument (-$OPTARG) found"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+
+#' ## Read Parameter Input
+#' If a parameter file is specified we read the input
+if [ "$PARAMFILE" != '' ]
+then
+  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+  source $PARAMFILE
+fi
+
 
 #' ## Check Container Env
 #' This script must run from inside a container
@@ -544,10 +579,10 @@ get_pg_version
 
 #' ### Export Postgresql Port
 #' If alternative port is specified, then export it
-if [ "$PG_PORT" != '' ]
+if [ "$NEWPGPORT" != '' ]
 then
-  log_msg "$SCRIPT" " ** Postgresql port specified as $PG_PORT ..."
-  export PGPORT=$PG_PORT
+  log_msg "$SCRIPT" " ** Postgresql port specified as $NEWPGPORT ..."
+  export PGPORT=$NEWPGPORT
   log_msg "$SCRIPT" " ** Postgresql port as PGPORT: $PGPORT ..."
 else
   log_msg "$SCRIPT" ' ** Use postgresql default port ...'
@@ -600,9 +635,9 @@ import_gnm_db_dump
 #' ### Change Port in GenMon
 #' The connectDB script contains the pg port
 #+ change-pg-port
-if [ "$PG_PORT" != '' ]
+if [ "$NEWPGPORT" != '' ]
 then
-  log_msg "$SCRIPT" " * Change pg port in $CONPGDB to $PG_PORT ..."
+  log_msg "$SCRIPT" " * Change pg port in $CONPGDB to $NEWPGPORT ..."
   change_pg_port
 fi  
 

@@ -1,0 +1,25 @@
+---
+title: "Processing Multiple GenMon Jobs in Parallel"
+author: "Peter von Rohr"
+date: "`r Sys.Date()`"
+output: output_format
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+The development of a fix that allows to run multiple GenMon jobs in parallel is described.
+
+
+# Problem
+In 'PopRep.php' in the part after PopReport finished running, the project name is determined by the following SQL-statement
+
+```
+SELECT datname FROM pg_database where datname like 'PPP%'
+```
+
+This works only reliably, if there are not more than one project in the table `pg_database`. 
+
+
