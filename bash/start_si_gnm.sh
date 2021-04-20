@@ -63,6 +63,7 @@ usage () {
   $ECHO "        -b <bind_path>           --  bindpath for the started instance ..."
   $ECHO "        -i <simg_instance_name>  --  name of the instance to be started ..."
   $ECHO "        -n <simg_image_file>     --  name of the image file from where instance is started ..."
+  $ECHO "        -p <parameter_config>    --  (optional) genmon configuration parameter file"
   $ECHO "        -w <network_args>        --  network arguments for the singularity container"
   $ECHO ""
   exit 1
@@ -155,7 +156,7 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 SINGULARITYINSTANCENAME='gnmsicnt'
 GNMADMINHOME=${HOME}
-SINGULARITYIMAGENAME=$GNMADMINHOME/simg/img/genmon/gnm.sif
+SIFLINK=$GNMADMINHOME/simg/img/genmon/gnm.sif
 BINDROOTHOST=$GNMADMINHOME/gnm/bindroot
 BINDROOTCNTRPG=/var/lib/postgresql
 BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
@@ -164,7 +165,8 @@ BINDROOTCNTRDATAFILE=/var/www/html/genmon-ch/Data_files
 BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$BINDROOTHOST/Data_files:$BINDROOTCNTRDATAFILE,$GNMADMINHOME"
 # NETWORKARGS='"portmap=90:80/tcp","portmap=8080:8080/tcp"'
 NETWORKARGS=''
-while getopts ":a:b:i:n:w:h" FLAG; do
+PARAMFILE=''
+while getopts ":a:b:i:n:p:w:h" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -180,10 +182,13 @@ while getopts ":a:b:i:n:w:h" FLAG; do
       ;;
     n)
       if test -f $OPTARG; then
-        SINGULARITYIMAGENAME=$OPTARG
+        SIFLINK=$OPTARG
       else
         usage "$OPTARG isn't a valid singularity image file"
       fi
+      ;;
+    p)
+      PARAMFILE=$OPTARG
       ;;
     w)  
       NETWORKARGS=$OPTARG
@@ -199,6 +204,16 @@ done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
+
+#' ## Read Parameter Input
+#' If a parameter file is specified we read the input
+if [ "$PARAMFILE" != '' ]
+then
+  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+  source $PARAMFILE
+fi
+
+
 #' ## Checks for Command Line Arguments
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
@@ -206,7 +221,7 @@ shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 if test "$SINGULARITYINSTANCENAME" == ""; then
   usage "-i <singularity_instance_name> not defined"
 fi
-if test "$SINGULARITYIMAGENAME" == ""; then
+if test "$SIFLINK" == ""; then
   usage "-n <singularity_image_name> not defined"
 fi
 
@@ -226,7 +241,6 @@ if [ "$BINDPATH" != '' ]
 then
   # check whether bind root exists
   check_exist_host_bind_dir
-
   EXTENDEDARG="--bind $BINDPATH"
 fi
 if [ "$NETWORKARGS" != '' ]
@@ -237,8 +251,8 @@ fi
 #' ## Start Singularity Instance
 #' Singularity instance is started
 #+ singularity-instance-start
-log_msg "$SCRIPT" " * Starting instance $SINGULARITYINSTANCENAME from image $SINGULARITYIMAGENAME with $EXTENDEDARG ..."
-sudo singularity instance start --writable-tmpfs $EXTENDEDARG $SINGULARITYIMAGENAME $SINGULARITYINSTANCENAME
+log_msg "$SCRIPT" " * Starting instance $SINGULARITYINSTANCENAME from image $SIFLINK with $EXTENDEDARG ..."
+sudo singularity instance start --writable-tmpfs $EXTENDEDARG $SIFLINK $SINGULARITYINSTANCENAME
 
 
 #' ## End of Script
