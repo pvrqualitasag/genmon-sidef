@@ -1,13 +1,22 @@
-# directory settings, container build
-GNMADMINHOME=${HOME}
-SIMGDIR=${GNMADMINHOME}/simg
-SIMGDEF=${SIMGDIR}/genmon-sidef/def/Singularity_genmon.recipe
-TDATE=$(date +"%Y%m%d%H%M%S")
-SIMGIMGDIR=${SIMGDIR}/img
-SIFPATH="${SIMGIMGDIR}/genmon/${TDATE}_gnm.sif"
-SIFDIR=$(dirname $SIFPATH)
-SIFLINK="${SIMGIMGDIR}/genmon/gnm.sif"
-# post_installation settings
+# directory settings, container build ---------------------------- # ----------------------------------------------- #
+GNMADMINHOME=${HOME}                                               # Home directory for GenMon Admin User            #
+SIMGDIR=${GNMADMINHOME}/simg                                       # Singularity root directory                      #
+SIMGDEF=${SIMGDIR}/genmon-sidef/def/Singularity_genmon.recipe      # Singularity recipe file                         #
+TDATE=$(date +"%Y%m%d%H%M%S")                                      # Current date-time stamp                         #
+SIMGIMGDIR=${SIMGDIR}/img                                          # Image root directory                            #
+SIFDIR=${SIMGIMGDIR}/genmon                                        # Parent directory for singularity image file     #                      
+SIFPATH="${SIFDIR}/${TDATE}_gnm.sif"                               # Path to the singularity image file              #
+SIFLINK="${SIFDIR}/gnm.sif"                                        # Link to current singularity image file          #
+SINGULARITYINSTANCENAME='gnmsicnt'                                 # Name of singularity instance                    #
+# directory binding between container and host ------------------- # ----------------------------------------------- #
+BINDROOTHOST=$GNMADMINHOME/gnm/bindroot                            # Root directory on host for directory binding    #
+BINDROOTCNTRPG=/var/lib/postgresql                                 # Postgres directory in container                 #
+BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log         # APIIS var log file                              #
+BINDROOTCNTRVARRUNPG=/var/run/postgresql                           # Postgres var run directory                      #
+BINDROOTCNTRDATAFILE=/var/www/html/genmon-ch/Data_files            # Input file for GenMon in container              #
+BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$BINDROOTHOST/Data_files:$BINDROOTCNTRDATAFILE,$GNMADMINHOME"                                                    # complete bind path used in start command        #
+NETWORKARGS=''                                                     # Network port mapping between host and container #
+# post_installation settings ------------------------------------- # ----------------------------------------------- #
 GNMWORKDIR=${GNMADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
