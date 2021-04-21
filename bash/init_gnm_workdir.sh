@@ -4,6 +4,8 @@
 #' date:  2020-08-06 16:02:52
 #' author: Peter von Rohr
 #' ---
+#' ## Status
+#' This script has status: DEPRECATED. The initialisation of the working directories must be in start_si_gnm.sh
 #' ## Purpose
 #' Seamless preparation of all working directories required by the genmon container.
 #'
