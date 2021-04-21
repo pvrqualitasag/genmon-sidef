@@ -165,22 +165,6 @@ check_non_empty_dir_fail_create_non_exist () {
   
 }
 
-
-#' ### Check Existence of GNM-Workdir
-#' Working directory and substructures are checked. If they do not exist, 
-#' an initialisation script is called. 
-#+ check-gnm-workdir-fun
-check_gnm_workdir () {
-  log_msg 'check_gnm_workdir' ' * Check existence of working directory ...'
-  if [ ! -d "$GNMWORKDIR" ]
-  then
-    log_msg 'check_gnm_workdir' " ** Create gnm-workdir $GNMWORKDIR..."
-    $INSTALLDIR/init_gnm_workdir.sh
-  else
-    log_msg 'check_gnm_workdir' " ** Found GNM-Workdir $GNMWORKDIR ..."
-  fi
-}
-
 #' ### Create PopRep Logfile
 #' If it does not exist yet, create the poprep logfile
 #+ check-create-gnm-logfile-fun
@@ -548,13 +532,6 @@ fi
 #' This script must run from inside a container
 #+ check-container
 check_container
-
-
-#' ## Check Existence of Workdirectory 
-#' Directory infrastructure is checked
-#+ check-exist-workdir
-log_msg "$SCRIPT" ' * Check PopRep work directory ...'
-check_gnm_workdir
 
 
 #' ## Create Logfile for PopRep
