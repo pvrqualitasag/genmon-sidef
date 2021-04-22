@@ -14,7 +14,7 @@
 #' The stopping procedure should remove any trailing items after stopping the database-server.
 #'
 #' ## Example
-#' ./gnm_pg_stop.sh -d <data_dir>
+#' ./gnm_pg_stop.sh -d <data_dir> -p <param_config_file
 #'
 #' ## Set Directives
 #' General behavior of the script is driven by the following settings
@@ -58,8 +58,9 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT  -d <data_directory>"
-  $ECHO "  where -d <data_directory>  --  specify the data directory with which the pg-server is running (optional)"
+  $ECHO "Usage: $SCRIPT  -d <data_directory> -p <param_config_file>"
+  $ECHO "  where -d <data_directory>     --  specify the data directory with which the pg-server is running (optional)"
+  $ECHO "        -p <param_config_file>  --  parameter configuration file"
   $ECHO ""
   exit 1
 }
@@ -147,9 +148,40 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-QUAGADMINHOME=/home/quagadmin
-DATADIR=${QUAGADMINHOME}/gnm/pgdata
+GNMADMINHOME=/home/gnmzws
+DATADIR=${GNMADMINHOME}/gnm/pgdata
 PGVERSIONFILE=$DATADIR/PG_VERSION
+PGVERPATTERN='Relational Database'
+NEWPGPORT='15433'
+PGUSER=postgres
+PARAMFILE=''
+while getopts ":p:h" FLAG; do
+  case $FLAG in
+    h)
+      usage "Help message for $SCRIPT"
+      ;;
+    p)
+      PARAMFILE=$OPTARG
+      ;;
+    :)
+      usage "-$OPTARG requires an argument"
+      ;;
+    ?)
+      usage "Invalid command line argument (-$OPTARG) found"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+
+#' ## Read Parameter Input
+#' If a parameter file is specified we read the input
+if [ "$PARAMFILE" != '' ]
+then
+  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+  source $PARAMFILE
+fi
 
 
 #' ### Determine Version of PG
@@ -164,14 +196,12 @@ get_pg_version
 PGBIN="/usr/lib/postgresql/$PG_ALLVERSION/bin"
 PGCTL=$PGBIN/pg_ctl
 PGISREADY=$PGBIN/pg_isready
-PG_PORT='5433'
-PGUSER=postgres
 #' ### Export Postgresql Port
 #' If alternative port is specified, then export it
-if [ "$PG_PORT" != '' ]
+if [ "$NEWPGPORT" != '' ]
 then
-  log_msg "$SCRIPT" " ** Postgresql port specified as $PG_PORT ==> exported as PGPORT"
-  export PGPORT=$PG_PORT
+  log_msg "$SCRIPT" " ** Postgresql port specified as $NEWPGPORT ==> exported as PGPORT"
+  export PGPORT=$NEWPGPORT
 else
   log_msg "$SCRIPT" ' ** Use postgresql default port ...'
 fi
