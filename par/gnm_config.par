@@ -1,5 +1,5 @@
 # directory settings, container build ---------------------------- # ----------------------------------------------- #
-GNMADMINHOME=${HOME}                                               # Home directory for GenMon Admin User            #
+GNMADMINHOME=/home/gnmzws                                          # Home directory for GenMon Admin User            #
 SIMGDIR=${GNMADMINHOME}/simg                                       # Singularity root directory                      #
 SIMGDEF=${SIMGDIR}/genmon-sidef/def/Singularity_genmon.recipe      # Singularity recipe file                         #
 TDATE=$(date +"%Y%m%d%H%M%S")                                      # Current date-time stamp                         #

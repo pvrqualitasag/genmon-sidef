@@ -469,7 +469,7 @@ start_msg
 #' The following constants are specific for the installation environment. 
 #' In case the installation must be made flexible, the constants can be 
 #' specified as command-line options.
-QUAGADMINHOME=${HOME}
+QUAGADMINHOME=/home/gnmzws   # NOTE: inside of the container $HOME is /root
 GNMWORKDIR=${QUAGADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
