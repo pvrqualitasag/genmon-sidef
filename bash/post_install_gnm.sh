@@ -459,6 +459,8 @@ import_gnm_db_dump () {
   su -c "$PSQL -d GenMon_CH -c \"CREATE EXTENSION postgis;\""  $PGUSER
   log_msg 'import_gnm_db_dump' " ** Unzipping the zip file: $GNMSRCDIR/${GNMDUMP}.zip ..."
   unzip $GNMSRCDIR/${GNMDUMP}.zip
+  # check whether directory GNMDBDUMP exists
+  check_dir_create_non_exist $GNMDBDUMP  
   log_msg 'import_gnm_db_dump' " ** Change owner of $GNMDBDUMP to ${WSUSER} ..."
   chown -R ${WSUSER}: $GNMDBDUMP
   log_msg 'import_gnm_db_dump' " ** Moving dump into $GNMDBDUMP ..."
