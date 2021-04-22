@@ -21,6 +21,7 @@ GNMWORKDIR=${GNMADMINHOME}/gnm                                     # GenMon work
 PGDATADIR=${GNMWORKDIR}/pgdata                                     # Postgres data directory for GenMon              #
 PGLOGDIR=${GNMWORKDIR}/pglog                                       # Postgres log directory for GenMon               #
 PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log            # Postgres log file for GenMon                    #
+PGVERPATTERN='Relational Database'                                 # Search pattern used to determine pg-version     #
 GNMLOGDIR=${GNMWORKDIR}/gnmlog                                     # GenMon log directory                            #
 GNMLOGFILE=${GNMLOGDIR}/popreport.log                              # PopReport log file                              #
 GNMDBDUMP=${GNMWORKDIR}/gnmdbdump                                  # Directory for GenMon Database dump to be read   #
