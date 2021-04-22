@@ -63,6 +63,10 @@ cd
 The Post-Building steps required for running GenMon are done using the script `post_install_gnm.sh`. 
 
 ```
+# shell in container
+sudo singularity shell --shell /bin/bash instance://gnmsicnt
+# run post_install
+cd /home/gnmzws/
 
 ```
 
