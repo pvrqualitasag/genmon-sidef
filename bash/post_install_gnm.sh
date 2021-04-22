@@ -231,19 +231,19 @@ get_pg_version () {
     # need PG_SUBVERSION  like 4
     # need PG_VERSION     like 9
     # need PG_PACKET      like postgresql_11
-    PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "Relational Database" |awk '{print $2}')
+    PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}')
     PG_SUBVERSION=''
     if [ -n "$PG_PACKET"  ]; then
        if [[ $PG_PACKET = *9.* ]]; then
 # subv wird packet bei 10 11 etc
-          PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "Relational Database" |awk '{print $2}'|sed -e 's/postgresql-9.//')
+          PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}'|sed -e 's/postgresql-9.//')
        else
           PG_SUBVERSION=' '
           echo no subversion
        fi
     fi
 
-    PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "Relational Database" |awk '{print $2}'|sed -e 's/postgresql-//')
+    PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}'|sed -e 's/postgresql-//')
     PG_VERSION=$(echo $PG_ALLVERSION |  cut -d. -f1)
     echo packet_____:$PG_PACKET
     echo version____:$PG_VERSION
@@ -494,6 +494,7 @@ GNMWORKDIR=${GNMADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
 PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
+PGVERPATTERN='Relational Database'
 GNMLOGDIR=${GNMWORKDIR}/gnmlog
 GNMLOGFILE=${GNMLOGDIR}/popreport.log
 GNMDBDUMP=${GNMWORKDIR}/gnmdbdump
@@ -513,6 +514,8 @@ CONPGDB=$GNMSRCDIR/connectDataBase.php
 WSUSER=www-data
 # popreport e-mail
 PRPEMAILADDRESS='none@neverland.no'
+# default parameter file
+PARAMFILE=''
 
 #' ## Getopts for Commandline Argument Parsing
 #' If an option should be followed by an argument, it should be followed by a ":".
