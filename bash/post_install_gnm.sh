@@ -62,7 +62,7 @@ usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
   $ECHO "Usage: $SCRIPT -p <parameter_config>"
-  $ECHO "        -p <parameter_config>        --  (optional) genmon configuration parameter file"
+  $ECHO "       where:  -p <parameter_config>        --  (optional) genmon configuration parameter file"
   $ECHO ""
   exit 1
 }
