@@ -226,14 +226,14 @@ get_pg_version () {
     if [ -n "$PG_PACKET"  ]; then
        if [[ $PG_PACKET = *9.* ]]; then
 # subv wird packet bei 10 11 etc
-          PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-9.//')
+          PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "Relational Database" |awk '{print $2}'|sed -e 's/postgresql-9.//')
        else
           PG_SUBVERSION=' '
           echo no subversion
        fi
     fi
 
-    PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-//')
+    PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "Relational Database" |awk '{print $2}'|sed -e 's/postgresql-//')
     PG_VERSION=$(echo $PG_ALLVERSION |  cut -d. -f1)
     echo packet_____:$PG_PACKET
     echo version____:$PG_VERSION
