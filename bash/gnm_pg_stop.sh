@@ -58,9 +58,8 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT  -d <data_directory> -p <param_config_file>"
-  $ECHO "  where -d <data_directory>     --  specify the data directory with which the pg-server is running (optional)"
-  $ECHO "        -p <param_config_file>  --  parameter configuration file"
+  $ECHO "Usage: $SCRIPT -p <param_config_file>"
+  $ECHO "  where -p <param_config_file>  --  parameter configuration file"
   $ECHO ""
   exit 1
 }
@@ -116,18 +115,18 @@ get_pg_version () {
       # need PG_SUBVERSION  like 4
       # need PG_VERSION     like 9
       # need PG_PACKET      like postgresql_11
-      PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}')
+      PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}')
       PG_SUBVERSION=''
       if [ -n "$PG_PACKET"  ]; then
          if [[ $PG_PACKET = *9.* ]]; then
            # subv wird packet bei 10 11 etc
-           PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-9.//')
+           PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}'|sed -e 's/postgresql-9.//')
          else
            PG_SUBVERSION=' '
            echo no subversion
         fi
       fi
-      PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-//')  
+      PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}'|sed -e 's/postgresql-//')  
     fi 
     # check whether version could be determined
     if [ "$PG_ALLVERSION" == '' ]
@@ -149,8 +148,8 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 GNMADMINHOME=/home/gnmzws
-DATADIR=${GNMADMINHOME}/gnm/pgdata
-PGVERSIONFILE=$DATADIR/PG_VERSION
+PGDATADIR=${GNMADMINHOME}/gnm/pgdata
+PGVERSIONFILE=$PGDATADIR/PG_VERSION
 PGVERPATTERN='Relational Database'
 NEWPGPORT='15433'
 PGUSER=postgres
@@ -212,7 +211,7 @@ fi
 if [ `su -c "$PGISREADY" $PGUSER | grep 'accepting connections' | wc -l` -eq 1 ]
 then
   log_msg "$SCRIPT" ' * Stop running Postgresql database ...'
-  su -c "$PGCTL -D $DATADIR stop" $PGUSER
+  su -c "$PGCTL -D $PGDATADIR stop" $PGUSER
 else
   log_msg "$SCRIPT" ' * Cannot find running Postgresql database  ...'
 fi
