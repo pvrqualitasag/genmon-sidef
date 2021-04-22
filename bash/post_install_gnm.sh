@@ -183,8 +183,8 @@ check_create_gnm_logfile () {
 #+ define-environment-variables-fun
 define_environment_variables () {
   log_msg 'define_environment_variables' ' * Define environment variables ...'
-  # apiis_QUAGADMINHOME in bashrc
-  BASHRC=${QUAGADMINHOME}/.bashrc
+  # apiis_GNMADMINHOME in bashrc
+  BASHRC=${GNMADMINHOME}/.bashrc
   if [ `grep 'APIIS_HOME' $BASHRC | wc -l` -eq 0 ]
   then
     log_msg 'define_environment_variables' " * Add APIIS_HOME to $BASHRC ..."
@@ -195,7 +195,7 @@ define_environment_variables () {
     grep 'APIIS_HOME' $BASHRC
   fi
   # define project section in .apiisrc
-  APIISRC=${QUAGADMINHOME}/.apiisrc
+  APIISRC=${GNMADMINHOME}/.apiisrc
   if [ ! -f "$APIISRC" ] || [ `grep '[PROJECTS]' $APIISRC | wc -l` -eq 0 ]
   then
     log_msg 'define_environment_variables' " * Add project section to $APIISRC ..."
@@ -469,8 +469,8 @@ start_msg
 #' The following constants are specific for the installation environment. 
 #' In case the installation must be made flexible, the constants can be 
 #' specified as command-line options.
-QUAGADMINHOME=/home/gnmzws   # NOTE: inside of the container $HOME is /root
-GNMWORKDIR=${QUAGADMINHOME}/gnm
+GNMADMINHOME=/home/gnmzws   # NOTE: inside of the container $HOME is /root
+GNMWORKDIR=${GNMADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
 PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
