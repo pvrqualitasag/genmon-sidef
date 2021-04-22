@@ -146,6 +146,20 @@ info () {
     fi >&2
 }
 
+#' ### Create Directory
+#' Directory is created, if it does not exist
+#+ check-dir-create-fun
+check_dir_create_non_exist () {
+  local l_check_dir=$1
+  if [ -d "$l_check_dir" ]
+  then
+    log_msg 'check_dir_create_non_exist' " * Found directory: $l_check_dir ..."
+  else
+    log_msg 'check_dir_create_non_exist' " * CANNOT Find directory: $l_check_dir ==> create it ..."
+    mkdir -p $l_check_dir
+  fi
+}
+
 #' ### Check Directory Existence
 #' The passed directory is created, if it does not exist. If it exists and is 
 #' non-empty the script stops with an error
@@ -172,11 +186,7 @@ check_create_gnm_logfile () {
   if [ ! -f "$GNMLOGFILE" ]
   then
     GNMLOGDIR=$(dirname $GNMLOGFILE)
-    if [ ! -d "$GNMLOGDIR" ]
-    then
-      log_msg 'check_create_gnm_logfile' " * Create poprep logdir: $GNMLOGDIR ..."
-      mkdir -p $GNMLOGDIR
-    fi
+    check_dir_create_non_exist $GNMLOGDIR
     log_msg 'check_create_gnm_logfile' " * Create poprep logfile: $GNMLOGFILE ... "
     touch $GNMLOGFILE
   else
@@ -251,6 +261,8 @@ init_pg_server () {
   # change owner of $PGDATADIR
   log_msg "init_pg_server" " ** Change owner of $PGDATADIR to ${PGUSER} ..."
   chown -R ${PGUSER}: $PGDATADIR
+  # Poprep Log directory
+  check_dir_create_non_exist $PGLOGDIR
   log_msg "init_pg_server" " ** Change owner of $PGLOGDIR to ${PGUSER} ..."
   chown -R ${PGUSER}: $PGLOGDIR
   # initialise a database for $PGUSER
