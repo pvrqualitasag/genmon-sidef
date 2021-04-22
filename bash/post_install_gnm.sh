@@ -171,6 +171,12 @@ check_non_empty_dir_fail_create_non_exist () {
 check_create_gnm_logfile () {
   if [ ! -f "$GNMLOGFILE" ]
   then
+    GNMLOGDIR=$(dirname $GNMLOGFILE)
+    if [ ! -d "$GNMLOGDIR" ]
+    then
+      log_msg 'check_create_gnm_logfile' " * Create poprep logdir: $GNMLOGDIR ..."
+      mkdir -p $GNMLOGDIR
+    fi
     log_msg 'check_create_gnm_logfile' " * Create poprep logfile: $GNMLOGFILE ... "
     touch $GNMLOGFILE
   else
