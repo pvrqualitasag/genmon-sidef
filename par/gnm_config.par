@@ -16,7 +16,7 @@ PRPPROJPATH=${BINDROOTCNTRPG}/projects                             # PopReport p
 BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log         # APIIS var log file                              #
 BINDROOTCNTRVARRUNPG=/var/run/postgresql                           # Postgres var run directory                      #
 BINDROOTCNTRDATAFILE=/var/www/html/genmon-ch/Data_files            # Input file for GenMon in container              #
-BINDPATH="$INCOMINGPATH:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$PRPPROJPATH:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$BINDROOTHOST/Data_files:$BINDROOTCNTRDATAFILE,$GNMADMINHOME"                                                    # complete bind path used in start command        #
+BINDPATH="${BINDROOTHOST}/incoming:$INCOMINGPATH,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,${BINDROOTHOST}/projects:$PRPPROJPATH,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$BINDROOTHOST/Data_files:$BINDROOTCNTRDATAFILE,$GNMADMINHOME"                                                    # complete bind path used in start command        #
 NETWORKARGS=''                                                     # Network port mapping between host and container #
 # post_installation settings ------------------------------------- # ----------------------------------------------- #
 GNMWORKDIR=${GNMADMINHOME}/gnm                                     # GenMon working directory                        #
