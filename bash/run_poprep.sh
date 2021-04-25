@@ -58,18 +58,20 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -b <breed_name> -p <pedigree_data_file> -e <email_address> -l <prp_logfile_path> -m <male_char> -f <female_char> -g <group> -d <date_format> -s <data_sep> -u <user> -i <incoming_dir>"
+  $ECHO "Usage: $SCRIPT -b <breed_name> -d <pedigree_data_file> -e <email_address> -l <prp_logfile_path> -m <male_char> -f <female_char> -g <group> -y <date_format> -s <data_sep> -u <user> -i <incoming_dir> -p <parameter_file>"
   $ECHO "  where -b <breed_name>          --  name of the breed"
-  $ECHO "        -p <pedigree_data_file>  --  pedigree data file of the breed to be analysed"
+  $ECHO "        -d <pedigree_data_file>  --  pedigree data file of the breed to be analysed"
   $ECHO "        -e <email_address>       --  e-mail address"
   $ECHO "        -f <female_char>         --  character representing female individual in pedigree"
   $ECHO "        -g <group>               --  group to which the user belongs with which we run poprep"
+  $ECHO "        -i <incoming_dir>        --  directory from where pedigrees are analysed"
   $ECHO "        -l <prp_logfile_path>    --  path to poprep logfile"
   $ECHO "        -m <male_char>           --  character representing male individual in pedigree"
-  $ECHO "        -d <date_format>         --  format for dates in pedigree"
+  $ECHO "        -p <parameter_file>      --  input file with program parameter"
   $ECHO "        -s <date_sep>            --  separator character for dates in pedigree"
   $ECHO "        -u <user>                --  user under which we run poprep"
-  $ECHO "        -i <incoming_dir>        --  directory from where pedigrees are analysed"
+  $ECHO "        -y <date_format>         --  format for dates in pedigree"
+  $ECHO "        -Z                       --  change debug flag to TRUE"
   $ECHO ""
   exit 1
 }
@@ -156,7 +158,7 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-PROJECTROOT=/var/lib/postgresql
+BINDROOTCNTRPG=/var/lib/postgresql
 BREEDNAME='test_breed'
 PEDIGREEFILE=''
 EMAILADDRESS='none@neverland.no' #'fbzws-quagzws@gmail.com'
@@ -164,13 +166,14 @@ MALECHAR='M'
 FEMALECHAR='F'
 DATEFORMAT='YYYY-MM-DD'
 DATESEP='-'
-INCOMINGPATH='incoming'
+INCOMINGPATH=${BINDROOTCNTRPG}/incoming
 PRPLOGFILEPATH=/home/zws/prp/prplog/popreport.log
 USER=`whoami`
 GROUP=`whoami`
-PRPPROJPATH='projects'
+PRPPROJPATH=${BINDROOTCNTRPG}/projects
 DEBUG='false'
-while getopts ":b:p:e:l:m:f:g:d:s:u:i:hZ" FLAG; do
+PARAMFILE=''
+while getopts ":b:p:e:l:m:f:g:d:s:u:i:y:hZ" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -178,7 +181,7 @@ while getopts ":b:p:e:l:m:f:g:d:s:u:i:hZ" FLAG; do
     b)
       BREEDNAME=$OPTARG
       ;;
-    d)
+    y)
       DATEFORMAT=$OPTARG
       ;;
     e)
@@ -199,12 +202,15 @@ while getopts ":b:p:e:l:m:f:g:d:s:u:i:hZ" FLAG; do
     m)
       MALECHAR=$OPTARG
       ;;
-    p)
+    d)
       if test -f $OPTARG; then
         PEDIGREEFILE=$OPTARG
       else
         usage "$OPTARG cannot be found as pedigree file ..."
       fi
+      ;;
+    p)
+      PARAMFILE=$OPTARG
       ;;
     r)
       PRPPROJPATH=$OPTARG
@@ -229,6 +235,16 @@ done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
+
+#' ## Read Parameter Input
+#' If a parameter file is specified we read the input
+if [ "$PARAMFILE" != '' ]
+then
+  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+  source $PARAMFILE
+fi
+
+
 #' ## Checks for Command Line Arguments
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
@@ -245,25 +261,14 @@ fi
 #' The path to the incoming directory
 if [ "$INCOMINGPATH" == "" ]
 then
-  INCOMINGPATH=${PROJECTROOT}/incoming
-else
-  if [ "${INCOMINGPATH:0:1}" != "/" ]
-  then
-    INCOMINGPATH=${PROJECTROOT}/${INCOMINGPATH}
-  fi
+  INCOMINGPATH=${BINDROOTCNTRPG}/incoming
 fi
 
 #' ## Path to PopRep Project Directory
 #' The project path for poprep is specified
 if [ "$PRPPROJPATH" == "" ]
 then
-  PRPPROJPATH=${PROJECTROOT}/projects
-else
-  # check whether path is specified as absolute path or not
-  if [ "${PRPPROJPATH:0:1}" != "/" ]
-  then
-    PRPPROJPATH=${PROJECTROOT}/${PRPPROJPATH}
-  fi
+  PRPPROJPATH=${BINDROOTCNTRPG}/projects
 fi
 
 
