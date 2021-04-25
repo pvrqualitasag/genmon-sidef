@@ -43,6 +43,7 @@ OLDPGPORT=5432
 NEWPGPORT=5434
 # webserver user
 WSUSER=www-data
+WSGROUP=www-data
 # popreport e-mail
 PRPEMAILADDRESS='none@neverland.no'
 # replace local host settings

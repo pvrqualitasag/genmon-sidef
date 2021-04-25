@@ -129,7 +129,7 @@ create_project_dir () {
 write_parameter_file () {
   local l_PARAMFILE=${PROJDIR}/param
   log_msg 'write_parameter_file' " * Writing parameters to parameter file: $l_PARAMFILE ..."
-  echo "email=${EMAILADDRESS}" > $l_PARAMFILE
+  echo "email=${PRPEMAILADDRESS}" > $l_PARAMFILE
   echo "breed=${BREEDNAME}" >> $l_PARAMFILE
   echo "male=${MALECHAR}" >> $l_PARAMFILE
   echo "female=${FEMALECHAR}" >> $l_PARAMFILE
@@ -161,15 +161,15 @@ start_msg
 BINDROOTCNTRPG=/var/lib/postgresql
 BREEDNAME='test_breed'
 PEDIGREEFILE=''
-EMAILADDRESS='none@neverland.no' #'fbzws-quagzws@gmail.com'
+PRPEMAILADDRESS='none@neverland.no' #'fbzws-quagzws@gmail.com'
 MALECHAR='M'
 FEMALECHAR='F'
 DATEFORMAT='YYYY-MM-DD'
 DATESEP='-'
 INCOMINGPATH=${BINDROOTCNTRPG}/incoming
-PRPLOGFILEPATH=/home/zws/prp/prplog/popreport.log
-USER=`whoami`
-GROUP=`whoami`
+GNMLOGFILE=''
+WSUSER=''
+WSGROUP=''
 PRPPROJPATH=${BINDROOTCNTRPG}/projects
 DEBUG='false'
 PARAMFILE=''
@@ -185,19 +185,19 @@ while getopts ":b:p:e:l:m:f:g:d:s:u:i:y:hZ" FLAG; do
       DATEFORMAT=$OPTARG
       ;;
     e)
-      EMAILADDRESS=$OPTARG
+      PRPEMAILADDRESS=$OPTARG
       ;;
     f)
       FEMALECHAR=$OPTARG
       ;;
     g)
-      GROUP=$OPTARG
+      WSGROUP=$OPTARG
       ;;
     i)
       INCOMINGPATH=$OPTARG
       ;;
     l)
-      PRPLOGFILEPATH=$OPTARG
+      GNMLOGFILE=$OPTARG
       ;;
     m)
       MALECHAR=$OPTARG
@@ -219,7 +219,7 @@ while getopts ":b:p:e:l:m:f:g:d:s:u:i:y:hZ" FLAG; do
       DATESEP=$OPTARG
       ;;
     u)
-      USER=$OPTARG
+      WSUSER=$OPTARG
       ;;
     Z) 
       DEBUG='true'
@@ -303,9 +303,9 @@ copy_pedigree_file
 #' The value of APIIS_HOME is checked
 log_msg "$SCRIPT" " * APIIS_HOME:     $APIIS_HOME"
 log_msg "$SCRIPT" " * INCOMINGPATH:   $INCOMINGPATH"
-log_msg "$SCRIPT" " * PRPLOGFILEPATH: $PRPLOGFILEPATH"
-log_msg "$SCRIPT" " * USER:           $USER"
-log_msg "$SCRIPT" " * GROUP:          $GROUP"
+log_msg "$SCRIPT" " * GNMLOGFILE:     $GNMLOGFILE"
+log_msg "$SCRIPT" " * WSUSER:         $WSUSER"
+log_msg "$SCRIPT" " * WSGROUP:        $WSGROUP"
 log_msg "$SCRIPT" " * PRPPROJPATH:    $PRPPROJPATH"
 log_msg "$SCRIPT" " * DEBUG:          $DEBUG"
 
@@ -315,9 +315,9 @@ log_msg "$SCRIPT" " * DEBUG:          $DEBUG"
 log_msg "$SCRIPT" ' * Running poprep ...'
 # $INSTALLDIR/test_process_uploads.sh -i /var/lib/postgresql/incoming -l /home/zws/prp/prplog/popreport.log -u zws -g zws -a /home/popreport/production/apiis -b $BREEDNAME
 $APIIS_HOME/bin/process_uploads.sh -i $INCOMINGPATH \
-  -l $PRPLOGFILEPATH \
-  -u $USER \
-  -g $GROUP \
+  -l $GNMLOGFILE \
+  -u $WSUSER \
+  -g $WSGROUP \
   -a $APIIS_HOME \
   -p $PRPPROJPATH \
   -Z $DEBUG
