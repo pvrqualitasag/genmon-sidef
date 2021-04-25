@@ -182,4 +182,5 @@ From: ubuntu:18.04
   # change owner of webhome
   chown -R www-data: /var/www  
 
-  
+%environment
+  export PGPORT=5434
