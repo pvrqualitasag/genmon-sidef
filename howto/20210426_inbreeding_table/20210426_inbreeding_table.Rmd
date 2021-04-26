@@ -1,0 +1,84 @@
+---
+title: "Inzucht Generationen Intervall Freiberger"
+author: "Peter von Rohr"
+date: "4/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Disclaimer
+Check availablility of inbreeding for more than five years.
+
+
+## Available Tables in Database
+In case the information is available, it must be in one of the tables in the database.
+
+```
+psql -U geome_admin -d GenMon_CH -c "select column_name, data_type, character_maximum_length, column_default, is_nullable
+from INFORMATION_SCHEMA.COLUMNS;"
+psql -U geome_admin -d GenMon_CH -c "select *from INFORMATION_SCHEMA.COLUMNS;"
+psql -U geome_admin -d GenMon_CH -c "select table_name, column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name like '%inbr%'";
+
+    table_name     | column_name | data_type 
+-------------------+-------------+-----------
+ breed107_inbryear | breed       | numeric
+ breed107_inbryear | year        | text
+ breed107_inbryear | number      | bigint
+ breed107_inbryear | a_min       | numeric
+ breed107_inbryear | a_max       | numeric
+ breed107_inbryear | a_avg       | numeric
+ breed107_inbryear | a_dev       | numeric
+ ...
+ 
+```
+
+What are the different breeds
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM codes";
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM codes where long_name like 'Freiberger%'";
+db_code | short_name | ext_code |        class         |                     long_name                      
+---------+------------+----------+----------------------+----------------------------------------------------
+     123 | FMV1       |          | BREED                | FreibergerV1                                      
+     124 | FMV1_7     |          | BREED                | FreibergerV1                                      
+     125 | FM1F       |          | BREED                | FreibergerV1                                      
+     126 | FMV2F      |          | BREED                | FreibergerV2                                      
+     127 | FMV3F      |          | BREED                | FreibergerV3                                      
+     128 | FMV4F      |          | BREED                | FreibergerV4       
+     
+```
+
+Finding all tables for a given breed like 128
+
+```
+psql -U geome_admin -d GenMon_CH -c "select table_name, column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name like 'breed128%'";
+```
+
+Finding ne-tables for the same breed
+
+```
+psql -U geome_admin -d GenMon_CH -c "select table_name, column_name, data_type from INFORMATION_SCHEMA.COLUMNS where table_name like 'breed128_ne%'";
+
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed128_ne";
+psql -U geome_admin -d GenMon_CH -c "select * from breed128_ne_deltaf";
+```
+
+
+## Data Export
+According to: https://www.postgresqltutorial.com/export-postgresql-table-to-csv-file/ the COPY command can be used.
+
+```
+psql -U geome_admin -d GenMon_CH -c "COPY breed128_ne_deltaf TO '/tmp/breed128_ne_deltaf.csv' DELIMITER ',' CSV HEADER;"
+```
+
+
+
+```
+
+
+
