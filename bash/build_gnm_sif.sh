@@ -109,6 +109,47 @@ log_msg () {
   $ECHO "[${l_RIGHTNOW} -- ${l_CALLER}] $l_MSG"
 }
 
+#' ### Build Singularity Image File
+#' Run a singularity image build
+#+ singularity-build-image-fun
+singularity_build_image () {
+  SIFDIR=$(dirname $SIFPATH)
+  if [ ! -d "$SIFDIR" ]
+  then 
+    log_msg "singularity_build_image" " * Creating $SIFDIR ..."
+    mkdir -p $SIFDIR
+  fi  
+  log_msg "singularity_build_image" " * Building from singularity definition: $SIMGDEF to image path: $SIFPATH ..."
+  sudo singularity build $SIFPATH $SIMGDEF
+  # add link
+  if [ "$SIFLINK" != '' ]
+  then
+    if [ -e "$SIFLINK" ]
+    then
+      log_msg "$SCRIPT" " * Removing existing link: $SIFLINK ..."
+      rm $SIFLINK
+    fi
+    log_msg "singularity_build_image" " * Adding link from $SIFPATH to $SIFLINK ..."
+    ln -s $SIFPATH $SIFLINK
+  fi  
+}
+
+#' ### Build Singularity Sandbox
+#' Build singularity container in a sandbox directory
+#+ singularity-build-sandbox-fun
+singularity_build_sandbox () {
+  log_msg "singularity_build_sandbox" " * Building from singularity definition: $SIMGDEF to sandbox directory: $SBDIR ..."
+  sudo singularity build --sandbox $SBDIR $SIMGDEF  
+}
+
+#' ### Replace PGPORT Place Holder
+#' Replace the placeholder for PGPORT in $SIMGDEF 
+#+ replace-pg-port-fun
+replace_pg_port () {
+  log_msg "$replace_pg_port" " * Replace PGPORT placeholder with $NEWPGPORT in $SIMGDEF ..."
+  sed -i -e "s/___PGPORT___/$NEWPGPORT/g" $SIMGDEF
+}
+
 
 #' ## Main Body of Script
 #' The main body of the script starts here.
@@ -127,6 +168,7 @@ SIFPATH="${GNMADMINHOME}/simg/img/genmon/${TDATE}_gnm.sif"
 SIFDIR=$(dirname $SIFPATH)
 SIFLINK="${GNMADMINHOME}/simg/img/genmon/gnm.sif"
 SBDIR=''
+NEWPGPORT=''
 PARAMFILE=''
 while getopts ":d:f:l:p:s:h" FLAG; do
   case $FLAG in
@@ -173,7 +215,6 @@ then
 fi
 
 
-
 #' ## Checks for Command Line Arguments
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
@@ -182,34 +223,25 @@ if test "$SIMGDEF" == ""; then
   usage "-d <def_file> not defined"
 fi
 
+
+#' ## Replace PGPORT
+#' Replace the placeholder in $SIMGDEF for the postgres port PGPORT
+if [ "$NEWPGPORT" != '' ]
+then
+  log_msg "$SCRIPT" " * Replace PGPORT placeholder in $SIMGDEF ..."
+  replace_pg_port
+fi
+
+
 #' ## Run Singularity Build
 #' Depending on option run the build command
 #+ simg-build
 if [ "$SIFPATH" != '' ]
 then
-  SIFDIR=$(dirname $SIFPATH)
-  if [ ! -d "$SIFDIR" ]
-  then 
-    log_msg "$SCRIPT" " * Creating $SIFDIR ..."
-    mkdir -p $SIFDIR
-  fi  
-  log_msg "$SCRIPT" " * Building from singularity definition: $SIMGDEF to image path: $SIFPATH ..."
-  sudo singularity build $SIFPATH $SIMGDEF
-  # add link
-  if [ "$SIFLINK" != '' ]
-  then
-    if [ -e "$SIFLINK" ]
-    then
-      log_msg "$SCRIPT" " * Removing existing link: $SIFLINK ..."
-      rm $SIFLINK
-    fi
-    log_msg "$SCRIPT" " * Adding link from $SIFPATH to $SIFLINK ..."
-    ln -s $SIFPATH $SIFLINK
-  fi
+  singularity_build_image
 elif [ "$SBDIR" != '' ]
 then
-  log_msg "$SCRIPT" " * Building from singularity definition: $SIMGDEF to sandbox directory: $SBDIR ..."
-  sudo singularity build --sandbox $SBDIR $SIMGDEF
+  singularity_build_sandbox
 else
   usage "either -f <singularity_image_file> or -s <sandbox_dir> must be defined"
 fi

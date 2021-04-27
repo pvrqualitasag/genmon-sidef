@@ -88,6 +88,13 @@ From: ubuntu:18.04
   mv poprep/libgfortran/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/
   ln -s /usr/lib/x86_64-linux-gnu/libgfortran.so.3.0.0 /usr/lib/x86_64-linux-gnu/libgfortran.so.3
   
+  # replace PGPORT replacement
+  grep -r __PGPORT__ poprep/production/* | cut -d ':' -f1 | while read f
+  do
+    echo " * Replacing PGPORT in $f ..."
+    sed -i -e "s/__PGPORT__/___PGPORT___/g" $f
+  done
+  
   # prepare directory for poprep
   mv poprep/production /home/popreport
   chmod -R 777 /home/popreport/production
@@ -183,4 +190,4 @@ From: ubuntu:18.04
   chown -R www-data: /var/www  
 
 %environment
-  export PGPORT=5434
+  export PGPORT=___PGPORT___
