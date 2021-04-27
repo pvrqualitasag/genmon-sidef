@@ -215,8 +215,11 @@ if [ `su -c "$PGISREADY" $PGUSER | grep 'accepting connections' | wc -l` -eq 1 ]
 then
   log_msg "$SCRIPT" ' * Postgresql database already running ...'
 else
-  log_msg "$SCRIPT" ' * Starting Postgresql database  ...'
-  su -c "$PGCTL -D $DATADIR -l $PGLOGFILE start" $PGUSER
+  log_msg "$SCRIPT" ' * Starting Postgresql database with ...'
+  log_msg "$SCRIPT" " * Data directory: $PGDATADIR  ..."
+  log_msg "$SCRIPT" " * Log file:       $PGLOGFILE  ..."
+  log_msg "$SCRIPT" " * User:           $PGUSER  ..."
+  su -c "$PGCTL -D $PGDATADIR -l $PGLOGFILE start" $PGUSER
 fi
 
 
