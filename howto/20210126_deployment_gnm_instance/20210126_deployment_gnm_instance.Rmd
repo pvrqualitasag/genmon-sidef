@@ -67,9 +67,21 @@ The Post-Building steps required for running GenMon are done using the script `p
 sudo singularity shell --shell /bin/bash instance://gnmsicnt
 # run post_install
 cd /home/gnmzws/
-
+./simg/genmon-sidef/bash/post_install_gnm.sh -p simg/genmon-sidef/par/gnm_config.par
 ```
 
 
 
 # Starting the GenMon-System
+Once the post-installation is done, the database can be started with
+
+```
+./simg/genmon-sidef/bash/gnm_pg_start.sh -p simg/genmon-sidef/par/gnm_config.par
+```
+
+The database is stopped with
+
+```
+./simg/genmon-sidef/bash/gnm_pg_stop.sh -p simg/genmon-sidef/par/gnm_config.par
+```
+
