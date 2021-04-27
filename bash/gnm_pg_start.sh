@@ -58,9 +58,10 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -d <data_directory> -l <log_directory>"
-  $ECHO "  where -d <data_directory>   --  specify the data directory with which the pg-server is running (optional)"
-  $ECHO "        -l <log_directory>    --  specify the log directory (optional)"
+  $ECHO "Usage: $SCRIPT -d <data_directory> -l <log_directory> -p <param_config_file>"
+  $ECHO "  where -d <data_directory>     --  specify the data directory with which the pg-server is running (optional)"
+  $ECHO "        -l <log_directory>      --  specify the log directory (optional)"
+  $ECHO "        -p <param_config_file>  --  parameter configuration file"
   $ECHO ""
   exit 1
 }
@@ -116,18 +117,18 @@ get_pg_version () {
       # need PG_SUBVERSION  like 4
       # need PG_VERSION     like 9
       # need PG_PACKET      like postgresql_11
-      PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}')
+      PG_PACKET=$(dpkg -l postgresql*    | egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}')
       PG_SUBVERSION=''
       if [ -n "$PG_PACKET"  ]; then
          if [[ $PG_PACKET = *9.* ]]; then
            # subv wird packet bei 10 11 etc
-           PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-9.//')
+           PG_SUBVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}'|sed -e 's/postgresql-9.//')
          else
            PG_SUBVERSION=' '
            echo no subversion
         fi
       fi
-      PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "SQL database, version" |awk '{print $2}'|sed -e 's/postgresql-//')  
+      PG_ALLVERSION=$(dpkg -l postgresql*| egrep 'ii ' |egrep "$PGVERPATTERN" |awk '{print $2}'|sed -e 's/postgresql-//')  
     fi 
     # check whether version could be determined
     if [ "$PG_ALLVERSION" == '' ]
@@ -144,16 +145,43 @@ get_pg_version () {
 #+ start-msg, eval=FALSE
 start_msg
 
-#' ## Getopts for Commandline Argument Parsing
-#' If an option should be followed by an argument, it should be followed by a ":".
-#' Notice there is no ":" after "h". The leading ":" suppresses error messages from
-#' getopts. This is required to get my unrecognized option code to work.
-#+ getopts-parsing, eval=FALSE
-QUAGADMINHOME=/home/quagadmin
-DATADIR=${QUAGADMINHOME}/gnm/pgdata
-LOGDIR=${QUAGADMINHOME}/gnm/pglog
-DATADIR=${QUAGADMINHOME}/gnm/pgdata
-PGVERSIONFILE=$DATADIR/PG_VERSION
+GNMADMINHOME=/home/gnmzws
+GNMWORKDIR=${GNMADMINHOME}/gnm                          
+PGDATADIR=${GNMWORKDIR}/pgdata                          
+PGLOGDIR=${GNMWORKDIR}/pglog                            
+PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
+PGVERSIONFILE=$PGDATADIR/PG_VERSION
+PGVERPATTERN='Relational Database'
+NEWPGPORT='15433'
+PGUSER=postgres
+PARAMFILE=''
+while getopts ":p:h" FLAG; do
+  case $FLAG in
+    h)
+      usage "Help message for $SCRIPT"
+      ;;
+    p)
+      PARAMFILE=$OPTARG
+      ;;
+    :)
+      usage "-$OPTARG requires an argument"
+      ;;
+    ?)
+      usage "Invalid command line argument (-$OPTARG) found"
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
+
+
+#' ## Read Parameter Input
+#' If a parameter file is specified we read the input
+if [ "$PARAMFILE" != '' ]
+then
+  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+  source $PARAMFILE
+fi
 
 
 #' ### Determine Version of PG
@@ -165,15 +193,31 @@ get_pg_version
 #' ### Define Variable
 #' Commands used with pg are defined with variables
 #+ pg-var-def
-PGCTL="/usr/lib/postgresql/$PG_ALLVERSION/bin/pg_ctl"
-PG_PORT='5433'
-PGUSER=postgres
-LOGFILE=$LOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log
+PGBIN="/usr/lib/postgresql/$PG_ALLVERSION/bin"
+PGCTL=$PGBIN/pg_ctl
+PGISREADY=$PGBIN/pg_isready
+
+#' ### Export Postgresql Port
+#' If alternative port is specified, then export it
+if [ "$NEWPGPORT" != '' ]
+then
+  log_msg "$SCRIPT" " ** Postgresql port specified as $NEWPGPORT ==> exported as PGPORT"
+  export PGPORT=$NEWPGPORT
+else
+  log_msg "$SCRIPT" ' ** Use postgresql default port ...'
+fi
 
 #' ## Starting the pg-server
-#' The pg-server is started with the pg_ctl command
-#+ pg-server-stop
-su -c "$PGCTL -D $DATADIR -l $LOGFILE start" $PGUSER
+#' The pg-server is started with the pg_ctl command, if it is not 
+#' already running
+#+ pg-server-start
+if [ `su -c "$PGISREADY" $PGUSER | grep 'accepting connections' | wc -l` -eq 1 ]
+then
+  log_msg "$SCRIPT" ' * Postgresql database already running ...'
+else
+  log_msg "$SCRIPT" ' * Starting Postgresql database  ...'
+  su -c "$PGCTL -D $DATADIR -l $PGLOGFILE start" $PGUSER
+fi
 
 
 #' ## End of Script
