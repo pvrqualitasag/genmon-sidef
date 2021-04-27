@@ -146,7 +146,7 @@ singularity_build_sandbox () {
 #' Replace the placeholder for PGPORT in $SIMGDEF 
 #+ replace-pg-port-fun
 replace_pg_port () {
-  log_msg "$replace_pg_port" " * Replace PGPORT placeholder with $NEWPGPORT in $SIMGDEF ..."
+  log_msg "replace_pg_port" " * Replace PGPORT placeholder with $NEWPGPORT in $SIMGDEF ..."
   sed -i -e "s/___PGPORT___/$NEWPGPORT/g" $SIMGDEF
 }
 
