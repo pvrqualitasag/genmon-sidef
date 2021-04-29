@@ -1,0 +1,66 @@
+---
+title: "Postprocessing BVCH Pedigree"
+author: "Peter von Rohr"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+The PopReport results for the BVCH pedigree are postprocessed. 
+
+
+# Project
+The project name is found by 
+
+```
+psql -U postgres -d GenMon_CH -c "SELECT datname FROM pg_database where datname like 'PPP%';"
+```
+
+From the poprep output, we know that the project name is `PPP_sOIJi5jOrPpzw`
+
+
+# Tables with PopRep Results
+Tables created by PopRep
+
+```
+PRPPROJ=PPP_sOIJi5jOrPpzw
+psql -U postgres -d $PRPPROJ -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin';"
+```
+
+
+# Breed ID
+How do we have to determine the breed ID
+
+```
+psql -U postgres -d GenMon_CH -c "select * from codes"
+```
+
+which is still empty.
+
+Content of species table
+
+```
+psql -U postgres -d GenMon_CH -c "select * from species"
+```
+
+still empty.
+
+Weights
+
+```
+psql -U postgres -d GenMon_CH -c "select * from thres_weight"
+```
+
+default weights are found.
+
+# Summary
+
+```
+psql -U postgres -d GenMon_CH -c "select * from summary"
+```
+
+
