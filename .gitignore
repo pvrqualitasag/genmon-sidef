@@ -4,3 +4,4 @@
 .Ruserdata
 *.html
 scratch
+.DS_Store
