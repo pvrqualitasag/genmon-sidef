@@ -184,3 +184,55 @@ From the existing installation
 ```
 psql -U geome_admin -d GenMon_CH -c "select * from thres_weight where owner = 'default'"
 ```
+
+
+Next trial for postprocessing
+
+```
+Singularity> cd /home/gnmzws/source/GENMON
+Singularity> php -f PostprocessPopRep.php
+
+PHP Warning:  pg_fetch_result(): Unable to jump to row 0 on PostgreSQL result index 10 in /home/gnmzws/source/GENMON/PostprocessPopRep.php on line 55
+pg_dump: [archiver (db)] connection to database "apiis_admin" failed: FATAL:  database "apiis_admin" does not exist
+PHP Warning:  pg_query(): Query failed: ERROR:  relation "apiis_admin.tmp2_table3" does not exist in /home/gnmzws/source/GENMON/PostprocessPopRep.php on line 90
+PHP Warning:  pg_query(): Query failed: ERROR:  relation "tmp2_table3" does not exist in /home/gnmzws/source/GENMON/PostprocessPopRep.php on line 94
+ls: cannot access '/var/lib/postgresql/projects//*.pdf': No such file or directory
+mv: missing destination file operand after '/var/www/html/genmon-ch/pdf/error-BV.pdf'
+Try 'mv --help' for more information.
+rm: cannot remove '/var/lib/postgresql/projects/': Device or resource busy
+dropdb: missing required argument database name
+Try "dropdb --help" for more information.
+PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/gnmzws/source/GENMON/logger.php:56) in /home/gnmzws/source/GENMON/PostprocessPopRep.php on line 101
+```
+
+# Drop Databases
+The following command allows to delete a database
+
+```
+dropdb -U apiis_admin -w PPP_CLBgBYyker8lM
+dropdb -U apiis_admin -w PPP_Zu57A2p0UPLEU
+```
+
+
+# Problems
+
+## P1: Empty project name
+Project cannot be found
+
+```
+psql -U geome_admin -d GenMon_CH -c "SELECT * FROM pg_database"
+```
+
+Most likely the database for the project was aready deleted.
+
+## Solution
+Re-run analysis for BV
+
+```
+/home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh \
+-b BV \
+-p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par \
+-d /home/gnmzws/gnm/prpinput/PopReport_Braunvieh_20210325.csv_adaptfin7.csv -Z &> /home/gnmzws/gnm/prplog/`date +"%Y%m%d%H%M%S"`_prp.log
+```
+
+

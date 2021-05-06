@@ -8,6 +8,7 @@ sudo singularity shell --shell /bin/bash instance://gnmsicnt
 
 # BV
 /home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh \
+-b BV \
 -p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par \
 -d /home/gnmzws/gnm/prpinput/PopReport_Braunvieh_20210325.csv_adaptfin7.csv -Z &> /home/gnmzws/gnm/prplog/`date +"%Y%m%d%H%M%S"`_prp.log
 
