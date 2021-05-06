@@ -47,7 +47,7 @@ Content of species table
 psql -U postgres -d GenMon_CH -c "select * from species"
 ```
 
-still empty.
+still empty. The species table seams to related users of the webapp to the different species that will be displayed. Here this does not seam to be important.
 
 Weights
 
@@ -107,6 +107,17 @@ Create new schema
 ```
 psql -U geome_admin -d GenMon_CH -c "CREATE SCHEMA IF NOT EXISTS apiis_admin"
 psql -U geome_admin -d GenMon_CH -c "SELECT schema_name FROM information_schema.schemata"
+    schema_name     
+--------------------
+ pg_toast
+ pg_temp_1
+ pg_toast_temp_1
+ pg_catalog
+ public
+ information_schema
+ apiis_admin
+(7 rows)
+
 ```
 
 Check codes
@@ -123,8 +134,53 @@ psql -U geome_admin -d GenMon_CH -c "select * from codes"
 Insert codes
 
 ```
-psql -U geome_admin -d GenMon_CH -c "insert into codes (db_code, short_name, class, long_name) values(6, 'BV', 'BREED', 'Braunvieh' "
+psql -U geome_admin -d GenMon_CH -c "insert into codes (db_code, short_name, class, long_name) values(6, 'BV', 'BREED', 'Braunvieh')"
 ```
 
+Check codes after insert
 
+```
+psql -U geome_admin -d GenMon_CH -c "select * from codes"
+ db_code | short_name | ext_code |        class         |                     long_name                      
+---------+------------+----------+----------------------+----------------------------------------------------
+       6 | BV         |          | BREED                | Braunvieh                                         
+(1 row)
 
+```
+
+Weights for the different indices
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from thres_weight"
+        criteria         |  t1  |  t2  | weight | crit_type |  owner  | species 
+-------------------------+------+------+--------+-----------+---------+---------
+ percent_change_wsl      |   94 |  100 |    0.2 | SocioEco  | default | 
+ percent_farmer          |    1 |   16 |    0.1 | SocioEco  | default | 
+ ne                      |   50 |  250 |    0.4 | demo      | default | 
+ percent_grazing_surface |    6 |   30 |   0.15 | SocioEco  | default | 
+ cryo_cons               |    0 |    1 |    0.1 | final     | default | 
+ avg_inb                 |  0.1 | 0.03 |   0.15 | demo      | default | 
+ percent_less_19         |    3 |   10 |   0.05 | SocioEco  | default | 
+ index_demo              |    0 |    1 |    0.5 | final     | default | 
+ trend_females           |   -5 |    0 |   0.15 | demo      | default | 
+ index_socio_eco         |    0 |    1 |    0.1 | final     | default | 
+ percent_more_65         |   20 |    4 |   0.15 | SocioEco  | default | 
+ introgression           | 0.15 | 0.03 |   0.15 | final     | default | 
+ unemployment_rate       |    5 |    2 |      0 | SocioEco  | default | 
+ breed_cultural_value    |    0 |    1 |    0.1 | SocioEco  | default | 
+ min_radius              |   20 |   50 |   0.15 | final     | default | 
+ trend_females           |   -5 |    0 |   0.15 | demo      | blw     | Cattle
+ breed_num_farms_trend   |   -5 |    0 |    0.1 | SocioEco  | default | 
+ demog_balance           |    0 |    3 |   0.05 | SocioEco  | default | 
+ evol_job_primary_sector |    0 |   10 |    0.1 | SocioEco  | default | 
+ trend_males             |   -5 |    0 |   0.15 | demo      | default | 
+ ped_compl               |   87 |   97 |   0.15 | demo      | default | 
+(21 rows)
+
+```
+
+From the existing installation
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from thres_weight where owner = 'default'"
+```
