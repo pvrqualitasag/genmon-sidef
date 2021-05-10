@@ -17,7 +17,7 @@ The PopReport results for the BVCH pedigree are postprocessed.
 The project name is found by 
 
 ```
-psql -U postgres -d GenMon_CH -c "SELECT datname FROM pg_database where datname like 'PPP%';"
+psql -U postgres -d GenMon_CH -c "SELECT datname FROM pg_database where datname like 'PPP%'"
 ```
 
 From the poprep output, we know that the project name is `PPP_sOIJi5jOrPpzw`
@@ -27,7 +27,7 @@ From the poprep output, we know that the project name is `PPP_sOIJi5jOrPpzw`
 Tables created by PopRep
 
 ```
-PRPPROJ=PPP_sOIJi5jOrPpzw
+PRPPROJ=PPP_X70k7O8Ev7stQ
 psql -U postgres -d $PRPPROJ -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin';"
 ```
 
@@ -236,3 +236,10 @@ Re-run analysis for BV
 ```
 
 
+# Testing Postprocessing Script
+A test script for the postprocessing is created. This is executed to run some tests.
+
+```
+cd /home/gnmzws/source/GENMON
+php -f TestPostprocessPopRep.php
+```
