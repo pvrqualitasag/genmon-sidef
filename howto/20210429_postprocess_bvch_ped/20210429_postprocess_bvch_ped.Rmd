@@ -243,3 +243,44 @@ A test script for the postprocessing is created. This is executed to run some te
 cd /home/gnmzws/source/GENMON
 php -f TestPostprocessPopRep.php
 ```
+
+
+# Running Complete Postprocessing Script
+
+Error
+
+```
+php -f PostprocessPopRep.php
+
+
+
+PHP Warning:  pg_query(): Query failed: ERROR:  type "method" does not exist
+LINE 1: ...TE summary SET ne=(select ne from breed6_ne where method 'Ne...
+                                                             ^ in /home/gnmzws/source/GENMON/PostprocessPopRep.php on line 439
+```
+
+Debugging sql statement
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from breed6_ne"
+```
+
+Check on table with NE
+
+```
+PRPPROJ=PPP_X70k7O8Ev7stQ
+psql -U apiis_admin -d $PRPPROJ -c "select * from tmp2_ne"
+  method   | ne  | description 
+------------+-----+-------------
+ Ne_DeltaFg | 136 |  
+ Ne_Deltafg | 208 |  
+(2 rows)
+
+```
+
+# Results in Summary Table 
+Check the summary table
+
+```
+psql -U geome_admin -d GenMon_CH -c "select * from summary"
+```
