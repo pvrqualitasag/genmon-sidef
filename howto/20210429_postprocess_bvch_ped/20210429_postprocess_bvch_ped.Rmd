@@ -284,3 +284,16 @@ Check the summary table
 ```
 psql -U geome_admin -d GenMon_CH -c "select * from summary"
 ```
+
+
+# Corrected Pedigree
+The pedigree was corrected by adapting the introgression coefficients. Hence, the pedigree must be re-analysed.
+
+```
+/home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh \
+-b BV \
+-p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par \
+-d /home/gnmzws/gnm/prpinput/PopReport_BV_20210510.csv_conv.csv_adaptfin7.csv -Z &> /home/gnmzws/gnm/prplog/`date +"%Y%m%d%H%M%S"`_prp.log
+
+```
+
