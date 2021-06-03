@@ -297,3 +297,43 @@ The pedigree was corrected by adapting the introgression coefficients. Hence, th
 
 ```
 
+# Inspect Results
+The first step is to find out the name of the project under which the pedigree was analysed in PopReport. This can be seen from the directory namens under `/var/lib/postgres/projects`
+
+```
+# assign to variable
+PROJNAME=$(ls -1tr /home/gnmzws/gnm/bindroot/projects | tail -1)
+echo $PROJNAME
+```
+
+The project database with all the PopReport results is obtained by the following statement
+
+```{bash}
+psql -U postgres -d GenMon_CH -c "SELECT datname FROM pg_database where datname = '$PROJNAME'"
+
+#      datname      
+#-------------------
+# PPP_NJbjmWSmjuVRo
+#(1 row)
+
+```
+
+Run the PHP postprocessing script step-by-step by first creating the SQL-script `PostprocessPopRep.sql` 
+
+```{bash}
+# start interactive version of psql client
+psql -U geome_admin -d GenMon_CH
+
+-- terminate the client
+GenMon_CH=# \q
+```
+
+
+Run a bash version (`PostprocessPopRep.sh`) of the PHP postprocessing script `PostprocessPopRep.php` 
+
+```{bash}
+source PostprocessPopRep.sh
+
+```
+
+
