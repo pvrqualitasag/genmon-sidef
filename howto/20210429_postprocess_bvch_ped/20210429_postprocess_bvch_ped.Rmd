@@ -332,7 +332,7 @@ GenMon_CH=# \q
 Run a bash version (`PostprocessPopRep.sh`) of the PHP postprocessing script `PostprocessPopRep.php` 
 
 ```{bash}
-source PostprocessPopRep.sh
+source PostprocessPopRep.sh &> `date +"%Y%m%d%H%M%S"`_PostprocessPopRep.log
 
 ```
 
