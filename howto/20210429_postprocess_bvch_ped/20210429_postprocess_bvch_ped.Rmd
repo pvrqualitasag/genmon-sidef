@@ -331,9 +331,14 @@ GenMon_CH=# \q
 
 Run a bash version (`PostprocessPopRep.sh`) of the PHP postprocessing script `PostprocessPopRep.php` 
 
-```{bash}
+```{bash, eval=FALSE}
 source PostprocessPopRep.sh &> `date +"%Y%m%d%H%M%S"`_PostprocessPopRep.log
-
 ```
+
+
+# Update Summary Table
+The table `summary` can only be updated, if there exists already an entry for the breed for which the results are to be entered. In the web-version the record for a given breed is entered in `AddBreed.php`. 
+
+The necessary insert statements were added to the postprocessing script.
 
 
