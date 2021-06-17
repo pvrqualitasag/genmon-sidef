@@ -1,0 +1,32 @@
+---
+title: "Introgression in BV Pedigree"
+author: "Peter von Rohr"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+
+
+# Checks
+Introgression in table `breed6_data`
+
+```
+psql -U postgres -d GenMon_CH -c "select count(*) from breed6_data where introgression != NULL"
+```
+
+
+# Latest PopRep Call for BV
+
+```
+/home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh -b BV -p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par -d /home/gnmzws/gnm/prpinput/PopReport_BV_20210510.csv_conv.csv_adaptfin7.csv -Z &> /home/gnmzws/gnm/prplog/`date +"%Y%m%d%H%M%S"`_prp.log
+```
+
+
+# Analysis of Pedigree 
+Check for introgression in pedigree
+
