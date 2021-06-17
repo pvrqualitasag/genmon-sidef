@@ -342,3 +342,8 @@ The table `summary` can only be updated, if there exists already an entry for th
 The necessary insert statements were added to the postprocessing script.
 
 
+# Latest PopRep Call for BV
+
+```
+/home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh -b BV -p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par -d /home/gnmzws/gnm/prpinput/PopReport_BV_20210510.csv_conv.csv_adaptfin7.csv -Z &> /home/gnmzws/gnm/prplog/`date +"%Y%m%d%H%M%S"`_prp.log
+```
