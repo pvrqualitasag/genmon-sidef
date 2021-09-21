@@ -1,0 +1,30 @@
+---
+title: Re-Design GenMon System
+author: Peter von Rohr
+date: "`r Sys.Date()`"
+output: html_documemt
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+A proposal for a re-design of the GenMon system is described. 
+
+
+# Current Status
+The current status of the GENMON system is that a PHP-Webapplication drives the following computational steps
+
+* upload and preliminary check of pedigrees
+* analysis of pedigree with PopRep
+* collection of results from PopRep
+* Display of results in tables and diagrams
+
+The whole system works in principle, but it has some severe design problems. Two of the most important problems are 
+
+* no multi-threaded analysis of pedigrees
+* large pedigrees which are common in livestock populations cannot be analysed with the current system, because the PopRep analysis takes too long to complete.
+
+
+# Re-Design
