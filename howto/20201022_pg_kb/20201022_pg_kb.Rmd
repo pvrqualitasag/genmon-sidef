@@ -109,6 +109,12 @@ The list of available databases are obtained by
 psql -U postgres -c 'SELECT datname FROM pg_database;'
 ```
 
+A more detailed output with selected columns of `pg_database` can be obtained by
+
+```
+psql -U postgres -l
+```
+
 
 ## Schemas
 A database contains one or more named schemas. These schemas in turn contain tables. Besides the tables, schemas also contain other types of objects such as datatypes, functions and operators. 

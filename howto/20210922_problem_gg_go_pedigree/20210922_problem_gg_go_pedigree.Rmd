@@ -1,0 +1,46 @@
+---
+title: Debug Problems with Pedigrees of GG and GO
+author: pvr
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+
+
+# Delete Prp Project DBs
+Old PopRep databases are not deleted which causes problems in the postprocessing.
+
+These databases are deleted with
+
+```
+# get shell in correct container
+sudo singularity shell --shell /bin/bash instance://signm
+```
+
+Run the drop-db commands
+
+```
+psql -U postgres -c "SELECT datname FROM pg_database where datname like 'PPP_%';" | grep PPP | while read d;do echo " * Dropping $d ...";dropdb -U postgres $d;sleep 2;done
+
+psql -U postgres -c "SELECT datname FROM pg_database where datname like 'PPP_%';" | grep PPP | while read d
+do 
+  echo " * Dropping $d ..."
+  dropdb -U postgres $d
+  sleep 2
+done
+```
+
+Check whether old project databases are still around
+
+```
+psql -U postgres -l
+#==> ok
+```
+
+
+The GG Pedigree is re-run.

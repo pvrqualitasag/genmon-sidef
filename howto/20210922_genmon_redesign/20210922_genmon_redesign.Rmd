@@ -1,0 +1,28 @@
+---
+title: Re-Design GenMon Analysis Process
+author: Peter von Rohr
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+The current process of how an analysis with GenMon is done is described. Based on the problems with the existing process an alternative is proposed.
+
+
+# GenMon Analysis Process
+In GenMon the pedigree of a certain breed augmented with the postal code for each animal is analysed. The first step in the analysis is done using PopRep. PopRep computes certain characteristics of the population given by the pedigree. The GenMon analysis requires besides the pedigree input file also a parameter file. In this parameter file the most important piece of information is the name of the breed to which the animals in the pedigree belong to. The other information in the parameter file is required by PopRep but does not influence the rest of the analysis. The content of a parameter file is given below
+
+```
+
+```
+
+
+# PopRep Analysis
+
+
+# Postprocessing of PopRep Results
+
