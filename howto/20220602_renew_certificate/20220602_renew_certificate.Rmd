@@ -1,0 +1,20 @@
+---
+title: "Renew Certificat"
+output: html_notebook
+---
+
+Renewal of certificate for the website fagr.genmon.ch is done with the following steps
+
+```bash
+cd /etc/nginx/sites-enabled/
+sudo rm fagr 
+sudo ln -s ../sites-available/.fagr.renew fagr
+sudo systemctl reload nginx
+sudo certbot renew --dry-run
+sudo certbot renew
+sudo rm fagr
+sudo ln -s ../sites-available/.fagr.prod fagr
+sudo systemctl reload nginx
+```
+
+Check the certificate at `fagr.genmon.ch`
