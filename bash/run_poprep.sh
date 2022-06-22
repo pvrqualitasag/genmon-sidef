@@ -138,6 +138,7 @@ write_parameter_file () {
   echo "dateformat=${DATEFORMAT}" >> $l_PARAMFILE
   echo "datesep=${DATESEP}" >> $l_PARAMFILE
   echo "get_tar=0" >> $l_PARAMFILE
+  echo "prp_wd=${PRPPROJWORKPATH}" >> $l_PARAMFILE
 }
 
 #' ### Move Pedigree
@@ -172,7 +173,7 @@ GNMLOGFILE=''
 WSUSER=''
 WSGROUP=''
 PRPPROJPATH=${BINDROOTCNTRPG}/projects
-PRPPROJWORDPATH=''
+PRPPROJWORKPATH=''
 DEBUG='false'
 PARAMFILE=''
 while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
@@ -215,7 +216,7 @@ while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
       PARAMFILE=$OPTARG
       ;;
     r)
-      PRPPROJWORDPATH=$OPTARG
+      PRPPROJWORKPATH=$OPTARG
       ;;
     s)
       DATESEP=$OPTARG
@@ -275,12 +276,12 @@ then
 fi
 
 #' ## Overwrite PopRep Working Directory
-#' Use the variable PRPPROJWORDPATH which can only changed 
+#' Use the variable PRPPROJWORKPATH which can only changed 
 #' by option -r to over-write the poprep working directory
 #+ over-write-poprep-wd
-if [ "$PRPPROJWORDPATH" != "" ]
+if [ "$PRPPROJWORKPATH" != "" ]
 then
-  PRPPROJPATH=$PRPPROJWORDPATH
+  PRPPROJPATH=$PRPPROJWORKPATH
 fi
 
 #' ## Create Project Working directory
