@@ -278,7 +278,7 @@ fi
 #' Use the variable PRPPROJWORDPATH which can only changed 
 #' by option -r to over-write the poprep working directory
 #+ over-write-poprep-wd
-if [ "$PRPPROJWORDPATH" == "" ]
+if [ "$PRPPROJWORDPATH" != "" ]
 then
   PRPPROJPATH=$PRPPROJWORDPATH
 fi
