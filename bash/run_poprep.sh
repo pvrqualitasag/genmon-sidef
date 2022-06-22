@@ -172,6 +172,7 @@ GNMLOGFILE=''
 WSUSER=''
 WSGROUP=''
 PRPPROJPATH=${BINDROOTCNTRPG}/projects
+PRPPROJWORDPATH=''
 DEBUG='false'
 PARAMFILE=''
 while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
@@ -214,7 +215,7 @@ while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
       PARAMFILE=$OPTARG
       ;;
     r)
-      PRPPROJPATH=$OPTARG
+      PRPPROJWORDPATH=$OPTARG
       ;;
     s)
       DATESEP=$OPTARG
@@ -267,9 +268,19 @@ fi
 
 #' ## Path to PopRep Project Directory
 #' The project path for poprep is specified
+#+ default-poprep-wd
 if [ "$PRPPROJPATH" == "" ]
 then
   PRPPROJPATH=${BINDROOTCNTRPG}/projects
+fi
+
+#' ## Overwrite PopRep Working Directory
+#' Use the variable PRPPROJWORDPATH which can only changed 
+#' by option -r to over-write the poprep working directory
+#+ over-write-poprep-wd
+if [ "$PRPPROJWORDPATH" == "" ]
+then
+  PRPPROJPATH=$PRPPROJWORDPATH
 fi
 
 #' ## Create Project Working directory
