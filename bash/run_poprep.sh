@@ -174,7 +174,7 @@ WSGROUP=''
 PRPPROJPATH=${BINDROOTCNTRPG}/projects
 DEBUG='false'
 PARAMFILE=''
-while getopts ":b:p:e:l:m:f:g:d:s:u:i:y:hZ" FLAG; do
+while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
