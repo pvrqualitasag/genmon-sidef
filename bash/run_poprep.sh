@@ -275,8 +275,11 @@ fi
 #' ## Create Project Working directory
 #' The working directory for PopRep is created, 
 #' if it does not exist yet.
-if [ !-d "$PRPPROJPATH" ];then 
-  log_msg $SCRIPT " * Create PopRep working directory: $PRPPROJPATH ..."
+log_msg $SCRIPT " * Check existance of PopRep working directory: $PRPPROJPATH ..."
+if [ -d "$PRPPROJPATH" ];then 
+  log_msg $SCRIPT "   ==> FOUND PopRep working directory: $PRPPROJPATH ..."
+else  
+  log_msg $SCRIPT "   ==> Create PopRep working directory: $PRPPROJPATH ..."
   mkdir -p $PRPPROJPATH
 fi
 
