@@ -58,7 +58,7 @@ SERVER=`hostname`                          # put hostname of server in variable 
 usage () {
   local l_MSG=$1
   $ECHO "Usage Error: $l_MSG"
-  $ECHO "Usage: $SCRIPT -b <breed_name> -d <pedigree_data_file> -e <email_address> -l <prp_logfile_path> -m <male_char> -f <female_char> -g <group> -y <date_format> -s <data_sep> -u <user> -i <incoming_dir> -p <parameter_file>"
+  $ECHO "Usage: $SCRIPT -b <breed_name> -d <pedigree_data_file> -e <email_address> -l <prp_logfile_path> -m <male_char> -f <female_char> -g <group> -y <date_format> -s <data_sep> -u <user> -i <incoming_dir> -p <parameter_file> -r <poprep_proj_path>"
   $ECHO "  where -b <breed_name>          --  name of the breed"
   $ECHO "        -d <pedigree_data_file>  --  pedigree data file of the breed to be analysed"
   $ECHO "        -e <email_address>       --  e-mail address"
@@ -68,6 +68,7 @@ usage () {
   $ECHO "        -l <prp_logfile_path>    --  path to poprep logfile"
   $ECHO "        -m <male_char>           --  character representing male individual in pedigree"
   $ECHO "        -p <parameter_file>      --  input file with program parameter"
+  $ECHO "        -r <poprep_proj_path>    --  poprep project path"
   $ECHO "        -s <date_sep>            --  separator character for dates in pedigree"
   $ECHO "        -u <user>                --  user under which we run poprep"
   $ECHO "        -y <date_format>         --  format for dates in pedigree"
@@ -253,7 +254,7 @@ if test "$BREEDNAME" == ""; then
   usage "-b <breed_name> not defined"
 fi
 if test "$PEDIGREEFILE" == ""; then
-  usage "-p <pedigree_data_file> not defined"
+  usage "-d <pedigree_data_file> not defined"
 fi
 
 
@@ -271,6 +272,13 @@ then
   PRPPROJPATH=${BINDROOTCNTRPG}/projects
 fi
 
+#' ## Create Project Working directory
+#' The working directory for PopRep is created, 
+#' if it does not exist yet.
+if [ !-d "$PRPPROJPATH" ];then 
+  log_msg $SCRIPT " * Create PopRep working directory: $PRPPROJPATH ..."
+  mkdir -p $PRPPROJPATH
+fi
 
 
 #' ## Definition of Project Directory

@@ -79,10 +79,23 @@ The script `genmon-sidef/bash/run_poprep.sh` seams to be able to run a complete 
 A new test with this script is done via
 
 ```bash
-
+DATENOW=$(date +"%Y%m%d%H%M%S")
+PEDPATH=/home/gnmzws/simg/genmon-sidef/inst/extdata/gnm_test_data/data_sample.csv
+PEDFILE=$(basename $PEDPATH)
+PEDSTEM=$(echo $PEDFILE | cut -d '.' -f1)
+PRPPROJPATH=/home/gnmzws/gnm/prp_projects/${DATENOW}_$PEDSTEM
+/home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh -b tbc2022 \
+-d $PEDPATH \
+-p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par \
+-r $PRPPROJPATH
+-Z &> /home/gnmzws/gnm/prplog/${DATENOW}_prp.log
 ```
 ## Step 3: Indices from PopRep Results
 
 
+# TODO
+
+## Problem 1: No global index
+For the test dataset no global index is produced because some of the partial indices are missing
 
 
