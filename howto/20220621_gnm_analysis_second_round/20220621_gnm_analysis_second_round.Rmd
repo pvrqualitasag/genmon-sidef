@@ -70,6 +70,18 @@ In `run_popreport_file` the project-specific database is created and a basic str
 2. run_popreport and
 3. PRMON_MONITOR
 
+The script `genmon-sidef/bash/run_poprep.sh` seams to be able to run a complete PopRep analysis. This was already done on `fagr.genmon.ch` as user `gnmzws` as shown below. 
+
+```bash
+/home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh -b BV -p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par -d /home/gnmzws/gnm/prpinput/PopReport_BV_20210510.csv_conv.csv_adaptfin7.csv -Z &> /home/gnmzws/gnm/prplog/`date +"%Y%m%d%H%M%S"`_prp.log
+```
+
+A new test with this script is done via
+
+```bash
+
+```
+## Step 3: Indices from PopRep Results
 
 
 
