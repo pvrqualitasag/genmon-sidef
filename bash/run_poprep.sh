@@ -179,7 +179,7 @@ PRPPROJPATH=${BINDROOTCNTRPG}/projects
 PRPPROJWORKPATH=''
 DEBUG='false'
 PARAMFILE=''
-while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
+while getopts ":b:d:e:f:g:i:l:m:p:r:s:u:y:hZ" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -187,8 +187,12 @@ while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
     b)
       BREEDNAME=$OPTARG
       ;;
-    y)
-      DATEFORMAT=$OPTARG
+    d)
+      if test -f $OPTARG; then
+        PEDIGREEFILE=$OPTARG
+      else
+        usage "$OPTARG cannot be found as pedigree file ..."
+      fi
       ;;
     e)
       PRPEMAILADDRESS=$OPTARG
@@ -208,13 +212,6 @@ while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
     m)
       MALECHAR=$OPTARG
       ;;
-    d)
-      if test -f $OPTARG; then
-        PEDIGREEFILE=$OPTARG
-      else
-        usage "$OPTARG cannot be found as pedigree file ..."
-      fi
-      ;;
     p)
       PARAMFILE=$OPTARG
       ;;
@@ -226,6 +223,9 @@ while getopts ":b:p:e:l:m:f:g:d:r:s:u:i:y:hZ" FLAG; do
       ;;
     u)
       WSUSER=$OPTARG
+      ;;
+    y)
+      DATEFORMAT=$OPTARG
       ;;
     Z) 
       DEBUG='true'
