@@ -46,7 +46,7 @@ INSTALLDIR=`$DIRNAME ${BASH_SOURCE[0]}`    # installation dir of bashtools on ho
 #+ script-files, eval=FALSE
 SCRIPT=`$BASENAME ${BASH_SOURCE[0]}`       # Set Script Name variable                #
 SERVER=`hostname`                          # put hostname of server in variable      #
-
+DATENOW=$(date +"%Y-%m-%d-%H-%M-%S")
 
 
 #' ## Functions
@@ -282,9 +282,12 @@ fi
 #' Use the variable PRPPROJWORKPATH which can only changed 
 #' by option -r to over-write the poprep working directory
 #+ over-write-poprep-wd
+TDATE=$(echo $DATENOW | tr -d '-')
 if [ "$PRPPROJWORKPATH" != "" ]
 then
   PRPPROJPATH=$PRPPROJWORKPATH
+else
+  PRPPROJPATH=$PRPPROJPATH/${TDATE}_${BREEDNAME}
 fi
 
 #' ## Create Project Working directory
@@ -301,7 +304,6 @@ fi
 
 #' ## Definition of Project Directory
 #' Project is defined based on current date
-DATENOW=$(date +"%Y-%m-%d-%H-%M-%S")
 PROJDIR=${INCOMINGPATH}/${DATENOW}
 
 #' ## Prepare Requirements
