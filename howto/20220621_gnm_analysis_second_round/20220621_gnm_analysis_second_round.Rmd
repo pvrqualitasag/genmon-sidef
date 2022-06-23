@@ -79,16 +79,29 @@ The script `genmon-sidef/bash/run_poprep.sh` seams to be able to run a complete 
 A new test with this script is done via
 
 ```bash
-DATENOW=$(date +"%Y%m%d%H%M%S")
+TDATE=$(date +"%Y%m%d%H%M%S")
 PEDPATH=/home/gnmzws/simg/genmon-sidef/inst/extdata/gnm_test_data/data_sample.csv
 BREED=tbc2022
-PRPPROJPATH=/home/gnmzws/gnm/prp_projects/${DATENOW}_$BREED
+PRPPROJPATH=/home/gnmzws/gnm/prp_projects/${TDATE}_$BREED
 /home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh -b $BREED \
 -d $PEDPATH \
 -p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par \
 -r $PRPPROJPATH \
--Z &> /home/gnmzws/gnm/prplog/${DATENOW}_prp.log
+-Z &> /home/gnmzws/gnm/prplog/${TDATE}_prp.log
 ```
+
+The new call after inserting project dir generation based on starting time and breed name by default
+
+```bash
+PEDPATH=/home/gnmzws/simg/genmon-sidef/inst/extdata/gnm_test_data/data_sample.csv
+BREED=tbc2022
+/home/gnmzws/simg/genmon-sidef/bash/run_poprep.sh -b $BREED \
+-d $PEDPATH \
+-p /home/gnmzws/simg/genmon-sidef/par/gnm_config.par \
+-Z &> /home/gnmzws/gnm/prplog/${TDATE}_prp.log
+```
+
+
 
 
 ## Step 3: Indices from PopRep Results
