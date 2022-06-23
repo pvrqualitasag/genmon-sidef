@@ -139,6 +139,9 @@ write_parameter_file () {
   echo "datesep=${DATESEP}" >> $l_PARAMFILE
   echo "get_tar=0" >> $l_PARAMFILE
   echo "prp_wd=${PRPPROJWORKPATH}" >> $l_PARAMFILE
+  # copy parameter file to prp work directory
+  log_msg 'write_parameter_file' " * Copy $l_PARAMFILE to $PRPPROJPATH ..."
+  cp $l_PARAMFILE $PRPPROJPATH
 }
 
 #' ### Move Pedigree
