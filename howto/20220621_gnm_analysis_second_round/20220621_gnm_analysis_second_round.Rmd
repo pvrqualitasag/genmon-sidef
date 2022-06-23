@@ -101,10 +101,53 @@ BREED=tbc2022
 -Z &> /home/gnmzws/gnm/prplog/${TDATE}_prp.log
 ```
 
+This analysis makes it possible to extract the name of the database. 
 
+All old databases are listed by 
+
+```bash
+CURDB=PPP_xmKDvyg6exqF2
+psql -U postgres -l | grep PPP | grep -v "$CURDB" | cut -d ' ' -f2
+```
+
+This list can be deleted by
+
+```bash
+for db in $(psql -U postgres -l | grep PPP | grep -v "$CURDB" | cut -d ' ' -f2)
+do
+  echo " * Drop db: $db ..."
+  dropdb -p 5434 -U postgres $db
+  sleep 2
+done
+```
+
+Find the list of tables for a given database
+
+```bash
+CURDB=PPP_xmKDvyg6exqF2
+psql -U postgres -d $CURDB -c "SELECT * FROM pg_catalog.pg_tables"
+```
+
+The tables produced by PopRep are owned by 'apiis_admin'
+
+```bash
+CURDB=PPP_xmKDvyg6exqF2
+psql -U postgres -d $CURDB -c "SELECT * FROM pg_catalog.pg_tables WHERE tableowner = 'apiis_admin'"
+```
+
+Looking at a given table can be done with
+
+```bash
+CURDB=PPP_xmKDvyg6exqF2
+psql -U postgres -d $CURDB -c "SELECT * FROM apiis_admin.animal"
+```
 
 
 ## Step 3: Indices from PopRep Results
+From the php-code, we have to find out what tables are used to compute which index.
+
+
+
 
 
 # TODO
