@@ -92,7 +92,7 @@ From: ubuntu:18.04
   grep -r __PGPORT__ poprep/production/* | cut -d ':' -f1 | while read f
   do
     echo " * Replacing PGPORT in $f ..."
-    sed -i -e "s/__PGPORT__/___PGPORT___/g" $f
+    sed -i -e "s/__PGPORT__/5434/g" $f
   done
   
   # prepare directory for poprep
@@ -190,4 +190,4 @@ From: ubuntu:18.04
   chown -R www-data: /var/www  
 
 %environment
-  export PGPORT=___PGPORT___
+  export PGPORT=5434
