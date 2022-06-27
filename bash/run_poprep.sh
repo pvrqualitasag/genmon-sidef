@@ -138,7 +138,7 @@ write_parameter_file () {
   echo "dateformat=${DATEFORMAT}" >> $l_PARAMFILE
   echo "datesep=${DATESEP}" >> $l_PARAMFILE
   echo "get_tar=0" >> $l_PARAMFILE
-  echo "prp_wd=${PRPPROJWORKPATH}" >> $l_PARAMFILE
+  echo "prp_wd=${PRPPROJPATH}" >> $l_PARAMFILE
   # copy parameter file to prp work directory
   log_msg 'write_parameter_file' " * Copy $l_PARAMFILE to $PRPPROJPATH ..."
   cp $l_PARAMFILE $PRPPROJPATH
