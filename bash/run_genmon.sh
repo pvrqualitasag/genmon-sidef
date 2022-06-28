@@ -111,6 +111,8 @@ start_msg
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
 PARFILE=$PARDIR/gnm_config.par
+BINDROOTCNTRPG=/var/lib/postgresql
+PRPPROJPATH=''
 BREEDNAME=''
 PEDIGREEFILE=''
 while getopts ":b:d:h" FLAG; do
@@ -150,6 +152,12 @@ if test "$PEDIGREEFILE" == ""; then
   usage "-d <path_to_pedigree> not defined"
 fi
 
+#' ## Defaults for Optional Parameters
+#' Use meaningful default for optional parameters
+#+ param-defaults
+TDATE=$(date +"%Y%m%d%H%M%S")
+PRPPROJPATH=$BINDROOTCNTRPG/projects/${TDATE}_${BREEDNAME}
+
 
 #' ## Run PopRep Analysis
 #' The given pedigree is analysed using PopRep
@@ -157,8 +165,23 @@ fi
 $INSTALLDIR/run_poprep.sh -b $BREEDNAME \
 -d $PEDIGREEFILE \
 -p $PARFILE \
+-r $PRPPROJPATH \
 -Z
 
+
+#' ## Find PopRep Project Name
+#' For each analysis, poprep creates an unique project name, this is 
+#' required for the post-analysis
+#+ get-prp-proj-name
+PRPPROJNAME=$(ls -1 $PRPPROJPATH/PPP*)
+log_msg $SCRIPT " * PopRep project name: $PRPPROJNAME ..."
+
+
+#' ## Run Post-PopRep Analysis
+#' Indices for GenMon are computed in this analysis
+#+ post-pop-rep
+log_msg $SCRIPT " * Running post-prp-analysis for breed: "
+#$INSTALLDIR/post_prp_analysis.sh -b $BREEDNAME -p $PRPPROJNAME
 
 #' ## End of Script
 #' This is the end of the script with an end-of-script message.
