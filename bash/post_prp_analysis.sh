@@ -159,7 +159,7 @@ fi
 #+ prp-post-analysis
 # check whether the breed already exists in the table codes
 log_msg $SCRIPT " * Check record of breed $breed_short_name in table codes ..."
-nr_code_breed=$(psql -U postgres -d GenMon_CH -c "select count(*) from codes where short_name=$breed_short_name" | tail -3 | head -1)
+nr_code_breed=$(psql -U postgres -d GenMon_CH -c "select count(*) from codes where short_name='$breed_short_name'" | tail -3 | head -1)
 log_msg $SCRIPT " ** Number of rows for breed $breed_short_name in table codes: $nr_code_breed ..."
 # create entry, if none was found
 if [ $nr_code_breed -eq 0 ]
