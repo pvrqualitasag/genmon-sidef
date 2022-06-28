@@ -1,0 +1,63 @@
+---
+title: Testing R Postgres
+author: pvr
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+Test how easy it is to run post-poprep analysis with R and RPostgres
+
+
+# Installation of R
+First R must be installed in the container. This is done using the installation script in `qfztools`. 
+
+```bash
+cd ;cd simg
+git clone https://petervonrohr@bitbucket.org/fb-zws-container/qfzcnttools.git
+```
+
+Installation of R in existing gnm-container does not work.
+
+
+# Installation of RPostgres
+Installation of the R-package RPostgres on the host worked and connection to the database in the container could be established.
+
+The installation was done with the following commands
+
+```bash
+# Install Deb-Pkg
+sudo apt install libpq-dev libssl-dev -y
+
+# Installation of RPostgres
+sudo su - -c "R -e 'install.packages(\"RPostgres\", repo=\"https://cran.rstudio.com\", dependencies = TRUE)'"
+
+```
+
+The connection test worked with
+
+```r
+# Check connection
+library(DBI)
+# Connect to a specific postgres database i.e. Heroku
+con <- dbConnect(RPostgres::Postgres(),dbname = 'PPP_xmKDvyg6exqF2', 
+                 host = 'localhost', # i.e. 'ec2-54-83-201-96.compute-1.amazonaws.com'
+                 port = 5434, # or any other port specified by your DBA
+                 user = 'apiis_admin',
+                 password = 'pass')
+# send query
+res <- dbSendQuery(con, "SELECT * FROM pg_catalog.pg_tables")
+# show top of results
+head(dbFetch(res))
+# clear results
+dbClearResult(res)
+# disconnect
+dbDisconnect(con)
+```
+
+
+
