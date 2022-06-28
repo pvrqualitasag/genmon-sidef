@@ -162,19 +162,19 @@ fi
 #+ prp-post-analysis
 # check whether the breed already exists in the table codes
 log_msg $SCRIPT " * Check record of breed $breed_short_name in table codes ..."
-nr_code_breed=$(psql -U postgres -d GenMon_CH -c "select count(*) from codes where short_name='$breed_short_name'" | tail -3 | head -1)
+nr_code_breed=$(psql -U postgres -d GenMon_CH -c "select count(*) from codes where short_name='$breed_short_name'" | tail -3 | head -1 | tr -d ' ')
 log_msg $SCRIPT " ** Number of rows for breed: $breed_short_name in table codes: $nr_code_breed ..."
 # create entry, if none was found
 if [ $nr_code_breed -eq 0 ]
 then
   # next id
-  last_id=$(psql -U postgres -d GenMon_CH -c "select max(db_code) from codes" | tail -3 | head -1)
+  last_id=$(psql -U postgres -d GenMon_CH -c "select max(db_code) from codes" | tail -3 | head -1 | tr -d ' ')
   log_msg $SCRIPT " ** Insert breed $breed_short_name into codes"
   psql -U postgres -d GenMon_CH -c "INSERT INTO codes (short_name, class, long_name, db_code) values ('$breed_short_name', 'BREED', '$breed_long_name', $((last_id+1)))"
 fi
 
 # get breed_id for current breed_short_name from table codes
-breed_id=$(psql -U postgres -d GenMon_CH -c "select db_code from codes where short_name='$breed_short_name'" | tail -3 | head -1)
+breed_id=$(psql -U postgres -d GenMon_CH -c "select db_code from codes where short_name='$breed_short_name'" | tail -3 | head -1 | tr -d ' ')
 log_msg $SCRIPT " * Id of breed $breed_short_name: $breed_id ..."
 
 
