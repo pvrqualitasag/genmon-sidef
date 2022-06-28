@@ -163,7 +163,7 @@ fi
 # check whether the breed already exists in the table codes
 log_msg $SCRIPT " * Check record of breed $breed_short_name in table codes ..."
 nr_code_breed=$(psql -U postgres -d GenMon_CH -c "select count(*) from codes where short_name='$breed_short_name'" | tail -3 | head -1)
-log_msg $SCRIPT " ** Number of rows for breed $breed_short_name in table codes: $nr_code_breed ..."
+log_msg $SCRIPT " ** Number of rows for breed: $breed_short_name in table codes: $nr_code_breed ..."
 # create entry, if none was found
 if [ $nr_code_breed -eq 0 ]
 then
@@ -180,7 +180,7 @@ log_msg $SCRIPT " * Id of breed $breed_short_name: $breed_id ..."
 
 # check whether the breed_id has already a record in the summary table
 log_msg $SCRIPT  " * Check record of breed $breed_id in table summary ..."
-nr_row_summary=$(psql -U postgres -d GenMon_CH -c "select count(*) from summary where breed_id = $breed_id" | tail -3 | head -1)
+nr_row_summary=$(psql -U postgres -d GenMon_CH -c "select count(*) from summary where breed_id = $breed_id" | tail -3 | head -1 | tr -d ' ')
 log_msg $SCRIPT  " ** Number of rows for breed $breed_id in table summary: $nr_row_summary ..."
 if [ $nr_row_summary -eq 0 ]
 then
@@ -191,7 +191,7 @@ fi
 
 # transfer most important tables (temp tables are deleted right after)
 # check which of the tables exist
-echo " * Name of tables to be deleted: "
+log_msg $SCRIPT " * Name of tables to be deleted: "
 psql -U postgres -d GenMon_CH -c "select * from pg_catalog.pg_tables where tableowner = 'apiis_admin'"
 psql -U postgres -d GenMon_CH -c "select * from pg_catalog.pg_tables where tablename in ('tmp2_table3',
                                                          'breed${breed_id}_inbryear',
