@@ -188,7 +188,6 @@ then
   psql -U postgres -d GenMon_CH -c "INSERT INTO summary (breed_id, breed_name, owner, species, public) VALUES ($breed_id, '$breed_short_name', '$user', '$species', $public)"
 fi
 
-exit
 
 # transfer most important tables (temp tables are deleted right after)
 # check which of the tables exist
