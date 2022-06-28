@@ -171,7 +171,7 @@ then
 fi
 
 # get breed_id for current breed_short_name from table codes
-breed_id=$(psql -U postgres -d GenMon_CH -c "select db_code from codes where short_name=$breed_short_name" | tail -3 | head -1)
+breed_id=$(psql -U postgres -d GenMon_CH -c "select db_code from codes where short_name='$breed_short_name'" | tail -3 | head -1)
 log_msg $SCRIPT " * Id of breed $breed_short_name: $breed_id ..."
 
 
