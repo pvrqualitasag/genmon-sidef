@@ -112,6 +112,9 @@ start_msg
 breed_short_name=''
 breed_long_name=''
 PROJNAME=''
+user=''
+species=''
+public=0
 while getopts ":b:p:h" FLAG; do
   case $FLAG in
     h)
