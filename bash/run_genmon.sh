@@ -173,7 +173,8 @@ $INSTALLDIR/run_poprep.sh -b $BREEDNAME \
 #' For each analysis, poprep creates an unique project name, this is 
 #' required for the post-analysis
 #+ get-prp-proj-name
-PRPPROJNAME=$(ls -1 $PRPPROJPATH/PPP*)
+PRPPROJPATH=$(find $PRPPROJPATH -maxdepth 1 -type d -name 'PPP*' -print)
+PRPPROJNAME=$(basename $PRPPROJPATH)
 log_msg $SCRIPT " * PopRep project name: $PRPPROJNAME ..."
 
 
@@ -181,7 +182,7 @@ log_msg $SCRIPT " * PopRep project name: $PRPPROJNAME ..."
 #' Indices for GenMon are computed in this analysis
 #+ post-pop-rep
 log_msg $SCRIPT " * Running post-prp-analysis for breed: "
-#$INSTALLDIR/post_prp_analysis.sh -b $BREEDNAME -p $PRPPROJNAME
+$INSTALLDIR/post_prp_analysis.sh -b $BREEDNAME -p $PRPPROJNAME
 
 #' ## End of Script
 #' This is the end of the script with an end-of-script message.
