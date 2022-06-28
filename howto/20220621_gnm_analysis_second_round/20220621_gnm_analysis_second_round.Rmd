@@ -144,7 +144,19 @@ psql -U postgres -d $CURDB -c "SELECT * FROM apiis_admin.animal"
 
 
 ## Step 3: Indices from PopRep Results
-From the php-code, we have to find out what tables are used to compute which index.
+From the php-code, we have to find out what tables are used to compute which index. In a first step in the php-code, the tables from poprep are renamed and are inserted into the database of GenMon using the public scheme.
+
+Here comes the mapping of old to new tables.
+
+```{r, echo=FALSE}
+OLD_TABLES=c("tmp2_table3","tmp2_table2","tmp2_ne","tmp2_pedcompl","tmp2_table5","transfer","animal", "gene_stuff","tmp1_gen")
+NEW_TABLES=c("breed__BREED_ID___inbryear","breed__BREED_ID___inb_year_sex","breed__BREED_ID___ne","breed__BREED_ID___pedcompl","breed__BREED_ID___ne_deltaf","breed__BREED_ID___transfer","breed__BREED_ID___data", "gene_stuff", "tmp1_gen")
+tbl_table_map <- tibble::tibble(`PopRep Table`= OLD_TABLES,
+                                `GenMon Table` = NEW_TABLES)
+knitr::kable(tbl_table_map, escape = TRUE)
+```
+
+
 
 
 
