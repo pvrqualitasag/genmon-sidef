@@ -166,7 +166,7 @@ if [ $nr_code_breed -eq 0 ]
 then
   # next id
   last_id=$(psql -U postgres -d GenMon_CH -c "select max(db_code) from codes" | tail -3 | head -1)
-  $breed_short_name " ** Insert breed $breed_short_name into codes"
+  log_msg $SCRIPT " ** Insert breed $breed_short_name into codes"
   psql -U postgres -d GenMon_CH -c "INSERT INTO codes (short_name, class, long_name, db_code) values ('$breed_short_name', 'BREED', '$breed_long_name', $((last_id+1)))"
 fi
 
