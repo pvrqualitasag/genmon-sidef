@@ -1,0 +1,76 @@
+---
+title: "Introduction to GenMon"
+author: "Peter von Rohr"
+date: "2023-01-25"
+output:
+  beamer_presentation: default
+  ioslides_presentation: default
+  slidy_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Background
+
+* Subsidies for rare breeds based on GenMon indices
+* Five-year contract 
+* Results usually due on Aug. 15
+
+
+## GenMon Indices
+
+* Results from PopRep based on pedigree characteristics 
+    + inbreeding
+    + age distribution of breeding animals
+    + effective population size
+    + ...
+* Socio-economic factors
+    + distance between animal owners
+    + age of animal owners
+    + ...
+* Factors combined into over-all index
+
+
+## Analysis Procedure
+
+* Pedigrees requested for "external" breeds
+* Pedigrees exported for breeds on Qualitas database (cattle, sheep, goat, ...)
+* Prepare pedigree data
+* PopRep analysis
+* Add socio-economic factors
+* Results in Shiny-App page
+
+
+## Components of GenMon System
+
+* Webapplication
+    + URL: https://fagr.genmon.ch/gnm/genmon-ch/index.php
+    + Username: see KeePassX
+    + works for small breeds (not for large cattle pedigrees)
+    
+* Commandline
+    + Hostname: fagr.genmon.ch
+    + ssh-access, credentials in KeePassX
+
+* Shiny
+    + Hostname: fagr.genmon.ch
+    + User: zws, credentials as other servers
+    + Directory: /home/zws/ShinyApps
+    + Website: https://fagr.genmon.ch/shiny/users/zws/GenMonReport2022/index.Rmd
+    + How to get to results not clear
+
+
+## Further Steps
+
+* Before 28.02.2023: 
+    + Ask Jürg for addresses of external breeding organisation
+    + Ask Urs whether he is willing to send out requests
+* After 04.04.2023: Planning of GenMon analysis 2023
+* Starting after 01.05.2023: 
+    + Send out requests for pedigrees at external breeding organisations
+    + Start to ask EDV for pedigree exports from Qualitas Database
+* June/July 2023: Run GenMon Analyses
+* August 2023: Results to BLW
+

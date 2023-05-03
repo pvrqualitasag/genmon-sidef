@@ -1,8 +1,10 @@
 ---
-title: Genmon from the Command Line
-author: Peter von Rohr
+title: "Genmon from the Command Line"
+author: "Peter von Rohr"
 date: "`r Sys.Date()`"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
