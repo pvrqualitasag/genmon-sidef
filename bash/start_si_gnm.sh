@@ -154,7 +154,7 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-SINGULARITYINSTANCENAME='gnmsicnt'
+SINGULARITYINSTANCENAME='gnmcnt2023'
 GNMADMINHOME=${HOME}
 SIFLINK=$GNMADMINHOME/simg/img/genmon/gnm.sif
 BINDROOTHOST=$GNMADMINHOME/gnm/bindroot

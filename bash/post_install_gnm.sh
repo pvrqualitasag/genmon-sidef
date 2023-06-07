@@ -476,20 +476,47 @@ import_gnm_db_dump () {
 #' changed to the specified value
 change_pg_port () {
   log_msg 'change_pg_port' " ** Change port to $NEWPGPORT in $CONPGDB ..."
-  sed -i "s/port=5432/port=$NEWPGPORT/" $CONPGDB
+  sed -i "s/port=$DEFAULTPGPORT/port=$NEWPGPORT/" $CONPGDB
+  log_msg change_pg_port " ** Change port to $NEWPGPORT in PopReport dirs ..."
+  for d in ${CONPGPRPDIR[@]}
+  do
+    # search for default port
+    for f in $(grep -l -r $DEFAULTPGPORT $d)
+    do
+      if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace default port in: $f ...";fi
+      sed -i "s/$DEFAULTPGPORT/$NEWPGPORT/g" $f
+    done
+    # search for old port if it is not empty
+    if [[ $OLDPGPORT != '' ]]
+    then
+      for f in $(grep -l -r $OLDPGPORT $d)
+      do
+        if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace old port in: $f ...";fi
+        sed -i "s/$OLDPGPORT/$NEWPGPORT/g" $f
+      done
+    fi
+  done
+  log_msg change_pg_port " ** Change port to $NEWPGPORT in PopReport files ..."
+  for f in ${CONPGPRPFILE[@]}
+  do
+    # default port
+    if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace default port in: $f ...";fi
+    sed -i "s/$DEFAULTPGPORT/$NEWPGPORT/g" $f
+    # oldport
+    if [[ $OLDPGPORT != '' ]]
+    then
+      if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace old port in: $f ...";fi
+      sed -i "s/$OLDPGPORT/$NEWPGPORT/g" $f
+    fi   
+  done
+
 }
-
-
-#' ## Main Body of Script
-#' The main body of the script starts here.
-#+ start-msg, eval=FALSE
-start_msg
 
 #' ## Define Constants 
 #' The following constants are specific for the installation environment. 
 #' In case the installation must be made flexible, the constants can be 
 #' specified as command-line options.
-GNMADMINHOME=/home/gnmzws   # NOTE: inside of the container $HOME is /root
+GNMADMINHOME=/home/gnm2023   # NOTE: inside of the container $HOME is /root
 GNMWORKDIR=${GNMADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
@@ -508,21 +535,27 @@ GEOMEADMIN=geome_admin
 GEOMEPASS=geome
 # with the following user, the pg-db will be inittialised
 PGUSER=postgres
-NEWPGPORT='15433'
+PGHOME=/var/lib/postgresql
+CURWORKDIR=$(pwd)
+DEFAULTPGPORT=5432
+OLDPGPORT=5434
+NEWPGPORT=5435
 CONPGDB=$GNMSRCDIR/connectDataBase.php
+CONPGPRPDIR=(/home/popreport/production/apiis/bin /home/popreport/production/apiis/projects/prmon/bin)
+CONPGPRPFILE=(/home/popreport/production/apiis/etc/model.dtd /home/popreport/production/apiis/lib/popreport/dummy.xml)
 # webserver user
 WSUSER=www-data
 # popreport e-mail
 PRPEMAILADDRESS='none@neverland.no'
 # default parameter file
 PARAMFILE=''
-
+VERBOSE='false'
 #' ## Getopts for Commandline Argument Parsing
 #' If an option should be followed by an argument, it should be followed by a ":".
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-while getopts ":p:h" FLAG; do
+while getopts ":p:hz" FLAG; do
   case $FLAG in
     h)
       usage "Help message for $SCRIPT"
@@ -530,6 +563,9 @@ while getopts ":p:h" FLAG; do
     p)
       PARAMFILE=$OPTARG
       ;;
+    z)
+      VERBOSE='true'
+      ;;  
     :)
       usage "-$OPTARG requires an argument"
       ;;
@@ -542,12 +578,27 @@ done
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
 
+#' ## Main Body of Script
+#' The main body of the script starts here.
+#+ start-msg, eval=FALSE
+start_msg
+
 #' ## Read Parameter Input
 #' If a parameter file is specified we read the input
-if [ "$PARAMFILE" != '' ]
-then
-  log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
+if [ "$PARAMFILE" != '' ];then
+  log_msg $SCRIPT " * Reading input from $PARAMFILE ..."
   source $PARAMFILE
+fi
+
+
+#' ## Change WorkDir
+#' Change working directory to PGHOME to avoid error messages
+#' of not being able to change dir to /root
+#+ change-wdir
+if [[ $PGHOME != '' ]];then
+  CURWORKDIR=$(pwd)
+  cd $PGHOME
+  log_msg $SCRIPT " * Changed workdir from $CURWORKDIR to $PGHOME ..."
 fi
 
 
@@ -632,12 +683,12 @@ log_msg "$SCRIPT" ' * Import db dump...'
 import_gnm_db_dump
 
 
-#' ### Change Port in GenMon
+#' ### Change Port in PopRep and GenMon
 #' The connectDB script contains the pg port
 #+ change-pg-port
 if [ "$NEWPGPORT" != '' ]
 then
-  log_msg "$SCRIPT" " * Change pg port in $CONPGDB to $NEWPGPORT ..."
+  log_msg "$SCRIPT" " * Change pg port to $NEWPGPORT ..."
   change_pg_port
 fi  
 
@@ -650,6 +701,17 @@ if [ "$PRPEMAILADDRESS" != '' ]
 then
   log_msg "$SCRIPT" " * Change poprep e-mail to $PRPEMAILADDRESS ..."
 fi
+
+
+#' ## Restore WorkDir
+#' Restore working directory to PGHOME to avoid error messages
+#' of not being able to change dir to /root
+#+ change-wdir
+if [[ $PGHOME != '' ]];then
+  cd $CURWORKDIR
+  log_msg $SCRIPT " * Changed workdir from $PGHOME to $CURWORKDIR ..."
+fi
+
 
 
 #' ## End of Script

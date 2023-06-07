@@ -100,11 +100,6 @@ log_msg () {
 }
 
 
-#' ## Main Body of Script
-#' The main body of the script starts here with a start script message.
-#+ start-msg, eval=FALSE
-start_msg
-
 #' ## Getopts for Commandline Argument Parsing
 #' If an option should be followed by an argument, it should be followed by a ":".
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
@@ -112,6 +107,7 @@ start_msg
 #+ getopts-parsing, eval=FALSE
 PARFILE=$PARDIR/gnm_config.par
 BINDROOTCNTRPG=/var/lib/postgresql
+NEWPGPORT=5435
 PRPPROJPATH=''
 BREEDNAME=''
 PEDIGREEFILE=''
@@ -141,6 +137,13 @@ done
 
 shift $((OPTIND-1))  #This tells getopts to move on to the next argument.
 
+
+#' ## Main Body of Script
+#' The main body of the script starts here with a start script message.
+#+ start-msg, eval=FALSE
+start_msg
+
+
 #' ## Checks for Command Line Arguments
 #' The following statements are used to check whether required arguments
 #' have been assigned with a non-empty value
@@ -158,6 +161,15 @@ fi
 TDATE=$(date +"%Y%m%d%H%M%S")
 PRPPROJPATH=$BINDROOTCNTRPG/projects/${TDATE}_${BREEDNAME}
 
+
+#' ## Export Special PG-Port
+#' If defined, export the special PG-PORT
+#+ export-pg-port
+if [[ $NEWPGPORT != '' ]];then
+  log_msg $SCRIPT " * Export PG-Port to: $NEWPGPORT ..."
+  export PGPORT=$NEWPGPORT
+fi
+log_msg $SCRIPT " * Postgres Port: $PGPORT ..."
 
 #' ## Run PopRep Analysis
 #' The given pedigree is analysed using PopRep
@@ -183,6 +195,7 @@ log_msg $SCRIPT " * PopRep project name: $PRPPROJNAME ..."
 #+ post-pop-rep
 log_msg $SCRIPT " * Running post-prp-analysis for breed: "
 $INSTALLDIR/post_prp_analysis.sh -b $BREEDNAME -p $PRPPROJNAME
+
 
 #' ## End of Script
 #' This is the end of the script with an end-of-script message.

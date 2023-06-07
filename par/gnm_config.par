@@ -1,5 +1,5 @@
 # directory settings, container build ---------------------------- # ----------------------------------------------- #
-GNMADMINHOME=/home/gnmzws                                          # Home directory for GenMon Admin User            #
+GNMADMINHOME=/home/gnm2023                                          # Home directory for GenMon Admin User            #
 SIMGDIR=${GNMADMINHOME}/simg                                       # Singularity root directory                      #
 SIMGDEF=${SIMGDIR}/genmon-sidef/def/Singularity_genmon.recipe      # Singularity recipe file                         #
 TDATE=$(date +"%Y%m%d%H%M%S")                                      # Current date-time stamp                         #
@@ -39,8 +39,8 @@ GEOMEPASS=geome
 PGUSER=postgres
 CONPGDB=$GNMSRCDIR/connectDataBase.php
 # old and new version of postgres database port
-OLDPGPORT=5432
-NEWPGPORT=5434
+OLDPGPORT=5434
+NEWPGPORT=5435
 # webserver user
 WSUSER=www-data
 WSGROUP=www-data

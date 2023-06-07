@@ -147,12 +147,14 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-GNMADMINHOME=/home/gnmzws
+GNMADMINHOME=/home/gnm2023
 PGDATADIR=${GNMADMINHOME}/gnm/pgdata
 PGVERSIONFILE=$PGDATADIR/PG_VERSION
 PGVERPATTERN='Relational Database'
-NEWPGPORT='15433'
+NEWPGPORT='5435'
 PGUSER=postgres
+PGHOME=/var/lib/postgresql
+CURWORKDIR=$(pwd)
 PARAMFILE=''
 while getopts ":p:h" FLAG; do
   case $FLAG in
@@ -180,6 +182,17 @@ if [ "$PARAMFILE" != '' ]
 then
   log_msg "$SCRIPT" " * Reading input from $PARAMFILE ..."
   source $PARAMFILE
+fi
+
+
+#' ## Change WorkDir
+#' Change working directory to PGHOME to avoid error messages
+#' of not being able to change dir to /root
+#+ change-wdir
+if [[ $PGHOME != '' ]];then
+  CURWORKDIR=$(pwd)
+  cd $PGHOME
+  log_msg $SCRIPT " * Changed workdir from $CURWORKDIR to $PGHOME ..."
 fi
 
 
@@ -215,6 +228,17 @@ then
 else
   log_msg "$SCRIPT" ' * Cannot find running Postgresql database  ...'
 fi
+
+
+#' ## Restore WorkDir
+#' Restore working directory to PGHOME to avoid error messages
+#' of not being able to change dir to /root
+#+ change-wdir
+if [[ $PGHOME != '' ]];then
+  cd $CURWORKDIR
+  log_msg $SCRIPT " * Changed workdir from $PGHOME to $CURWORKDIR ..."
+fi
+
 
 #' ## End of Script
 #+ end-msg, eval=FALSE
