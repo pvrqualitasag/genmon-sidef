@@ -1,0 +1,43 @@
+---
+title: "Genmon from the Command Line"
+author: "Peter von Rohr"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Disclaimer
+This document describes how to do an analysis in GenMon using the command line.
+
+
+# Background Information
+The command-line version of GenMon runs in the container instance `gnmsicnt` on the server `fagr.genomon.ch`. This instance can be accessed via the username `gnmzws`. The reason for having a new user to run analyses in GenMon is that the container runs with root-privileges and these were not granted to the ordinary user `zws`. 
+
+
+# Instructions
+An analysis using GenMon can be done as follows.
+
+
+* Step 1: Upload pedigree data to server fagr.genmon.ch to directory `/home/gnmzws/gnm/prpinput`. This can be done using `scp`
+
+```bash
+scp pedigree_data.csv gnmzws@fagr.genmon.ch:/home/gnmzws/gnm/prpinput
+```
+
+* Step 2: Login to a bash-shell as user `gnmzws`. Password is given in `.kdbx` file of FB-ZWS in MS Teams
+* Step 3: The alias `ssgnm` starts a bash-shell into the GenMon-Container-Instance `gnmsicnt`
+* Step 4: With the script `run_genmon.sh` (in a `screen`) start the analysis with
+
+```bash
+/home/gnmzws/simg/genmon-sidef/bash/run_genmon.sh -b tbn2022 \
+-d /home/gnmzws/gnm/prpinput/pedigree_data.csv
+```
+
+where `tbn2022` is the name of the breed to be analysed. 
+
+The results will be shown on STDOUT in the form of a table. 
