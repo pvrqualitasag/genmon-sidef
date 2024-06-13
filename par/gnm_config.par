@@ -1,5 +1,5 @@
 # directory settings, container build ---------------------------- # ----------------------------------------------- #
-GNMADMINHOME=/home/gnm2023                                          # Home directory for GenMon Admin User            #
+GNMADMINHOME=/home/gnm2024                                          # Home directory for GenMon Admin User            #
 SIMGDIR=${GNMADMINHOME}/simg                                       # Singularity root directory                      #
 SIMGDEF=${SIMGDIR}/genmon-sidef/def/Singularity_genmon.recipe      # Singularity recipe file                         #
 TDATE=$(date +"%Y%m%d%H%M%S")                                      # Current date-time stamp                         #
@@ -25,7 +25,7 @@ PGLOGDIR=${GNMWORKDIR}/pglog                                       # Postgres lo
 PGLOGFILE=$PGLOGDIR/`date +"%Y%m%d%H%M%S"`_postgres.log            # Postgres log file for GenMon                    #
 PGVERPATTERN='Relational Database'                                 # Search pattern used to determine pg-version     #
 GNMLOGDIR=${GNMWORKDIR}/gnmlog                                     # GenMon log directory                            #
-GNMLOGFILE=${GNMLOGDIR}/popreport.log                              # PopReport log file                              #
+GNMLOGFILE=${GNMLOGDIR}/$(date +"%Y%m%d%H%M%S")_popreport.log      # PopReport log file                              #
 GNMDBDUMP=${GNMWORKDIR}/gnmdbdump                                  # Directory for GenMon Database dump to be read   #
 GNMSRCDIR=/var/www/html/genmon-ch                                  # GenMon WebApp PHP source directory              #
 GNMDUMP=empty_GenMon_DB                                            # GenMon Database dump file to be read            #
@@ -40,7 +40,7 @@ PGUSER=postgres
 CONPGDB=$GNMSRCDIR/connectDataBase.php
 # old and new version of postgres database port
 OLDPGPORT=5434
-NEWPGPORT=5435
+NEWPGPORT=5436
 # webserver user
 WSUSER=www-data
 WSGROUP=www-data

@@ -475,40 +475,28 @@ import_gnm_db_dump () {
 #' The script connectDatabase.php contains the port of the PG DB. This is 
 #' changed to the specified value
 change_pg_port () {
+  local l_REPL_PORT="$DEFAULTPGPORT $OLDPGPORT"
   log_msg 'change_pg_port' " ** Change port to $NEWPGPORT in $CONPGDB ..."
-  sed -i "s/port=$DEFAULTPGPORT/port=$NEWPGPORT/" $CONPGDB
-  log_msg change_pg_port " ** Change port to $NEWPGPORT in PopReport dirs ..."
-  for d in ${CONPGPRPDIR[@]}
+  for p in $l_REPL_PORT
   do
-    # search for default port
-    for f in $(grep -l -r $DEFAULTPGPORT $d)
+    log_msg 'change_pg_port' " ** ** Current port to be replaced $p ..."
+    sed -i "s/port=$p/port=$NEWPGPORT/" $CONPGDB
+  done
+  log_msg change_pg_port " ** Change port to $NEWPGPORT in PopReport dirs ..."
+  for rel_dir in $CONPGPRPDIR
+  do
+    d=$APIIS_ROOT/$rel_dir
+    # search for ports to be replaced
+    for p in $l_REPL_PORT
     do
-      if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace default port in: $f ...";fi
-      sed -i "s/$DEFAULTPGPORT/$NEWPGPORT/g" $f
-    done
-    # search for old port if it is not empty
-    if [[ $OLDPGPORT != '' ]]
-    then
-      for f in $(grep -l -r $OLDPGPORT $d)
+      for f in $(grep -l -r "$p" $d)
       do
-        if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace old port in: $f ...";fi
-        sed -i "s/$OLDPGPORT/$NEWPGPORT/g" $f
+        if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace port: $p in: $f ...";fi
+        sed -i "s/$p/$NEWPGPORT/g" $f
       done
-    fi
+    done  
   done
   log_msg change_pg_port " ** Change port to $NEWPGPORT in PopReport files ..."
-  for f in ${CONPGPRPFILE[@]}
-  do
-    # default port
-    if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace default port in: $f ...";fi
-    sed -i "s/$DEFAULTPGPORT/$NEWPGPORT/g" $f
-    # oldport
-    if [[ $OLDPGPORT != '' ]]
-    then
-      if [[ $VERBOSE == 'true' ]];then log_msg change_pg_port  " * Replace old port in: $f ...";fi
-      sed -i "s/$OLDPGPORT/$NEWPGPORT/g" $f
-    fi   
-  done
 
 }
 
@@ -516,7 +504,7 @@ change_pg_port () {
 #' The following constants are specific for the installation environment. 
 #' In case the installation must be made flexible, the constants can be 
 #' specified as command-line options.
-GNMADMINHOME=/home/gnm2023   # NOTE: inside of the container $HOME is /root
+GNMADMINHOME=/home/gnm2024   # NOTE: inside of the container $HOME is /root
 GNMWORKDIR=${GNMADMINHOME}/gnm
 PGDATADIR=${GNMWORKDIR}/pgdata
 PGLOGDIR=${GNMWORKDIR}/pglog
@@ -538,11 +526,11 @@ PGUSER=postgres
 PGHOME=/var/lib/postgresql
 CURWORKDIR=$(pwd)
 DEFAULTPGPORT=5432
-OLDPGPORT=5434
-NEWPGPORT=5435
+OLDPGPORT='5434 5435'
+NEWPGPORT=5436
 CONPGDB=$GNMSRCDIR/connectDataBase.php
-CONPGPRPDIR=(/home/popreport/production/apiis/bin /home/popreport/production/apiis/projects/prmon/bin)
-CONPGPRPFILE=(/home/popreport/production/apiis/etc/model.dtd /home/popreport/production/apiis/lib/popreport/dummy.xml)
+APIIS_ROOT=/home/popreport/production/apiis
+CONPGPRPDIR='bin etc lib projects'
 # webserver user
 WSUSER=www-data
 # popreport e-mail

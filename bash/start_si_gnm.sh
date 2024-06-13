@@ -154,7 +154,7 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-SINGULARITYINSTANCENAME='gnmcnt2023'
+SINGULARITYINSTANCENAME='gnmcnt2024'
 GNMADMINHOME=${HOME}
 SIFLINK=$GNMADMINHOME/simg/img/genmon/gnm.sif
 BINDROOTHOST=$GNMADMINHOME/gnm/bindroot
@@ -163,7 +163,6 @@ BINDROOTCNTRAPIIS=/home/popreport/production/apiis/var/log
 BINDROOTCNTRVARRUNPG=/var/run/postgresql
 BINDROOTCNTRDATAFILE=/var/www/html/genmon-ch/Data_files
 BINDPATH="$BINDROOTHOST/incoming/:$BINDROOTCNTRPG/incoming,$BINDROOTHOST/done:$BINDROOTCNTRPG/done,$BINDROOTHOST/projects:$BINDROOTCNTRPG/projects,$BINDROOTHOST/log:$BINDROOTCNTRAPIIS,$BINDROOTHOST/run:$BINDROOTCNTRVARRUNPG,$BINDROOTHOST/Data_files:$BINDROOTCNTRDATAFILE,$GNMADMINHOME"
-# NETWORKARGS='"portmap=90:80/tcp","portmap=8080:8080/tcp"'
 NETWORKARGS=''
 PARAMFILE=''
 while getopts ":a:b:i:n:p:w:h" FLAG; do

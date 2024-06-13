@@ -107,7 +107,7 @@ log_msg () {
 #+ getopts-parsing, eval=FALSE
 PARFILE=$PARDIR/gnm_config.par
 BINDROOTCNTRPG=/var/lib/postgresql
-NEWPGPORT=5435
+NEWPGPORT=5436
 PRPPROJPATH=''
 BREEDNAME=''
 PEDIGREEFILE=''

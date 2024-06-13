@@ -147,11 +147,11 @@ start_msg
 #' Notice there is no ":" after "h". The leading ":" suppresses error messages from
 #' getopts. This is required to get my unrecognized option code to work.
 #+ getopts-parsing, eval=FALSE
-GNMADMINHOME=/home/gnm2023
+GNMADMINHOME=/home/gnm2024
 PGDATADIR=${GNMADMINHOME}/gnm/pgdata
 PGVERSIONFILE=$PGDATADIR/PG_VERSION
 PGVERPATTERN='Relational Database'
-NEWPGPORT='5435'
+NEWPGPORT='5436'
 PGUSER=postgres
 PGHOME=/var/lib/postgresql
 CURWORKDIR=$(pwd)
